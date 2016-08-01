@@ -1,5 +1,13 @@
-manipulateWidget <- function(expr, ...) {
+manipulateWidget <- function(expr, ..., main = NULL) {
   expr <- substitute(expr)
+
+  if (is.null(main)) {
+    main <- deparse(expr)
+    if (nchar(main) > 53) {
+      main <- substring(main, 1, 50)
+      main <- paste0(main, "...")
+    }
+  }
 
   controls <- list(...)
   controlNames <- names(controls)
@@ -8,7 +16,7 @@ manipulateWidget <- function(expr, ...) {
                      SIMPLIFY = FALSE, USE.NAMES = FALSE)
 
   ui <- miniPage(
-    gadgetTitleBar("title"),
+    gadgetTitleBar(main),
     miniContentPanel(
       fillRow(flex = c(1, 3),
         fillCol(
