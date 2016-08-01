@@ -1,0 +1,17 @@
+Package: manipulateWidget
+Type: Package
+Title: Add More Interactivity to htmlWidgets
+Version: 0.1.0
+Author: Francois Guillem
+Maintainer: Francois Guillem <francois.guillem@rte-france.com>
+Description: Like package 'manipulate' does for static graphics, this package
+    helps to easily to add controls like slider, picker, checkboxes, etc. to an
+    interactive plot created with htmlWidget. This way one can use controls to
+    modify the input data or the parameters of a widget.
+Imports:
+    shiny,
+    miniUI,
+    htmltools
+License: rte
+LazyData: TRUE
+RoxygenNote: 5.0.1
