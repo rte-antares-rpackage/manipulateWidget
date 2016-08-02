@@ -18,8 +18,15 @@
 #'   One or more named control arguments created with functions
 #'   \code{\link{mwSlider}}, \code{\link{mwText}}, etc. The name of each control
 #'   is the name of the variable the controls modifies in the expression.
-#' @param main
+#' @param .main
 #'   Title of the shiny gadget
+#' @param .controlPos
+#'   Where controls should be placed ? By default, they are placed in the left,
+#'   next to the graphic. If \code{controlPos = "tab"}, two tabs are created:
+#'   one containing controls and the other containing the graphic.
+#' @param .tabColumns
+#'   If controls are placed in a distinct tab, how many columns should be
+#'   used ? This parameter is used only if \code{controlPos = "tab"}
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the control.
@@ -37,8 +44,11 @@
 #'
 #' @export
 #'
-manipulateWidget <- function(.expr, ..., .main = NULL) {
+manipulateWidget <- function(.expr, ..., .main = NULL,
+                             .controlPos = c("left", "top", "right", "bottom", "tab"),
+                             .tabColumns = 2) {
   .expr <- substitute(.expr)
+  .controlPos <- match.arg(.controlPos)
 
   if (is.null(.main)) {
     .main <- deparse(.expr)
@@ -56,15 +66,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL) {
 
   ui <- miniPage(
     gadgetTitleBar(.main),
-    miniContentPanel(
-      fillRow(flex = c(1, 3),
-        fillCol(
-          unname(controls)
-        ),
-
-        htmlOutput("content", style = "height:100%; width:100%")
-      )
-    )
+    .ui(controls, .controlPos, .tabColumns)
   )
 
   server <- function(input, output, session) {
