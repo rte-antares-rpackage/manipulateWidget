@@ -20,6 +20,9 @@
 #'   is the name of the variable the controls modifies in the expression.
 #' @param .main
 #'   Title of the shiny gadget
+#' @updateBtn
+#'   Should an update button be added to the controls ? If \code{TRUE}, then
+#'   the graphic is updated only when the user clicks on the update button.
 #' @param .controlPos
 #'   Where controls should be placed ? By default, they are placed in the left,
 #'   next to the graphic. If \code{controlPos = "tab"}, two tabs are created:
@@ -44,11 +47,13 @@
 #'
 #' @export
 #'
-manipulateWidget <- function(.expr, ..., .main = NULL,
+manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .controlPos = c("left", "top", "right", "bottom", "tab"),
                              .tabColumns = 2) {
   .expr <- substitute(.expr)
   .controlPos <- match.arg(.controlPos)
+
+  if (.controlPos == "tab") .updateBtn <- FALSE
 
   if (is.null(.main)) {
     .main <- deparse(.expr)
@@ -64,6 +69,9 @@ manipulateWidget <- function(.expr, ..., .main = NULL,
   controls <- mapply(function(f, id) f(id), f = controls, id = controlNames,
                      SIMPLIFY = FALSE, USE.NAMES = FALSE)
 
+  if (.updateBtn) controls <- append(controls, list(actionButton(".update", "Update",
+                                                                 class = "btn-primary")))
+
   ui <- miniPage(
     gadgetTitleBar(.main),
     .ui(controls, .controlPos, .tabColumns)
@@ -72,8 +80,11 @@ manipulateWidget <- function(.expr, ..., .main = NULL,
   server <- function(input, output, session) {
 
     inputList <- reactive({
+      input$.update
+
       res <- lapply(controlNames, function(s) {
-        eval(parse(text = paste0("input$", s)))
+        if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
+        else eval(parse(text = sprintf("input$%s", s)))
       })
       names(res) <- controlNames
 
