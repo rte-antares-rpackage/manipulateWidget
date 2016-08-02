@@ -1,3 +1,6 @@
+#' Add a Slider to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwSlider <- function(min, max, value, label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
@@ -5,6 +8,9 @@ mwSlider <- function(min, max, value, label = NULL, ...) {
   }
 }
 
+#' Add a text input to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwText <- function(value = "", label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
@@ -12,6 +18,9 @@ mwText <- function(value = "", label = NULL, ...) {
   }
 }
 
+#' Add a numeric input to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwNumeric <- function(value, label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
@@ -19,6 +28,9 @@ mwNumeric <- function(value, label = NULL, ...) {
   }
 }
 
+#' Add a password to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwPassword <- function(value = "", label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
@@ -26,6 +38,9 @@ mwPassword <- function(value = "", label = NULL, ...) {
   }
 }
 
+#' Add a Select list input to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwSelect <- function(choices, value = NULL, label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
@@ -33,6 +48,9 @@ mwSelect <- function(choices, value = NULL, label = NULL, ...) {
   }
 }
 
+#' Add a checkbox to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwCheckbox <- function(value = FALSE, label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
@@ -40,6 +58,9 @@ mwCheckbox <- function(value = FALSE, label = NULL, ...) {
   }
 }
 
+#' Add radio buttons to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwRadio <- function(choices, value = NULL, label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
@@ -47,6 +68,9 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
   }
 }
 
+#' Add a date picker to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwDate <- function(value = NULL, label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
@@ -54,6 +78,9 @@ mwDate <- function(value = NULL, label = NULL, ...) {
   }
 }
 
+#' Add a date range picker to a manipulateWidget gadget
+#' @export
+#' @family controls
 mwDateRange <- function(start = NULL, end = NULL, label = NULL, ...) {
   function(id) {
     if (is.null(label)) label <- id
