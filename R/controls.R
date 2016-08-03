@@ -88,5 +88,13 @@ mwDateRange <- function(start = NULL, end = NULL, label = NULL, ...) {
   }
 }
 
-
+#' Add a group of checkboxes to a manipulateWidget gadget
+#' @export
+#' @family controls
+mwCheckboxGroup <- function(choices, value = NULL, label = NULL, ...) {
+  function(id) {
+    if (is.null(label)) label <- id
+    checkboxGroupInput(id, label, choices, value, ...)
+  }
+}
 
