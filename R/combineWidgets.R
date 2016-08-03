@@ -2,7 +2,8 @@
 #'
 #' @export
 #'
-combineWidgets <- function(..., nrow = NULL, ncol = NULL, hflex = 1, vflex = 1) {
+combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
+                           hflex = 1, vflex = 1) {
   widgets <- lapply(list(...), function(x) {
     x$width <- x$height <- "100%"
     x
@@ -21,11 +22,23 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, hflex = 1, vflex = 1) 
     ncol <- ceiling(nwidgets / nrow)
   }
 
+  hflex <- rep(hflex, length.out = ncol)
+  vflex <- rep(vflex, length.out = nrow)
+
   rows <- lapply(1:nrow, function(i) {
     args <- widgets[((i-1) * ncol + 1):(i * ncol)]
     args$flex <- hflex
     do.call(fillRow, args)
   })
+
+  # Title
+  if(!is.null(title)) {
+    vflex <- c(NA, vflex)
+    title <- tags$div(style = "text-align: center;",
+      tags$h1(title)
+    )
+    rows <- append(list(title), rows)
+  }
 
   rows$flex <- vflex
 
