@@ -4,10 +4,7 @@
 #'
 combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
                            hflex = 1, vflex = 1) {
-  widgets <- lapply(list(...), function(x) {
-    x$width <- x$height <- "100%"
-    x
-  })
+  widgets <- lapply(list(...), .processOutput)
 
   # Get Number of rows and columns
   nwidgets <- length(widgets)

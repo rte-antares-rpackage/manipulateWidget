@@ -92,13 +92,12 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     })
 
     output$content <- renderUI({
-      res <- eval(.expr, envir = inputList())
-      res$width <- res$height <- "100%"
+      res <- .processOutput(eval(.expr, envir = inputList()))
       fillCol(res)
     })
 
     observeEvent(input$done, {
-      stopApp(eval(.expr, envir = inputList()))
+      stopApp(.processOutput(eval(.expr, envir = inputList())))
     })
   }
 
