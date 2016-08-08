@@ -20,7 +20,7 @@
 #'   is the name of the variable the controls modifies in the expression.
 #' @param .main
 #'   Title of the shiny gadget
-#' @updateBtn
+#' @param .updateBtn
 #'   Should an update button be added to the controls ? If \code{TRUE}, then
 #'   the graphic is updated only when the user clicks on the update button.
 #' @param .controlPos
@@ -56,7 +56,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   if (.controlPos == "tab") .updateBtn <- FALSE
 
   if (is.null(.main)) {
-    .main <- deparse(.expr)
+    .main <- paste(deparse(.expr), collapse = " ")
     if (nchar(.main) > 53) {
       .main <- substring(.main, 1, 50)
       .main <- paste0(.main, " ...")
