@@ -4,16 +4,40 @@
 \alias{mwDateRange}
 \title{Add a date range picker to a manipulateWidget gadget}
 \usage{
-mwDateRange(start = NULL, end = NULL, label = NULL, ...)
+mwDateRange(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...)
+}
+\arguments{
+\item{value}{Vector containing two dates (either Date objects pr a string in yyy-mm-dd
+format) representing the initial date range selected.}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{dateRangeInput}}}
+}
+\value{
+A function that will generate the input control.
 }
 \description{
 Add a date range picker to a manipulateWidget gadget
 }
+\examples{
+if (require(dygraphs) && require(xts)) {
+  mydata <- xts(rnorm(365), order.by = as.Date("2017-01-01") + 0:364)
+
+  manipulateWidget(
+    dygraph(mydata) \%>\% dyShading(from=period[1], to = period[2], color = "#CCEBD6"),
+    period = mwDateRange(c("2017-03-01", "2017-04-01"),
+                  min = "2017-01-01", max = "2017-12-31")
+  )
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDate}}, \code{\link{mwNumeric}},
-  \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelect}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwCheckbox}}, \code{\link{mwDate}},
+  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
+  \code{\link{mwRadio}}, \code{\link{mwSelect}},
+  \code{\link{mwSlider}}, \code{\link{mwText}}
 }
 

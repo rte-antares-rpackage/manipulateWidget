@@ -6,14 +6,39 @@
 \usage{
 mwCheckbox(value = FALSE, label = NULL, ...)
 }
+\arguments{
+\item{value}{Initial value of the input.}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{checkboxInput}}}
+}
+\value{
+A function that will generate the input control.
+}
 \description{
 Add a checkbox to a manipulateWidget gadget
 }
+\examples{
+
+if(require(plotly)) {
+ manipulateWidget(
+   {
+       plot_ly(iris, x = Sepal.Length, y = Sepal.Width,
+               color = Species, mode = "markers") \%>\%
+         layout(showlegend = legend)
+   },
+   legend = mwCheckbox(TRUE, "Show legend")
+ )
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwDateRange}},
-  \code{\link{mwDate}}, \code{\link{mwNumeric}},
-  \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelect}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwDateRange}}, \code{\link{mwDate}},
+  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
+  \code{\link{mwRadio}}, \code{\link{mwSelect}},
+  \code{\link{mwSlider}}, \code{\link{mwText}}
 }
 

@@ -6,14 +6,38 @@
 \usage{
 mwPassword(value = "", label = NULL, ...)
 }
+\arguments{
+\item{value}{Default value of the input.}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{passwordInput}}}
+}
+\value{
+A function that will generate the input control.
+}
 \description{
 Add a password to a manipulateWidget gadget
 }
+\examples{
+if (require(plotly)) {
+  manipulateWidget(
+    {
+      if (passwd != 'abc123') "Wrong password. True password is 'abc123'"
+      else plot_ly(data.frame(x = 1:10, y = rnorm(10)), x=x, y=y)
+    },
+    user = mwText(label = "Username"),
+    passwd = mwPassword(label = "Password")
+  )
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDateRange}}, \code{\link{mwDate}},
-  \code{\link{mwNumeric}}, \code{\link{mwRadio}},
-  \code{\link{mwSelect}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
+  \code{\link{mwDate}}, \code{\link{mwNumeric}},
+  \code{\link{mwRadio}}, \code{\link{mwSelect}},
+  \code{\link{mwSlider}}, \code{\link{mwText}}
 }
 

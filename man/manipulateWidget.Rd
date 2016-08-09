@@ -4,7 +4,8 @@
 \alias{manipulateWidget}
 \title{Add Controls to Interactive Plots}
 \usage{
-manipulateWidget(.expr, ..., .main = NULL)
+manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
+  .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -15,7 +16,17 @@ modified.}
 \code{\link{mwSlider}}, \code{\link{mwText}}, etc. The name of each control
 is the name of the variable the controls modifies in the expression.}
 
-\item{main}{Title of the shiny gadget}
+\item{.main}{Title of the shiny gadget}
+
+\item{.updateBtn}{Should an update button be added to the controls ? If \code{TRUE}, then
+the graphic is updated only when the user clicks on the update button.}
+
+\item{.controlPos}{Where controls should be placed ? By default, they are placed in the left,
+next to the graphic. If \code{controlPos = "tab"}, two tabs are created:
+one containing controls and the other containing the graphic.}
+
+\item{.tabColumns}{If controls are placed in a distinct tab, how many columns should be
+used ? This parameter is used only if \code{controlPos = "tab"}}
 }
 \value{
 The result of the expression evaluated with the last values of the control.

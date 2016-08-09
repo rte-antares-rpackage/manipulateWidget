@@ -6,14 +6,36 @@
 \usage{
 mwNumeric(value, label = NULL, ...)
 }
+\arguments{
+\item{value}{Initial value of the numeric input.}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{numericInput}}}
+}
+\value{
+A function that will generate the input control.
+}
 \description{
 Add a numeric input to a manipulateWidget gadget
 }
+\examples{
+
+if (require(plotly)) {
+  manipulateWidget(
+    plot_ly(data.frame(x = 1:10, y = rnorm(10, mean, sd)), x=x, y=y),
+    mean = mwNumeric(0),
+    sd = mwNumeric(1, min = 0, step = 0.1)
+  )
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDateRange}}, \code{\link{mwDate}},
-  \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelect}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
+  \code{\link{mwDate}}, \code{\link{mwPassword}},
+  \code{\link{mwRadio}}, \code{\link{mwSelect}},
+  \code{\link{mwSlider}}, \code{\link{mwText}}
 }
 

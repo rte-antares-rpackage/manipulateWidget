@@ -6,14 +6,51 @@
 \usage{
 mwSlider(min, max, value, label = NULL, ...)
 }
+\arguments{
+\item{min}{The minimum value that can be selected.}
+
+\item{max}{The maximum value that can be selected.}
+
+\item{value}{Initial value of the slider  A numeric vector of length one will create a
+regular slider; a numeric vector of length two will create a double-ended
+range slider}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{sliderInput}}}
+}
+\value{
+A function that will generate the input control.
+}
 \description{
 Add a Slider to a manipulateWidget gadget
 }
+\examples{
+
+if (require(plotly)) {
+
+  manipulateWidget(
+    plot_ly(data.frame(x = 1:n, y = rnorm(n)), x=x, y=y),
+    n = mwSlider(1, 100, 10, label = "Number of values")
+  )
+
+  # Create a double ended slider to choose a range instead of a single value
+  mydata <- data.frame(x = 1:100, y = rnorm(100))
+
+  manipulateWidget(
+    plot_ly(mydata[n[1]:n[2], ], x=x, y=y),
+    n = mwSlider(1, 100, c(1, 10), label = "Number of values")
+  )
+
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDateRange}}, \code{\link{mwDate}},
-  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
-  \code{\link{mwRadio}}, \code{\link{mwSelect}},
-  \code{\link{mwText}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
+  \code{\link{mwDate}}, \code{\link{mwNumeric}},
+  \code{\link{mwPassword}}, \code{\link{mwRadio}},
+  \code{\link{mwSelect}}, \code{\link{mwText}}
 }
 

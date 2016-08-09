@@ -6,14 +6,55 @@
 \usage{
 mwSelect(choices, value = NULL, label = NULL, ...)
 }
+\arguments{
+\item{choices}{Vector or list of choices. If it is named, then the names rather than the
+values are displayed to the user.}
+
+\item{value}{Initial value of the input. If not specified, the first choice is used.}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{selectInput}}}
+}
+\value{
+A function that will generate the input control.
+}
 \description{
 Add a Select list input to a manipulateWidget gadget
 }
+\examples{
+if (require(plotly)) {
+  mydata <- data.frame(x = 1:100, y = rnorm(100))
+
+  manipulateWidget(
+    {
+      mode <- switch(type, points = "markers", lines = "lines", both = "markers+lines")
+      plot_ly(mydata, x=x, y=y, mode = mode)
+    },
+    type = mwSelect(c("points", "lines", "both"))
+  )
+
+  # Select multiple values
+  manipulateWidget(
+    {
+      if (length(species) == 0) "Select at least one species."
+      else {
+        mydata <- iris[iris$Species \%in\% species,]
+        plot_ly(mydata, x = Sepal.Length, y = Sepal.Width,
+                color = droplevels(Species), mode = "markers")
+      }
+    },
+    species = mwSelect(levels(iris$Species), multiple = TRUE)
+  )
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDateRange}}, \code{\link{mwDate}},
-  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
-  \code{\link{mwRadio}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
+  \code{\link{mwDate}}, \code{\link{mwNumeric}},
+  \code{\link{mwPassword}}, \code{\link{mwRadio}},
+  \code{\link{mwSlider}}, \code{\link{mwText}}
 }
 

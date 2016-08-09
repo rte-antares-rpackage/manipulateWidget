@@ -4,10 +4,40 @@
 \alias{mwCheckboxGroup}
 \title{Add a group of checkboxes to a manipulateWidget gadget}
 \usage{
-mwCheckboxGroup(choices, value = NULL, label = NULL, ...)
+mwCheckboxGroup(choices, value = c(), label = NULL, ...)
+}
+\arguments{
+\item{choices}{Vector or list of choices. If it is named, then the names rather than the
+values are displayed to the user.}
+
+\item{value}{Vector containing the values initially selected}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{checkboxGroupInput}}}
+}
+\value{
+A function that will generate the input control.
 }
 \description{
 Add a group of checkboxes to a manipulateWidget gadget
+}
+\examples{
+if (require(plotly)) {
+  manipulateWidget(
+    {
+      if (length(species) == 0) "Select at least one species."
+      else {
+        mydata <- iris[iris$Species \%in\% species,]
+        plot_ly(mydata, x = Sepal.Length, y = Sepal.Width,
+                color = droplevels(Species), mode = "markers")
+      }
+    },
+    species = mwCheckboxGroup(levels(iris$Species))
+  )
+}
+
 }
 \seealso{
 Other controls: \code{\link{mwCheckbox}},

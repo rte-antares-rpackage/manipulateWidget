@@ -6,14 +6,37 @@
 \usage{
 mwDate(value = NULL, label = NULL, ...)
 }
+\arguments{
+\item{value}{Default value of the input.}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{dateInput}}}
+}
+\value{
+A function that will generate the input control.
+}
 \description{
 Add a date picker to a manipulateWidget gadget
 }
+\examples{
+if (require(dygraphs) && require(xts)) {
+  mydata <- xts(rnorm(365), order.by = as.Date("2017-01-01") + 0:364)
+
+  manipulateWidget(
+    dygraph(mydata) \%>\% dyEvent(date, "Your birthday"),
+    date = mwDate("2017-03-27", label = "Your birthday date",
+                  min = "2017-01-01", max = "2017-12-31")
+  )
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDateRange}}, \code{\link{mwNumeric}},
-  \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelect}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
+  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
+  \code{\link{mwRadio}}, \code{\link{mwSelect}},
+  \code{\link{mwSlider}}, \code{\link{mwText}}
 }
 

@@ -6,14 +6,42 @@
 \usage{
 mwRadio(choices, value = NULL, label = NULL, ...)
 }
+\arguments{
+\item{choices}{Vector or list of choices. If it is named, then the names rather than the
+values are displayed to the user.}
+
+\item{value}{Initial value of the input. If not specified, the first choice is used.}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{radioButtons}}}
+}
+\value{
+A function that will generate the input control.
+}
 \description{
 Add radio buttons to a manipulateWidget gadget
 }
+\examples{
+if (require(plotly)) {
+  mydata <- data.frame(x = 1:100, y = rnorm(100))
+
+  manipulateWidget(
+    {
+      mode <- switch(type, points = "markers", lines = "lines", both = "markers+lines")
+      plot_ly(mydata, x=x, y=y, mode = mode)
+    },
+    type = mwRadio(c("points", "lines", "both"))
+  )
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDateRange}}, \code{\link{mwDate}},
-  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
-  \code{\link{mwSelect}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
+  \code{\link{mwDate}}, \code{\link{mwNumeric}},
+  \code{\link{mwPassword}}, \code{\link{mwSelect}},
+  \code{\link{mwSlider}}, \code{\link{mwText}}
 }
 

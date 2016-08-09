@@ -6,14 +6,35 @@
 \usage{
 mwText(value = "", label = NULL, ...)
 }
+\arguments{
+\item{value}{Initial value of the text input.}
+
+\item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
+variable is used.}
+
+\item{...}{Other arguments passed to function\code{\link[shiny]{textInput}}}
+}
+\value{
+A function that will generate the input control.
+}
 \description{
 Add a text input to a manipulateWidget gadget
 }
+\examples{
+if (require(plot_ly)) {
+  mydata <- data.frame(x = 1:100, y = rnorm(100))
+  manipulateWidget(
+    plot_ly(mydata, x=x, y=y) \%>\% layout(title = mytitle),
+    mytitle = mwText("Awesome title !")
+  )
+}
+
+}
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDateRange}}, \code{\link{mwDate}},
-  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
-  \code{\link{mwRadio}}, \code{\link{mwSelect}},
-  \code{\link{mwSlider}}
+Other controls: \code{\link{mwCheckboxGroup}},
+  \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
+  \code{\link{mwDate}}, \code{\link{mwNumeric}},
+  \code{\link{mwPassword}}, \code{\link{mwRadio}},
+  \code{\link{mwSelect}}, \code{\link{mwSlider}}
 }
 
