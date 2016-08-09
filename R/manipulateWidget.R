@@ -62,7 +62,9 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   if (.controlPos == "tab") .updateBtn <- FALSE
 
   if (is.null(.main)) {
-    .main <- paste(deparse(.expr), collapse = " ")
+    .main <- paste(deparse(.expr), collapse = ";")
+    .main <- gsub("^\\{ *;?", "", .main)
+    .main <- gsub("\\}$", "", .main)
     if (nchar(.main) > 53) {
       .main <- substring(.main, 1, 50)
       .main <- paste0(.main, " ...")
