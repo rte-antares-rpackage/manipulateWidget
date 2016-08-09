@@ -30,6 +30,10 @@
 #' @param .tabColumns
 #'   If controls are placed in a distinct tab, how many columns should be
 #'   used ? This parameter is used only if \code{controlPos = "tab"}
+#' @param .viewer
+#'   Controls where the gadget should be displayed. \code{"pane"} corresponds to
+#'   the Rstudio viewer, \code{"window"} to a dialog window, and \code{"browser}
+#'   to an external web browser.
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the control.
@@ -49,9 +53,11 @@
 #'
 manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .controlPos = c("left", "top", "right", "bottom", "tab"),
-                             .tabColumns = 2) {
+                             .tabColumns = 2,
+                             .viewer = c("pane", "window", "browser")) {
   .expr <- substitute(.expr)
   .controlPos <- match.arg(.controlPos)
+  .viewer <- match.arg(.viewer)
 
   if (.controlPos == "tab") .updateBtn <- FALSE
 
@@ -97,10 +103,16 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     })
 
     observeEvent(input$done, {
-      stopApp(.processOutput(eval(.expr, envir = inputList())))
+      stopApp(eval(.expr, envir = inputList()))
     })
   }
 
-  runGadget(ui, server)
+  .viewer <- switch(.viewer,
+    pane = paneViewer(),
+    window = dialogViewer(.main),
+    browser = browserViewer()
+  )
+
+  runGadget(ui, server, viewer = .viewer)
 
 }
