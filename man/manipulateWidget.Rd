@@ -5,7 +5,8 @@
 \title{Add Controls to Interactive Plots}
 \usage{
 manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
-  .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2)
+  .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
+  .viewer = c("pane", "window", "browser"))
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -27,6 +28,10 @@ one containing controls and the other containing the graphic.}
 
 \item{.tabColumns}{If controls are placed in a distinct tab, how many columns should be
 used ? This parameter is used only if \code{controlPos = "tab"}}
+
+\item{.viewer}{Controls where the gadget should be displayed. \code{"pane"} corresponds to
+the Rstudio viewer, \code{"window"} to a dialog window, and \code{"browser"}
+to an external web browser.}
 }
 \value{
 The result of the expression evaluated with the last values of the control.

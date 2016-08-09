@@ -32,7 +32,7 @@
 #'   used ? This parameter is used only if \code{controlPos = "tab"}
 #' @param .viewer
 #'   Controls where the gadget should be displayed. \code{"pane"} corresponds to
-#'   the Rstudio viewer, \code{"window"} to a dialog window, and \code{"browser}
+#'   the Rstudio viewer, \code{"window"} to a dialog window, and \code{"browser"}
 #'   to an external web browser.
 #'
 #' @return
