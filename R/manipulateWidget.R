@@ -58,6 +58,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .expr <- substitute(.expr)
   .controlPos <- match.arg(.controlPos)
   .viewer <- match.arg(.viewer)
+  .env <- parent.frame()
 
   if (.controlPos == "tab") .updateBtn <- FALSE
 
@@ -100,12 +101,15 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     })
 
     output$content <- renderUI({
-      res <- .processOutput(eval(.expr, envir = inputList()))
+      inputEnv <- list2env(inputList(), parent = .env)
+
+      res <- .processOutput(eval(.expr, envir = inputEnv))
       fillCol(res)
     })
 
     observeEvent(input$done, {
-      stopApp(eval(.expr, envir = inputList()))
+      inputEnv <- list2env(inputList(), parent = .env)
+      stopApp(eval(.expr, envir = inputEnv))
     })
   }
 
