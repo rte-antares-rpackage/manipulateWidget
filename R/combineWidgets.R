@@ -118,6 +118,7 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
   res
 }
 
+#' @export
 print.combinedHtmlwidgets <- function(x, ...) {
   htmltools:::html_print(miniPage(x))
 }
