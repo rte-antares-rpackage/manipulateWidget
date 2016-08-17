@@ -98,6 +98,22 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
 
   rows <- lapply(1:nrow, function(i) {
     args <- widgets[((i-1) * ncol + 1):(i * ncol)]
+
+    # If vflex is NA for this row, then try to infer the height of the row.
+    if (is.na(vflex[i])) {
+      heights <- unlist(sapply(args, function(x) {
+        if (!is.list(x)) return (NULL)
+        if (!is.null(x$height)) return(x$height)
+        if (!is.null(x$attribs)) return(x$attribs$height)
+        NULL
+      }))
+      if (!is.null(heights)) {
+        heights <- na.omit(heights)
+        if (length(heights) > 0)  args$height <- heights[1]
+      }
+      if (is.null(args$height)) args$height <- 200
+    }
+
     args$flex <- hflex
     do.call(fillRow, args)
   })
