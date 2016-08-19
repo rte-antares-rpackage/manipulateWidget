@@ -34,6 +34,13 @@
 #'   Controls where the gadget should be displayed. \code{"pane"} corresponds to
 #'   the Rstudio viewer, \code{"window"} to a dialog window, and \code{"browser"}
 #'   to an external web browser.
+#' @param .display
+#'   A named list of conditions that evaluate to TRUE OR FALSE indicating when
+#'   inputs should be displayed. These conditions are reevaluated each time a
+#'   control it modified. By default, each control is displayed, but if the name
+#'   of a control appears in this list, then the associated condition is
+#'   evaluated. If the result is TRUE then the control is visible, else it is
+#'   hidden.
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the control.
@@ -49,13 +56,44 @@
 #'
 #' }
 #'
+#' # Example of conditional input controls
+#' #
+#' # In this exemple, we plot a x series against a y series. User can choose to
+#' # use points or lines. If he chooses lines, then an additional input is displayed
+#' # to let him control the width of the lines.
+#' if (require("plotly")) {
+#'
+#'   dt <- data.frame (
+#'     x = sort(runif(100)),
+#'     y = rnorm(100)
+#'   )
+#'
+#'   myPlot <- function(type, lwd) {
+#'     if (type == "points") {
+#'       plot_ly(dt, x= x, y = y, mode = "markers")
+#'     } else {
+#'       plot_ly(dt, x= x, y = y, mode = "lines", line = list(width = lwd))
+#'     }
+#'   }
+#'
+#'   manipulateWidget(
+#'     myPlot(type, lwd),
+#'     type = mwSelect(c("points", "lines")),
+#'     lwd = mwSlider(1, 10, 1),
+#'     .display = list(lwd = type == "lines")
+#'   )
+#'
+#' }
+#'
 #' @export
 #'
 manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .controlPos = c("left", "top", "right", "bottom", "tab"),
                              .tabColumns = 2,
-                             .viewer = c("pane", "window", "browser")) {
+                             .viewer = c("pane", "window", "browser"),
+                             .display = NULL) {
   .expr <- substitute(.expr)
+  .display <- substitute(.display)
   .controlPos <- match.arg(.controlPos)
   .viewer <- match.arg(.viewer)
   .env <- parent.frame()
@@ -75,8 +113,25 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   controls <- list(...)
   controlNames <- names(controls)
 
-  controls <- mapply(function(f, id) f(id), f = controls, id = controlNames,
-                     SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  controls <- mapply(
+    function(f, id) {
+      conditionalPanel(
+        condition = sprintf("input.%s_visible", id),
+        f(id)
+      )
+    },
+    f = controls, id = controlNames,
+    SIMPLIFY = FALSE, USE.NAMES = FALSE
+  )
+
+  # Add an invisible checkbox for each control indicating if the control must be
+  # displayed or not
+  vis_checkboxes <- lapply(controlNames, function(id) {
+    checkboxInput(paste0(id, "_visible"), "", value = TRUE)
+  })
+  vis_checkboxes$style <- "visibility:hidden"
+
+  controls <- append(controls, list(do.call(tags$div, vis_checkboxes)))
 
   if (.updateBtn) controls <- append(controls, list(actionButton(".update", "Update",
                                                                  class = "btn-primary")))
@@ -102,6 +157,13 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
     output$content <- renderUI({
       inputEnv <- list2env(inputList(), parent = .env)
+
+      # Update the interface if parameter .display is set
+      .displayBool <- eval(.display, envir = inputEnv)
+      for (id in names(.displayBool)) {
+        updateCheckboxInput(session, inputId = paste0(id, "_visible"),
+                            value = .displayBool[[id]])
+      }
 
       res <- .processOutput(eval(.expr, envir = inputEnv))
       fillCol(res)

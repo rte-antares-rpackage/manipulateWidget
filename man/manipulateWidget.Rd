@@ -6,7 +6,7 @@
 \usage{
 manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
-  .viewer = c("pane", "window", "browser"))
+  .viewer = c("pane", "window", "browser"), .display = NULL)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -32,6 +32,13 @@ used ? This parameter is used only if \code{controlPos = "tab"}}
 \item{.viewer}{Controls where the gadget should be displayed. \code{"pane"} corresponds to
 the Rstudio viewer, \code{"window"} to a dialog window, and \code{"browser"}
 to an external web browser.}
+
+\item{.display}{A named list of conditions that evaluate to TRUE OR FALSE indicating when
+inputs should be displayed. These conditions are reevaluated each time a
+control it modified. By default, each control is displayed, but if the name
+of a control appears in this list, then the associated condition is
+evaluated. If the result is TRUE then the control is visible, else it is
+hidden.}
 }
 \value{
 The result of the expression evaluated with the last values of the control.
@@ -54,6 +61,35 @@ if (require(dygraphs)) {
   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
                    range = mwSlider(2001, 2100, c(2001, 2100)),
                    title = mwText("Fictive time series"))
+
+}
+
+# Example of conditional input controls
+#
+# In this exemple, we plot a x series against a y series. User can choose to
+# use points or lines. If he chooses lines, then an additional input is displayed
+# to let him control the width of the lines.
+if (require("plotly")) {
+
+  dt <- data.frame (
+    x = sort(runif(100)),
+    y = rnorm(100)
+  )
+
+  myPlot <- function(type, lwd) {
+    if (type == "points") {
+      plot_ly(dt, x= x, y = y, mode = "markers")
+    } else {
+      plot_ly(dt, x= x, y = y, mode = "lines", line = list(width = lwd))
+    }
+  }
+
+  manipulateWidget(
+    myPlot(type, lwd),
+    type = mwSelect(c("points", "lines")),
+    lwd = mwSlider(1, 10, 1),
+    .display = list(lwd = type == "lines")
+  )
 
 }
 
