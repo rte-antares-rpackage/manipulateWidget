@@ -1,5 +1,6 @@
 #' Prepare widgets and other types of objects to be displayed in the shiny
 #' gadget
+#' @noRd
 .processOutput <- function(x) {
 
   if (is(x, "plotly_hash")) {

@@ -94,7 +94,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .display = NULL) {
   .expr <- substitute(.expr)
   .display <- substitute(.display)
-  .controlPos <- match.arg(.controlPos)
   .viewer <- match.arg(.viewer)
   .env <- parent.frame()
 
@@ -110,35 +109,17 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     }
   }
 
-  controls <- list(...)
-  controlNames <- names(controls)
-
-  controls <- mapply(
-    function(f, id) {
-      conditionalPanel(
-        condition = sprintf("input.%s_visible", id),
-        f(id)
-      )
-    },
-    f = controls, id = controlNames,
-    SIMPLIFY = FALSE, USE.NAMES = FALSE
-  )
+  controlNames <- names(list(...))
 
   # Add an invisible checkbox for each control indicating if the control must be
   # displayed or not
-  vis_checkboxes <- lapply(controlNames, function(id) {
-    checkboxInput(paste0(id, "_visible"), "", value = TRUE)
-  })
-  vis_checkboxes$style <- "visibility:hidden"
 
-  controls <- append(controls, list(do.call(tags$div, vis_checkboxes)))
-
-  if (.updateBtn) controls <- append(controls, list(actionButton(".update", "Update",
-                                                                 class = "btn-primary")))
-
-  ui <- miniPage(
-    gadgetTitleBar(.main),
-    .ui(controls, .controlPos, .tabColumns)
+  ui <- mwUI(
+    ...,
+    .controlPos = .controlPos,
+    .tabColumns = .tabColumns,
+    .updateBtn = .updateBtn,
+    .main = .main
   )
 
   server <- function(input, output, session) {
