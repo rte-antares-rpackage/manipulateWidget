@@ -95,6 +95,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .expr <- substitute(.expr)
   .display <- substitute(.display)
   .viewer <- match.arg(.viewer)
+  .controlPos <- match.arg(.controlPos)
   .env <- parent.frame()
 
   if (.controlPos == "tab") .updateBtn <- FALSE
