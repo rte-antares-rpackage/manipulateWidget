@@ -39,9 +39,12 @@
 #' @export
 #' @family controls
 mwSlider <- function(min, max, value, label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    sliderInput(id, label, min, max, value, ...)
+    tags$div(
+      style = "padding:0 5px;",
+      sliderInput(id, label, min, max, value, width = width, ...)
+    )
   }
 }
 
@@ -68,9 +71,9 @@ mwSlider <- function(min, max, value, label = NULL, ...) {
 #' @export
 #' @family controls
 mwText <- function(value = "", label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    textInput(id, label, value, ...)
+    textInput(id, label, value, width = width, ...)
   }
 }
 
@@ -98,9 +101,9 @@ mwText <- function(value = "", label = NULL, ...) {
 #' @export
 #' @family controls
 mwNumeric <- function(value, label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    numericInput(id, label, value, ...)
+    numericInput(id, label, value, width = width, ...)
   }
 }
 
@@ -130,9 +133,9 @@ mwNumeric <- function(value, label = NULL, ...) {
 #' @export
 #' @family controls
 mwPassword <- function(value = "", label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    passwordInput(id, label, value, ...)
+    passwordInput(id, label, value, width = width, ...)
   }
 }
 
@@ -179,9 +182,9 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #' @export
 #' @family controls
 mwSelect <- function(choices, value = NULL, label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    selectInput(id, label, choices, value, ...)
+    selectInput(id, label, choices, value, width = width, ...)
   }
 }
 
@@ -212,9 +215,9 @@ mwSelect <- function(choices, value = NULL, label = NULL, ...) {
 #' @export
 #' @family controls
 mwCheckbox <- function(value = FALSE, label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    checkboxInput(id, label, value, ...)
+    checkboxInput(id, label, value, width = width, ...)
   }
 }
 
@@ -248,9 +251,9 @@ mwCheckbox <- function(value = FALSE, label = NULL, ...) {
 #' @export
 #' @family controls
 mwRadio <- function(choices, value = NULL, label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    radioButtons(id, label, choices, value, ...)
+    radioButtons(id, label, choices, value, width = width, ...)
   }
 }
 
@@ -279,9 +282,9 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
 #' @export
 #' @family controls
 mwDate <- function(value = NULL, label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    dateInput(id, label, value, ...)
+    dateInput(id, label, value, width = width, ...)
   }
 }
 
@@ -311,9 +314,9 @@ mwDate <- function(value = NULL, label = NULL, ...) {
 #' @export
 #' @family controls
 mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    dateRangeInput(id, label, start = value[1], end = value[2], ...)
+    dateRangeInput(id, label, start = value[1], end = value[2], width = width, ...)
   }
 }
 
@@ -349,9 +352,9 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 #' @export
 #' @family controls
 mwCheckboxGroup <- function(choices, value = c(), label = NULL, ...) {
-  function(id) {
+  function(id, width) {
     if (is.null(label)) label <- id
-    checkboxGroupInput(id, label, choices, value, ...)
+    checkboxGroupInput(id, label, choices, value, width = width, ...)
   }
 }
 

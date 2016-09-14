@@ -18,11 +18,11 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
   .controlPos <- match.arg(.controlPos)
 
   if (.controlPos == "tab") {
-
+    ctrls <- mwControlsUI(..., .dir = "v", .n = .tabColumns, .updateBtn = .updateBtn)
     ui <- miniTabstripPanel(
       miniTabPanel("Parameters", icon = icon("sliders"),
         miniContentPanel(
-          mwControlsUI(..., .dir = "v", .n = .tabColumns, .updateBtn = .updateBtn)
+          ctrls
         )
       ),
       miniTabPanel("Plot", icon = icon("area-chart"),
@@ -33,45 +33,47 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     )
 
   } else if (.controlPos == "left") {
-
+    ctrls <- mwControlsUI(..., .dir = "v", .updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillRow(flex = c(NA, 1),
-              mwControlsUI(..., .dir = "v", .updateBtn = .updateBtn),
+              tags$div(style ="width:200px;height:100%;overflow-y:auto;", ctrls),
               .content
       )
     )
 
   } else if (.controlPos == "top") {
-
+    ctrls <- mwControlsUI(..., .dir = "h",.updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillCol(flex = c(NA, 1),
-              mwControlsUI(..., .dir = "h",.updateBtn = .updateBtn),
+              ctrls,
               .content
       )
     )
 
   } else if (.controlPos == "right") {
-
+    ctrls <- mwControlsUI(..., .dir = "v", .updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillRow(flex = c(1, NA),
               .content,
-              mwControlsUI(..., .dir = "v", .updateBtn = .updateBtn)
+              tags$div(style ="width:200px;height:100%;overflow-y:auto;", ctrls)
       )
     )
 
   } else if (.controlPos == "bottom") {
-
+    ctrls <- mwControlsUI(..., .dir = "h", .updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillCol(flex = c(1, NA),
               content,
-              mwControlsUI(..., .dir = "h", .updateBtn = .updateBtn)
+              ctrls
       )
     )
 
   }
 
-  miniPage(
+  res <- miniPage(
     gadgetTitleBar(.main),
     ui
   )
+  attr(res, "controlNames") <- .getControlNames(ctrls)
+  res
 }

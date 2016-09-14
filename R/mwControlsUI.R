@@ -20,23 +20,50 @@ mwControlsUI <- function(..., .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
   .dir <- match.arg(.dir)
 
   controls <- list(...)
-  controlNames <- names(controls)
+  ids <- names(controls)
 
   controls <- mapply(
     function(f, id) {
-      conditionalPanel(
-        condition = sprintf("input.%s_visible", id),
-        f(id)
-      )
+      if(is.list(f)) {
+        ctrls <- do.call(mwControlsUI, f)
+        id <- gsub(" ", "-", id)
+        res <- tags$div(
+          class="panel panel-default",
+          tags$div(
+            class="panel-heading",
+            style = "cursor: pointer;",
+            "data-toggle"="collapse",
+            "data-target"=paste0("#panel-body-", id),
+            id
+          ),
+          tags$div(
+            class="panel-body collapse",
+            id=paste0("panel-body-", id),
+            ctrls
+          )
+        )
+
+        attr(res, "controlNames") <- .getControlNames(ctrls)
+
+      } else {
+        res <- conditionalPanel(
+          condition = sprintf("input.%s_visible", id),
+          f(id, width = ifelse(.dir == "v", "100%", "180px"))
+        )
+
+        attr(res, "controlNames") <- id
+      }
+
+      res
     },
-    f = controls, id = controlNames,
+    f = controls, id = ids,
     SIMPLIFY = FALSE, USE.NAMES = FALSE
   )
 
-  vis_checkboxes <- lapply(controlNames, function(id) {
+  vis_checkboxes <- lapply(ids, function(id) {
     checkboxInput(paste0(id, "_visible"), "", value = TRUE)
   })
-  vis_checkboxes$style <- "visibility:hidden"
+  vis_checkboxes$style <- "display:none"
 
   controls <- append(controls, list(do.call(tags$div, vis_checkboxes)))
 
@@ -45,27 +72,32 @@ mwControlsUI <- function(..., .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
 
 
   if (.dir == "v") {
-    if (.n == 1) return(.controlsCol(controls))
-
-    nrows <- ceiling(length(controls) / .n)
-    controlCols <- lapply(1:.n, function(i) {
-      .controlsCol(controls[((i-1) * nrows + 1):(i * nrows)])
-    })
-    return(do.call(fillRow, controlCols))
+    if (.n == 1) res <- .controlsCol(controls)
+    else {
+      nrows <- ceiling(length(controls) / .n)
+      controlCols <- lapply(1:.n, function(i) {
+        .controlsCol(controls[((i-1) * nrows + 1):(i * nrows)])
+      })
+      res <- do.call(fillRow, controlCols)
+    }
 
   } else { # dir == "h"
-    if (.n == 1) return(.controlsRow(controls))
-
-    ncols <- ceiling(length(controls) / .n)
-    controlRows <- lapply(1:.n, function(i) {
-      .controlsRow(controls[((i-1) * ncols + 1):(i * ncols)])
-    })
-    return(do.call(fillCol, controlRows))
+    if (.n == 1) res <- .controlsRow(controls)
+    else {
+      ncols <- ceiling(length(controls) / .n)
+      controlRows <- lapply(1:.n, function(i) {
+        .controlsRow(controls[((i-1) * ncols + 1):(i * ncols)])
+      })
+      res <- do.call(fillCol, controlRows)
+    }
   }
+
+  attr(res, "controlNames") <- .getControlNames(controls)
+  res
 }
 
 .controlsCol <- function(controls) {
-  controls$style <- "width:200px;"
+  #controls$style <- "width:200px;"
   do.call(div, controls)
 }
 
@@ -73,3 +105,9 @@ mwControlsUI <- function(..., .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
   controls$height <- "100px"
   do.call(fillRow, controls)
 }
+
+.getControlNames <- function(x) {
+  if (!is.null(attr(x, "controlNames"))) return(attr(x, "controlNames"))
+  unlist(lapply(x, function(e) attr(e, "controlNames")))
+}
+

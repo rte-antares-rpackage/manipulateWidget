@@ -11,7 +11,11 @@ mwUI(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
 \arguments{
 \item{...}{One or more named control arguments created with functions
 \code{\link{mwSlider}}, \code{\link{mwText}}, etc. The name of each control
-is the name of the variable the controls modifies in the expression.}
+is the name of the variable the controls modifies in the expression. One
+can also create a group of inputs by passing a list of such control
+arguments. for instance
+\code{mygroup = list(txt = mwText(""), nb = mwNumeric(0))} creates a group
+of inputs named mygroup with two inputs named "txt" and "nb".}
 
 \item{.controlPos}{Where controls should be placed ? By default, they are placed in the left,
 next to the graphic. If \code{controlPos = "tab"}, two tabs are created:

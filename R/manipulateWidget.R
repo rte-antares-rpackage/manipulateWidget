@@ -17,7 +17,11 @@
 #' @param ...
 #'   One or more named control arguments created with functions
 #'   \code{\link{mwSlider}}, \code{\link{mwText}}, etc. The name of each control
-#'   is the name of the variable the controls modifies in the expression.
+#'   is the name of the variable the controls modifies in the expression. One
+#'   can also create a group of inputs by passing a list of such control
+#'   arguments. for instance
+#'   \code{mygroup = list(txt = mwText(""), nb = mwNumeric(0))} creates a group
+#'   of inputs named mygroup with two inputs named "txt" and "nb".
 #' @param .main
 #'   Title of the shiny gadget
 #' @param .updateBtn
@@ -53,6 +57,21 @@
 #'   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
 #'                    range = mwSlider(2001, 2100, c(2001, 2100)),
 #'                    title = mwText("Fictive time series"))
+#'
+#' }
+#'
+#' # Grouping inputs
+#' if (require(dygraphs)) {
+#'
+#'   mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
+#'   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
+#'                    range = mwSlider(2001, 2100, c(2001, 2100)),
+#'                    "Graphical parameters" = list(
+#'                       title = mwText("Fictive time series"),
+#'                       xlab = mwText("X axis label"),
+#'                       ylab = mwText("Y axis label")
+#'                    )
+#'                   )
 #'
 #' }
 #'
@@ -110,8 +129,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     }
   }
 
-  controlNames <- names(list(...))
-
   # Add an invisible checkbox for each control indicating if the control must be
   # displayed or not
 
@@ -122,6 +139,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .updateBtn = .updateBtn,
     .main = .main
   )
+
+  controlNames <- .getControlNames(ui)
 
   server <- function(input, output, session) {
 
