@@ -1,3 +1,9 @@
+Copyright © 2016 RTE Réseau de transport d’électricité
+
+Changes in version 0.3 (2016-10-06)
+BREAKING CHANGES:
+* add a file LICENSE and copyright to sources files
+
 Changes in version 0.2 (2016-09-27)
 
 NEW FEATURES
