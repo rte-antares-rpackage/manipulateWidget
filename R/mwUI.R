@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Generate the UI of a manipulateWidget gadget
 #'
 #' This function can be used if you desire to create a gadget that has the same

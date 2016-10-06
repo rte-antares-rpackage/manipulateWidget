@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Prepare widgets and other types of objects to be displayed in the shiny
 #' gadget
 #' @noRd

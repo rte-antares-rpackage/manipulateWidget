@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Combine several interactive plots
 #'
 #' This function combines different interactive plots in a unique view. It is

@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Add a Slider to a manipulateWidget gadget
 #'
 #' @param min
