@@ -131,15 +131,46 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     }
   }
 
-  # Add an invisible checkbox for each control indicating if the control must be
-  # displayed or not
+  # Evaluate a first time .expr to determine the class of the output
+  initValues <- list()
+  .getInitValues <- function(x, name = "") {
+    if (is.function(x)) {
+      input <- list(attr(x, "value"))
+      names(input) <- name
+      initValues <<- append(initValues, input)
+    }
+    else mapply(.getInitValues, x=x, name = names(x))
+  }
+  .getInitValues(list(...))
 
+
+  initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
+
+  # Get shiny input and render functions
+  if (is(initWidget, "htmlwidget")) {
+    cl <- class(initWidget)[1]
+    pkg <- attr(initWidget, "package")
+
+    renderFunName <- ls(getNamespace(pkg), pattern = "^render")
+    renderFunction <- getFromNamespace(renderFunName, pkg)
+
+    OutputFunName <- ls(getNamespace(pkg), pattern = "Output$")
+    outputFunction <- getFromNamespace(OutputFunName, pkg)
+    outputArgs <- list(outputId = "content", height="100%")
+  } else {
+    renderFunction <- renderUI
+    outputFunction <- htmlOutput
+    outputArgs <- list(outputId = "content", style="width:100%;height:100%")
+  }
+
+  # UI
   ui <- mwUI(
     ...,
     .controlPos = .controlPos,
     .tabColumns = .tabColumns,
     .updateBtn = .updateBtn,
-    .main = .main
+    .main = .main,
+    .content = do.call(outputFunction, outputArgs)
   )
 
   controlNames <- .getControlNames(ui)
@@ -158,7 +189,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
       res
     })
 
-    output$content <- renderUI({
+    output$content <- renderFunction({
       inputEnv <- list2env(inputList(), parent = .env)
 
       # Update the interface if parameter .display is set
@@ -168,8 +199,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                             value = .displayBool[[id]])
       }
 
-      res <- .processOutput(eval(.expr, envir = inputEnv))
-      fillCol(res)
+      eval(.expr, envir = inputEnv)
     })
 
     observeEvent(input$done, {

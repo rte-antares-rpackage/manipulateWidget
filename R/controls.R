@@ -41,13 +41,16 @@
 #' @export
 #' @family controls
 mwSlider <- function(min, max, value, label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     tags$div(
       style = "padding:0 5px;",
       sliderInput(id, label, min, max, value, width = width, ...)
     )
   }
+
+  attr(res, "value") <- value
+  res
 }
 
 #' Add a text input to a manipulateWidget gadget
@@ -73,10 +76,12 @@ mwSlider <- function(min, max, value, label = NULL, ...) {
 #' @export
 #' @family controls
 mwText <- function(value = "", label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     textInput(id, label, value, width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
 #' Add a numeric input to a manipulateWidget gadget
@@ -103,10 +108,12 @@ mwText <- function(value = "", label = NULL, ...) {
 #' @export
 #' @family controls
 mwNumeric <- function(value, label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     numericInput(id, label, value, width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
 #' Add a password to a manipulateWidget gadget
@@ -135,10 +142,12 @@ mwNumeric <- function(value, label = NULL, ...) {
 #' @export
 #' @family controls
 mwPassword <- function(value = "", label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     passwordInput(id, label, value, width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
 #' Add a Select list input to a manipulateWidget gadget
@@ -184,10 +193,12 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #' @export
 #' @family controls
 mwSelect <- function(choices, value = NULL, label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     selectInput(id, label, choices, value, width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
 #' Add a checkbox to a manipulateWidget gadget
@@ -217,10 +228,12 @@ mwSelect <- function(choices, value = NULL, label = NULL, ...) {
 #' @export
 #' @family controls
 mwCheckbox <- function(value = FALSE, label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     checkboxInput(id, label, value, width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
 #' Add radio buttons to a manipulateWidget gadget
@@ -253,10 +266,12 @@ mwCheckbox <- function(value = FALSE, label = NULL, ...) {
 #' @export
 #' @family controls
 mwRadio <- function(choices, value = NULL, label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     radioButtons(id, label, choices, value, width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
 #' Add a date picker to a manipulateWidget gadget
@@ -284,10 +299,12 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
 #' @export
 #' @family controls
 mwDate <- function(value = NULL, label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     dateInput(id, label, value, width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
 #' Add a date range picker to a manipulateWidget gadget
@@ -316,10 +333,12 @@ mwDate <- function(value = NULL, label = NULL, ...) {
 #' @export
 #' @family controls
 mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...) {
-  function(id, width) {
+  res <- function(id, width) {
     if (is.null(label)) label <- id
     dateRangeInput(id, label, start = value[1], end = value[2], width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
 #' Add a group of checkboxes to a manipulateWidget gadget
@@ -354,9 +373,11 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 #' @export
 #' @family controls
 mwCheckboxGroup <- function(choices, value = c(), label = NULL, ...) {
-  function(id, width) {
+  res <-function(id, width) {
     if (is.null(label)) label <- id
     checkboxGroupInput(id, label, choices, value, width = width, ...)
   }
+  attr(res, "value") <- value
+  res
 }
 
