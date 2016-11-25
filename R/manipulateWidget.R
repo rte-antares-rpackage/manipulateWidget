@@ -143,6 +143,9 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   }
   .getInitValues(list(...))
 
+  # Add a parameter indicating this is the first evaluation of
+  initValues$.initial <- TRUE
+  initValues$.session <- NULL
 
   initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
 
@@ -176,6 +179,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   controlNames <- .getControlNames(ui)
 
   server <- function(input, output, session) {
+    # Initialize the widget with its first evaluation
+    output$content <- renderFunction(initWidget)
 
     inputList <- reactive({
       input$.update
@@ -189,8 +194,14 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
       res
     })
 
-    output$content <- renderFunction({
-      inputEnv <- list2env(inputList(), parent = .env)
+    observe({
+      # get input current values
+      inputValues <- inputList()
+      # Add parameters indicating the widget already exists
+      inputValues$.initial <- FALSE
+      inputValues$.session <- session
+
+      inputEnv <- list2env(inputValues, parent = .env)
 
       # Update the interface if parameter .display is set
       .displayBool <- eval(.display, envir = inputEnv)
@@ -199,11 +210,19 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                             value = .displayBool[[id]])
       }
 
-      eval(.expr, envir = inputEnv)
+      # Output or update the widget
+      res <- eval(.expr, envir = inputEnv)
+      if (is(res, "htmlwidget")) {
+        output$content <- renderFunction(res)
+      }
     })
 
     observeEvent(input$done, {
-      inputEnv <- list2env(inputList(), parent = .env)
+      inputValues <- inputList()
+      inputValues$.initial <- TRUE
+      inputValues$.session <- NULL
+      inputEnv <- list2env(inputValues, parent = .env)
+
       stopApp(eval(.expr, envir = inputEnv))
     })
   }
