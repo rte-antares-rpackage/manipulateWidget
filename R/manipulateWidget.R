@@ -52,6 +52,34 @@
 #' The result of the expression evaluated with the last values of the control.
 #' It should be an object of class \code{htmlWidget}.
 #'
+#' @section Advanced Usage:
+#' The "normal" use of the function is to provide an expression that always
+#' return an \code{htmlwidget}. In such case, every time the user changes the
+#' value of an input, the current widget is destroyed and a new one is created
+#' and rendered.
+#'
+#' Some packages provide functions to update a widget that has already been
+#' rendered. This is the case for instance for package \code{leaflet} with the
+#' function \code{\link[leaflet]{leafletProxy}}. To use such functions,
+#' \code{manipulateWidget} evaluates the parameter \code{.expr} with two extra
+#' variables:
+#'
+#' \itemize{
+#'   \item{\code{.initial}:}{
+#'     \code{TRUE} if the expression is evaluated for the first time and then
+#'     the widget has not been rendered yet, \code{FALSE} if the widget has
+#'     already been rendered.
+#'   }
+#'   \item{\code{.session}:}{
+#'     A shiny session object.
+#'   }
+#' }
+#'
+#' Moreover the ID of the rendered widget will always be "output".
+#'
+#' You can take a look at the last example to see how to use these two
+#' variables to update a leaflet widget.
+#'
 #' @examples
 #' if (require(dygraphs)) {
 #'
@@ -66,7 +94,8 @@
 #' if (require(dygraphs)) {
 #'
 #'   mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
-#'   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
+#'   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ],
+#'                            main = title, xlab = xlab, ylab = ylab),
 #'                    range = mwSlider(2001, 2100, c(2001, 2100)),
 #'                    "Graphical parameters" = list(
 #'                       title = mwText("Fictive time series"),
@@ -79,7 +108,7 @@
 #'
 #' # Example of conditional input controls
 #' #
-#' # In this exemple, we plot a x series against a y series. User can choose to
+#' # In this example, we plot a x series against a y series. User can choose to
 #' # use points or lines. If he chooses lines, then an additional input is displayed
 #' # to let him control the width of the lines.
 #' if (require("plotly")) {
@@ -91,18 +120,49 @@
 #'
 #'   myPlot <- function(type, lwd) {
 #'     if (type == "points") {
-#'       plot_ly(dt, x= x, y = y, mode = "markers")
+#'       plot_ly(dt, x= ~x, y = ~y, type = "scatter", mode = "markers")
 #'     } else {
-#'       plot_ly(dt, x= x, y = y, mode = "lines", line = list(width = lwd))
+#'       plot_ly(dt, x= ~x, y = ~y, type = "scatter", mode = "lines", line = list(width = lwd))
 #'     }
 #'   }
 #'
 #'   manipulateWidget(
 #'     myPlot(type, lwd),
-#'     type = mwSelect(c("points", "lines")),
+#'     type = mwSelect(c("points", "lines"), "points"),
 #'     lwd = mwSlider(1, 10, 1),
 #'     .display = list(lwd = type == "lines")
 #'   )
+#'
+#' }
+#'
+#' # Advanced Usage
+#' #
+#' # .expr is evaluated with two extra variables .initial and .session that can
+#' # be used to update an already rendered widget instead of replacing it each
+#' # time an input value is modified.
+#' #
+#' # Here we generate a UI that permits to change color and size of arbitrary
+#' # points on a map generated with leaflet.
+#'
+#' if (require(leaflet)) {
+#'   lon <- rnorm(10, sd = 20)
+#'   lat <- rnorm(10, sd = 20)
+#'
+#'   myMapFun <- function(radius, color, initial, session) {
+#'     if (initial) {
+#'       # Widget has not been rendered
+#'       map <- leaflet() %>% addTiles()
+#'     } else {
+#'       # widget has already been rendered
+#'       map <- leafletProxy("output", session) %>% clearMarkers()
+#'     }
+#'
+#'     map %>% addCircleMarkers(lon, lat, radius = radius, color = color)
+#'   }
+#'
+#'   manipulateWidget(myMapFun(radius, color, .initial, .session),
+#'                    radius = mwSlider(5, 30, 10),
+#'                    color = mwSelect(c("red", "blue", "green")))
 #'
 #' }
 #'
@@ -159,11 +219,11 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
     OutputFunName <- ls(getNamespace(pkg), pattern = "Output$")
     outputFunction <- getFromNamespace(OutputFunName, pkg)
-    outputArgs <- list(outputId = "content", height="100%")
+    outputArgs <- list(outputId = "output", height="100%")
   } else {
     renderFunction <- renderUI
     outputFunction <- htmlOutput
-    outputArgs <- list(outputId = "content", style="width:100%;height:100%")
+    outputArgs <- list(outputId = "output", style="width:100%;height:100%")
   }
 
   # UI
@@ -180,7 +240,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   server <- function(input, output, session) {
     # Initialize the widget with its first evaluation
-    output$content <- renderFunction(initWidget)
+    output$output <- renderFunction(initWidget)
 
     inputList <- reactive({
       input$.update
@@ -213,7 +273,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
       # Output or update the widget
       res <- eval(.expr, envir = inputEnv)
       if (is(res, "htmlwidget")) {
-        output$content <- renderFunction(res)
+        output$output <- renderFunction(res)
       }
     })
 

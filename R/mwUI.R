@@ -15,7 +15,7 @@
 #'
 mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
-                 .content = htmlOutput("content", style = "height:100%;width:100%")) {
+                 .content = htmlOutput("output", style = "height:100%;width:100%")) {
 
   .controlPos <- match.arg(.controlPos)
 
