@@ -4,35 +4,45 @@
 \alias{combineWidgets}
 \title{Combine several interactive plots}
 \usage{
-combineWidgets(..., nrow = NULL, ncol = NULL, title = NULL, hflex = 1,
-  vflex = 1)
+combineWidgets(..., nrow = NULL, ncol = NULL, title = NULL, rowsize = 1,
+  colsize = 1, byrow = TRUE, titleCSS = "", width = NULL,
+  height = NULL)
 }
 \arguments{
-\item{...}{Elements to combine. They should be htmlwidgets, but they can also be
-shiny tags or html object or text}
+\item{...}{htmlwidgets to combine.}
 
-\item{nrow}{Number of rows of the layout.}
+\item{nrow}{Number of rows of the layout. If \code{NULL}, the function will automatically
+take a value such that are at least as many cells in the layout as the number
+of htmlwidgets.}
 
-\item{ncol}{Number of columns of the layout.}
+\item{ncol}{Number of columns of the layout.If \code{NULL}, the function will automatically
+take a value such that are at least as many cells in the layout as the number
+of htmlwidgets.}
 
-\item{title}{Title of the view}
+\item{title}{Title of the view.}
 
-\item{hflex}{This argument controls the relative size of each column. For instance, if
-the layout has two columns and \code{hflex = c(2,1)}, then the width of the
-first column will be twice the one of the second one. If a value is equal
-to NA, then the corresponding column will have its 'natural' width, and the
-remaining space will be shared between the other columns.}
+\item{rowsize}{This argument controls the relative size of each row. For instance, if
+the layout has two rows and \code{rowsize = c(2,1)}, then the width of the
+first row will be twice the one of the second one. This argument is recycled
+to fit the number of rows.}
 
-\item{vflex}{Same as hflex but for the height of the rows of the layout.}
+\item{colsize}{Same as rowsize but for the height of the columns of the layout.}
+
+\item{byrow}{If \code{TRUE}, then the layout is filled by row. Else it is filled by
+column.}
+
+\item{titleCSS}{A character containing css properties to modify the appearance of the title
+of the view.}
+
+\item{width}{Total width of the layout (optional, defaults to automatic sizing)}
+
+\item{height}{Total height of the layout (optional, defaults to automatic sizing)}
 }
 \value{
-Object of class 'combinedHtmlwidgets' which is an extension of 'siny.tags'.
+A HTML widget.
 }
 \description{
-This function combines different interactive plots in a unique view. It is
-especially useful in the function \code{\link{manipulateWidget}} to have in
-the same window several related plots that respond to the same set of
-controls.
+This function combines different htmlwidgets in a unique view.
 }
 \details{
 The function only allows table like layout : each row has the same number of
@@ -40,45 +50,25 @@ columns and reciprocally. But it is possible to create more complex layout
 by nesting combined htmlwidgets. (see examples)
 }
 \examples{
-if require(plotly) {
+if (require(plotly)) {
   data(iris)
 
- combineWidgets(title = "The Iris dataset",
-   plot_ly(iris, x = Sepal.Length, type = "histogram", nbinsx = 20),
-   plot_ly(iris, x = Sepal.Width, type = "histogram", nbinsx = 20),
-   plot_ly(iris, x = Petal.Length, type = "histogram", nbinsx = 20),
-   plot_ly(iris, x = Petal.Width, type = "histogram", nbinsx = 20)
- )
+  combineWidgets(title = "The Iris dataset",
+    plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
+    plot_ly(iris, x = ~Sepal.Width, type = "histogram", nbinsx = 20),
+    plot_ly(iris, x = ~Petal.Length, type = "histogram", nbinsx = 20),
+    plot_ly(iris, x = ~Petal.Width, type = "histogram", nbinsx = 20)
+  )
 
- # Create a more complex layout by nesting combinedWidgets
- combineWidgets(title = "The iris data set: sepals", ncol = 2, hflex = c(2,1),
-   plot_ly(iris, x = Sepal.Length, y = Sepal.Width, mode = "markers", color = Species),
-   combineWidgets(
-     plot_ly(iris, x = Sepal.Length, type = "histogram", nbinsx = 20),
-     plot_ly(iris, x = Sepal.Width, type = "histogram", nbinsx = 20)
-   )
- )
-
- # Use combineWidgets with manipulateWidget
-manipulateWidget({
-  if (length(species) == 0) return ("Please choose a species")
-
-  data <- subset(iris, Species \%in\% species)
-
-  colors <- c("#A020F0", "#FFA500", "#2020FF")
-  names(colors) <- levels(iris$Species)
-  colors <- colors[species]
-
-  combineWidgets(title = "The iris data set: sepals", ncol = 2, hflex = c(2,1),
-    plot_ly(data, x = Sepal.Length, y = Sepal.Width, mode = "markers",
-            color = droplevels(Species), colors = colors),
+  # Create a more complex layout by nesting combinedWidgets
+  combineWidgets(title = "The iris data set: sepals", ncol = 2, colsize = c(2,1),
+    plot_ly(iris, x = ~Sepal.Length, y = ~Sepal.Width, type = "scatter",
+            mode = "markers", color = ~Species),
     combineWidgets(
-      plot_ly(data, x = Sepal.Length, type = "histogram", nbinsx = 20),
-      plot_ly(data, x = Sepal.Width, type = "histogram", nbinsx = 20)
+      plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
+      plot_ly(iris, x = ~Sepal.Width, type = "histogram", nbinsx = 20)
     )
   )
-},
-species = mwCheckboxGroup(levels(iris$Species)))
 }
 
 }

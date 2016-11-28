@@ -1,32 +1,38 @@
-#Copyright © 2016 RTE Réseau de transport d’électricité
-
 #' Combine several interactive plots
 #'
-#' This function combines different interactive plots in a unique view. It is
-#' especially useful in the function \code{\link{manipulateWidget}} to have in
-#' the same window several related plots that respond to the same set of
-#' controls.
+#' This function combines different htmlwidgets in a unique view.
 #'
 #' @param ...
-#'   Elements to combine. They should be htmlwidgets, but they can also be
-#'   shiny tags or html object or text
+#'   htmlwidgets to combine.
 #' @param nrow
-#'   Number of rows of the layout.
+#'   Number of rows of the layout. If \code{NULL}, the function will automatically
+#'   take a value such that are at least as many cells in the layout as the number
+#'   of htmlwidgets.
 #' @param ncol
-#'   Number of columns of the layout.
+#'   Number of columns of the layout.If \code{NULL}, the function will automatically
+#'   take a value such that are at least as many cells in the layout as the number
+#'   of htmlwidgets.
 #' @param title
-#'   Title of the view
-#' @param hflex
-#'   This argument controls the relative size of each column. For instance, if
-#'   the layout has two columns and \code{hflex = c(2,1)}, then the width of the
-#'   first column will be twice the one of the second one. If a value is equal
-#'   to NA, then the corresponding column will have its 'natural' width, and the
-#'   remaining space will be shared between the other columns.
-#' @param vflex
-#'   Same as hflex but for the height of the rows of the layout.
-#'
+#'   Title of the view.
+#' @param rowsize
+#'   This argument controls the relative size of each row. For instance, if
+#'   the layout has two rows and \code{rowsize = c(2,1)}, then the width of the
+#'   first row will be twice the one of the second one. This argument is recycled
+#'   to fit the number of rows.
+#' @param colsize
+#'   Same as rowsize but for the height of the columns of the layout.
+#' @param byrow
+#'   If \code{TRUE}, then the layout is filled by row. Else it is filled by
+#'   column.
+#' @param titleCSS
+#'   A character containing css properties to modify the appearance of the title
+#'   of the view.
+#' @param width
+#'   Total width of the layout (optional, defaults to automatic sizing)
+#' @param height
+#'   Total height of the layout (optional, defaults to automatic sizing)
 #' @return
-#' Object of class 'combinedHtmlwidgets' which is an extension of 'siny.tags'.
+#'   A HTML widget.
 #'
 #' @details
 #' The function only allows table like layout : each row has the same number of
@@ -34,109 +40,149 @@
 #' by nesting combined htmlwidgets. (see examples)
 #'
 #' @examples
-#' if require(plotly) {
+#' if (require(plotly)) {
 #'   data(iris)
 #'
-#'  combineWidgets(title = "The Iris dataset",
-#'    plot_ly(iris, x = Sepal.Length, type = "histogram", nbinsx = 20),
-#'    plot_ly(iris, x = Sepal.Width, type = "histogram", nbinsx = 20),
-#'    plot_ly(iris, x = Petal.Length, type = "histogram", nbinsx = 20),
-#'    plot_ly(iris, x = Petal.Width, type = "histogram", nbinsx = 20)
-#'  )
+#'   combineWidgets(title = "The Iris dataset",
+#'     plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
+#'     plot_ly(iris, x = ~Sepal.Width, type = "histogram", nbinsx = 20),
+#'     plot_ly(iris, x = ~Petal.Length, type = "histogram", nbinsx = 20),
+#'     plot_ly(iris, x = ~Petal.Width, type = "histogram", nbinsx = 20)
+#'   )
 #'
-#'  # Create a more complex layout by nesting combinedWidgets
-#'  combineWidgets(title = "The iris data set: sepals", ncol = 2, hflex = c(2,1),
-#'    plot_ly(iris, x = Sepal.Length, y = Sepal.Width, mode = "markers", color = Species),
-#'    combineWidgets(
-#'      plot_ly(iris, x = Sepal.Length, type = "histogram", nbinsx = 20),
-#'      plot_ly(iris, x = Sepal.Width, type = "histogram", nbinsx = 20)
-#'    )
-#'  )
-#'
-#'  # Use combineWidgets with manipulateWidget
-#' manipulateWidget({
-#'   if (length(species) == 0) return ("Please choose a species")
-#'
-#'   data <- subset(iris, Species %in% species)
-#'
-#'   colors <- c("#A020F0", "#FFA500", "#2020FF")
-#'   names(colors) <- levels(iris$Species)
-#'   colors <- colors[species]
-#'
-#'   combineWidgets(title = "The iris data set: sepals", ncol = 2, hflex = c(2,1),
-#'     plot_ly(data, x = Sepal.Length, y = Sepal.Width, mode = "markers",
-#'             color = droplevels(Species), colors = colors),
+#'   # Create a more complex layout by nesting combinedWidgets
+#'   combineWidgets(title = "The iris data set: sepals", ncol = 2, colsize = c(2,1),
+#'     plot_ly(iris, x = ~Sepal.Length, y = ~Sepal.Width, type = "scatter",
+#'             mode = "markers", color = ~Species),
 #'     combineWidgets(
-#'       plot_ly(data, x = Sepal.Length, type = "histogram", nbinsx = 20),
-#'       plot_ly(data, x = Sepal.Width, type = "histogram", nbinsx = 20)
+#'       plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
+#'       plot_ly(iris, x = ~Sepal.Width, type = "histogram", nbinsx = 20)
 #'     )
 #'   )
-#' },
-#' species = mwCheckboxGroup(levels(iris$Species)))
 #' }
 #'
-#' @export
+#' @import htmlwidgets
 #'
+#' @export
 combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
-                           hflex = 1, vflex = 1) {
-
-  widgets <- lapply(list(...), .processOutput)
-
-  # Get Number of rows and columns
+                           rowsize = 1, colsize = 1, byrow = TRUE,
+                           titleCSS = "",
+                           width = NULL, height = NULL) {
+  widgets <- lapply(list(...), function(x) {
+    if (is.null(x$preRenderHook)) return(x)
+    x$preRenderHook(x)
+  })
   nwidgets <- length(widgets)
+
+  # Get number of rows and cols
   if (!is.null(nrow) && !is.null(ncol) && nrow * ncol < nwidgets) {
     stop("There are too much widgets compared to the number of rows and columns")
   } else if (is.null(nrow) && !is.null(ncol)) {
     nrow <- ceiling(nwidgets / ncol)
   } else if (!is.null(nrow) && is.null(ncol)) {
     ncol <- ceiling(nwidgets / nrow)
-  } else {
+  } else if (is.null(nrow) && is.null(ncol)) {
     nrow <- ceiling(sqrt(nwidgets))
     ncol <- ceiling(nwidgets / nrow)
   }
 
-  hflex <- rep(hflex, length.out = ncol)
-  vflex <- rep(vflex, length.out = nrow)
+  ncells <- nrow * ncol
 
-  rows <- lapply(1:nrow, function(i) {
-    args <- widgets[((i-1) * ncol + 1):(i * ncol)]
+  # Relative size of rows and cols
+  rowsize <- rep(rowsize, length.out=nrow)
+  colsize <- rep(colsize, length.out = ncol)
 
-    # If vflex is NA for this row, then try to infer the height of the row.
-    if (is.na(vflex[i])) {
-      heights <- unlist(sapply(args, function(x) {
-        if (!is.list(x)) return (NULL)
-        if (!is.null(x$height)) return(x$height)
-        if (!is.null(x$attribs)) return(x$attribs$height)
-        NULL
-      }))
-      if (!is.null(heights)) {
-        heights <- na.omit(heights)
-        if (length(heights) > 0)  args$height <- heights[1]
-      }
-      if (is.null(args$height)) args$height <- 200
-    }
+  # Get the html ID of each widget
+  elementId <- sapply(widgets[1:ncells], function(x) {
+    if (is.null(x)) res <- NULL
+    else res <- x$elementId
 
-    args$flex <- hflex
-    do.call(fillRow, args)
+    if (is.null(res)) res <- paste0("widget", floor(runif(1, max = 1e9)))
+
+    res
   })
 
-  # Title
-  if(!is.null(title)) {
-    vflex <- c(NA, vflex)
-    title <- tags$div(style = "text-align: center;",
-      tags$h1(title)
-    )
-    rows <- append(list(title), rows)
+  # Construct the html of the combined widget
+  dirClass <- ifelse(byrow, "cw-by-row", "cw-by-col")
+
+  widgetEL <- mapply(
+    function(id, size) {
+      sprintf('<div class="cw-col" style="flex:%s;-webkit-flex:%s">
+                 <div id="%s" class="cw-widget" style="width:100%%;height:100%%"></div>
+               </div>',
+              size, size, id)
+    },
+    id = elementId,
+    size = rep(colsize, length.out = ncells)
+  )
+
+  rowsEl <- lapply(1:nrow, function(i) {
+    content <- widgetEL[((i-1) * ncol + 1):(i * ncol)]
+    sprintf('<div class="cw-row %s" style="flex:%s;-webkit-flex:%s">%s</div>',
+            dirClass, rowsize[i], rowsize[i], paste(content, collapse = ""))
+  })
+
+  content <- sprintf('<div class="cw-content %s">%s</div>',
+                     dirClass, paste(rowsEl, collapse = ""))
+
+  if(!is.null(title) && !title == "") {
+    titleEl <- sprintf('<div><h2 class="cw-title" style="%s">%s</h2></div>',
+                       titleCSS, title)
+  } else {
+    titleEl <- ""
   }
 
-  rows$flex <- vflex
+  html <- sprintf('<div class="cw-container">%s%s</div>', titleEl, content)
 
-  res <- do.call(fillCol, rows)
-  class(res) <- append("combinedHtmlwidgets", class(res))
-  res
+  data <- lapply(widgets, function(x) x$x)
+  widgetType <- sapply(widgets, function(x) class(x)[1])
+
+
+  x <- list(data = data, widgetType = widgetType, elementId = elementId, html = html);
+
+  # create widget
+  combinedWidget <- htmlwidgets::createWidget(
+    name = 'combineWidgets',
+    x,
+    width = width,
+    height = height,
+    package = 'combineWidgets'
+  )
+
+  deps <- lapply(widgets, function(x) {
+    append(getDependency(class(x)[1], attr(x, "package")), x$dependencies)
+  })
+  deps <- do.call(c, deps)
+
+  combinedWidget$dependencies <- deps
+
+  combinedWidget
 }
 
+#' Shiny bindings for combineWidgets
+#'
+#' Output and render functions for using combineWidgets within Shiny
+#' applications and interactive Rmd documents.
+#'
+#' @param outputId output variable to read from
+#' @param width,height Must be a valid CSS unit (like \code{'100\%'},
+#'   \code{'400px'}, \code{'auto'}) or a number, which will be coerced to a
+#'   string and have \code{'px'} appended.
+#' @param expr An expression that generates a combineWidgets
+#' @param env The environment in which to evaluate \code{expr}.
+#' @param quoted Is \code{expr} a quoted expression (with \code{quote()})? This
+#'   is useful if you want to save an expression in a variable.
+#'
+#' @name combineWidgets-shiny
+#'
 #' @export
-print.combinedHtmlwidgets <- function(x, ...) {
-  htmltools:::html_print(miniPage(x))
+combineWidgetsOutput <- function(outputId, width = '100%', height = '400px'){
+  htmlwidgets::shinyWidgetOutput(outputId, 'combineWidgets', width, height, package = 'combineWidgets')
+}
+
+#' @rdname combineWidgets-shiny
+#' @export
+renderCombineWidgets <- function(expr, env = parent.frame(), quoted = FALSE) {
+  if (!quoted) { expr <- substitute(expr) } # force quoted
+  htmlwidgets::shinyRenderWidget(expr, combineWidgetsOutput, env, quoted = TRUE)
 }
