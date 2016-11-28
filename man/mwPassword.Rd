@@ -24,8 +24,12 @@ Add a password to a manipulateWidget gadget
 if (require(plotly)) {
   manipulateWidget(
     {
-      if (passwd != 'abc123') "Wrong password. True password is 'abc123'"
-      else plot_ly(data.frame(x = 1:10, y = rnorm(10)), x=x, y=y)
+      if (passwd != 'abc123') {
+        plot_ly(type = "scatter", mode="markers") \%>\%
+          layout(title = "Wrong password. True password is 'abc123'")
+      } else {
+        plot_ly(data.frame(x = 1:10, y = rnorm(10)), x=~x, y=~y, type = "scatter", mode = "markers")
+      }
     },
     user = mwText(label = "Username"),
     passwd = mwPassword(label = "Password")

@@ -28,10 +28,12 @@ used ? This parameter is used only if \code{controlPos = "tab"}}
 the graphic is updated only when the user clicks on the update button.}
 
 \item{.main}{Title of the shiny gadget}
+
+\item{.content}{HTML of the main content of the application, where outputs are displayed.}
 }
 \value{
 A \code{shiny.tag.list} object that can be used in function
-\code{\link[shiny]{runGadget}} as ui parameter
+\code{\link[shiny]{runGadget}} as ui parameter.
 }
 \description{
 This function can be used if you desire to create a gadget that has the same

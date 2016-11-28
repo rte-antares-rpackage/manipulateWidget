@@ -209,7 +209,10 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
 
-  # Get shiny input and render functions
+  # Stop here if R session is not in interactive mode.
+  if (!interactive()) return(initWidget)
+
+  # Get shiny output and render functions
   if (is(initWidget, "htmlwidget")) {
     cl <- class(initWidget)[1]
     pkg <- attr(initWidget, "package")

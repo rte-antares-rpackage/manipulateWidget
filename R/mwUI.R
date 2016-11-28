@@ -5,11 +5,13 @@
 #' This function can be used if you desire to create a gadget that has the same
 #' UI as a manipulateWidget gadget but with a custom server logic.
 #'
+#' @param .content
+#' HTML of the main content of the application, where outputs are displayed.
 #' @inheritParams manipulateWidget
 #'
 #' @return
 #' A \code{shiny.tag.list} object that can be used in function
-#' \code{\link[shiny]{runGadget}} as ui parameter
+#' \code{\link[shiny]{runGadget}} as ui parameter.
 #'
 #' @export
 #'
@@ -65,7 +67,7 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     ctrls <- mwControlsUI(..., .dir = "h", .updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillCol(flex = c(1, NA),
-              content,
+              .content,
               ctrls
       )
     )

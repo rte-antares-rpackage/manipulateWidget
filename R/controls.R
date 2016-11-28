@@ -23,16 +23,18 @@
 #'
 #' if (require(plotly)) {
 #'
-#'   manipulateWidget(
-#'     plot_ly(data.frame(x = 1:n, y = rnorm(n)), x=x, y=y),
+#'   myWidget <- manipulateWidget(
+#'     plot_ly(data.frame(x = 1:n, y = rnorm(n)), x=~x, y=~y, type = "scatter", mode = "markers"),
 #'     n = mwSlider(1, 100, 10, label = "Number of values")
 #'   )
+#'
+#'   Sys.sleep(0.5)
 #'
 #'   # Create a double ended slider to choose a range instead of a single value
 #'   mydata <- data.frame(x = 1:100, y = rnorm(100))
 #'
 #'   manipulateWidget(
-#'     plot_ly(mydata[n[1]:n[2], ], x=x, y=y),
+#'     plot_ly(mydata[n[1]:n[2], ], x=~x, y=~y, type = "scatter", mode = "markers"),
 #'     n = mwSlider(1, 100, c(1, 10), label = "Number of values")
 #'   )
 #'
@@ -65,10 +67,12 @@ mwSlider <- function(min, max, value, label = NULL, ...) {
 #' A function that will generate the input control.
 #'
 #' @examples
-#' if (require(plot_ly)) {
+#' if (require(plotly)) {
 #'   mydata <- data.frame(x = 1:100, y = rnorm(100))
-#'   manipulateWidget(
-#'     plot_ly(mydata, x=x, y=y) %>% layout(title = mytitle),
+#'   manipulateWidget({
+#'       plot_ly(mydata, x=~x, y=~y, type = "scatter", mode = "markers") %>%
+#'         layout(title = mytitle)
+#'     },
 #'     mytitle = mwText("Awesome title !")
 #'   )
 #' }
@@ -98,8 +102,10 @@ mwText <- function(value = "", label = NULL, ...) {
 #' @examples
 #'
 #' if (require(plotly)) {
-#'   manipulateWidget(
-#'     plot_ly(data.frame(x = 1:10, y = rnorm(10, mean, sd)), x=x, y=y),
+#'   manipulateWidget({
+#'       plot_ly(data.frame(x = 1:10, y = rnorm(10, mean, sd)), x=~x, y=~y,
+#'               type = "scatter", mode = "markers")
+#'     },
 #'     mean = mwNumeric(0),
 #'     sd = mwNumeric(1, min = 0, step = 0.1)
 #'   )
@@ -131,8 +137,12 @@ mwNumeric <- function(value, label = NULL, ...) {
 #' if (require(plotly)) {
 #'   manipulateWidget(
 #'     {
-#'       if (passwd != 'abc123') "Wrong password. True password is 'abc123'"
-#'       else plot_ly(data.frame(x = 1:10, y = rnorm(10)), x=x, y=y)
+#'       if (passwd != 'abc123') {
+#'         plot_ly(type = "scatter", mode="markers") %>%
+#'           layout(title = "Wrong password. True password is 'abc123'")
+#'       } else {
+#'         plot_ly(data.frame(x = 1:10, y = rnorm(10)), x=~x, y=~y, type = "scatter", mode = "markers")
+#'       }
 #'     },
 #'     user = mwText(label = "Username"),
 #'     passwd = mwPassword(label = "Password")
@@ -171,20 +181,21 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #'   manipulateWidget(
 #'     {
 #'       mode <- switch(type, points = "markers", lines = "lines", both = "markers+lines")
-#'       plot_ly(mydata, x=x, y=y, mode = mode)
+#'       plot_ly(mydata, x=~x, y=~y, type = "scatter", mode = mode)
 #'     },
 #'     type = mwSelect(c("points", "lines", "both"))
 #'   )
 #'
+#'   Sys.sleep(0.5)
+#'
 #'   # Select multiple values
 #'   manipulateWidget(
 #'     {
-#'       if (length(species) == 0) "Select at least one species."
-#'       else {
-#'         mydata <- iris[iris$Species %in% species,]
-#'         plot_ly(mydata, x = Sepal.Length, y = Sepal.Width,
-#'                 color = droplevels(Species), mode = "markers")
-#'       }
+#'       if (length(species) == 0) mydata <- iris
+#'       else mydata <- iris[iris$Species %in% species,]
+#'
+#'       plot_ly(mydata, x = ~Sepal.Length, y = ~Sepal.Width,
+#'               color = ~droplevels(Species), type = "scatter", mode = "markers")
 #'     },
 #'     species = mwSelect(levels(iris$Species), multiple = TRUE)
 #'   )
@@ -197,6 +208,7 @@ mwSelect <- function(choices, value = NULL, label = NULL, ...) {
     if (is.null(label)) label <- id
     selectInput(id, label, choices, value, width = width, ...)
   }
+  if (is.null(value)) value <- choices[1]
   attr(res, "value") <- value
   res
 }
@@ -217,8 +229,8 @@ mwSelect <- function(choices, value = NULL, label = NULL, ...) {
 #' if(require(plotly)) {
 #'  manipulateWidget(
 #'    {
-#'        plot_ly(iris, x = Sepal.Length, y = Sepal.Width,
-#'                color = Species, mode = "markers") %>%
+#'        plot_ly(iris, x = ~Sepal.Length, y = ~Sepal.Width,
+#'                color = ~Species, type = "scatter", mode = "markers") %>%
 #'          layout(showlegend = legend)
 #'    },
 #'    legend = mwCheckbox(TRUE, "Show legend")
@@ -257,7 +269,7 @@ mwCheckbox <- function(value = FALSE, label = NULL, ...) {
 #'   manipulateWidget(
 #'     {
 #'       mode <- switch(type, points = "markers", lines = "lines", both = "markers+lines")
-#'       plot_ly(mydata, x=x, y=y, mode = mode)
+#'       plot_ly(mydata, x=~x, y=~y, type = "scatter", mode = mode)
 #'     },
 #'     type = mwRadio(c("points", "lines", "both"))
 #'   )
@@ -270,6 +282,7 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
     if (is.null(label)) label <- id
     radioButtons(id, label, choices, value, width = width, ...)
   }
+  if (is.null(value)) value <- choices[1]
   attr(res, "value") <- value
   res
 }
@@ -359,12 +372,11 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 #' if (require(plotly)) {
 #'   manipulateWidget(
 #'     {
-#'       if (length(species) == 0) "Select at least one species."
-#'       else {
-#'         mydata <- iris[iris$Species %in% species,]
-#'         plot_ly(mydata, x = Sepal.Length, y = Sepal.Width,
-#'                 color = droplevels(Species), mode = "markers")
-#'       }
+#'       if (length(species) == 0) mydata <- iris
+#'       else mydata <- iris[iris$Species %in% species,]
+#'
+#'       plot_ly(mydata, x = ~Sepal.Length, y = ~Sepal.Width,
+#'               color = ~droplevels(Species), type = "scatter", mode = "markers")
 #'     },
 #'     species = mwCheckboxGroup(levels(iris$Species))
 #'   )

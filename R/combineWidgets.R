@@ -146,7 +146,7 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
     x,
     width = width,
     height = height,
-    package = 'combineWidgets'
+    package = 'manipulateWidget'
   )
 
   deps <- lapply(widgets, function(x) {
@@ -177,7 +177,7 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
 #'
 #' @export
 combineWidgetsOutput <- function(outputId, width = '100%', height = '400px'){
-  htmlwidgets::shinyWidgetOutput(outputId, 'combineWidgets', width, height, package = 'combineWidgets')
+  htmlwidgets::shinyWidgetOutput(outputId, 'combineWidgets', width, height, package = 'manipulateWidget')
 }
 
 #' @rdname combineWidgets-shiny

@@ -25,8 +25,8 @@ Add a checkbox to a manipulateWidget gadget
 if(require(plotly)) {
  manipulateWidget(
    {
-       plot_ly(iris, x = Sepal.Length, y = Sepal.Width,
-               color = Species, mode = "markers") \%>\%
+       plot_ly(iris, x = ~Sepal.Length, y = ~Sepal.Width,
+               color = ~Species, type = "scatter", mode = "markers") \%>\%
          layout(showlegend = legend)
    },
    legend = mwCheckbox(TRUE, "Show legend")

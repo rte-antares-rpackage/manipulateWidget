@@ -30,7 +30,7 @@ if (require(plotly)) {
   manipulateWidget(
     {
       mode <- switch(type, points = "markers", lines = "lines", both = "markers+lines")
-      plot_ly(mydata, x=x, y=y, mode = mode)
+      plot_ly(mydata, x=~x, y=~y, type = "scatter", mode = mode)
     },
     type = mwRadio(c("points", "lines", "both"))
   )
