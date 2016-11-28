@@ -203,12 +203,14 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwSelect <- function(choices, value = NULL, label = NULL, ...) {
+mwSelect <- function(choices, value = NULL, label = NULL, ..., multiple = FALSE) {
   res <- function(id, width) {
     if (is.null(label)) label <- id
-    selectInput(id, label, choices, value, width = width, ...)
+    selectInput(id, label, choices, value, width = width, ..., multiple = multiple)
   }
-  if (is.null(value)) value <- choices[1]
+  if (is.null(value)) {
+    value <- if (multiple) character(0) else choices[1]
+  }
   attr(res, "value") <- value
   res
 }
@@ -282,7 +284,7 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
     if (is.null(label)) label <- id
     radioButtons(id, label, choices, value, width = width, ...)
   }
-  if (is.null(value)) value <- choices[1]
+  if (is.null(value)) value <- character(0)
   attr(res, "value") <- value
   res
 }
