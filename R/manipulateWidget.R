@@ -193,11 +193,16 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   # Evaluate a first time .expr to determine the class of the output
   initValues <- list()
+  selectInputList <- c()
   .getInitValues <- function(x, name = "") {
     if (is.function(x)) {
       input <- list(attr(x, "value"))
       names(input) <- name
       initValues <<- append(initValues, input)
+
+      if (!is.null(attr(x, "type")) && attr(x, "type") == "select") {
+        selectInputList <<- append(selectInputList, name)
+      }
     }
     else mapply(.getInitValues, x=x, name = names(x))
   }
@@ -244,6 +249,12 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   server <- function(input, output, session) {
     # Initialize the widget with its first evaluation
     output$output <- renderFunction(initWidget)
+
+    # Ensure that initial values of select inputs with multiple = TRUE are in
+    # same order than the user asked.
+    for (v in selectInputList) {
+      shiny::updateSelectInput(session, v, selected = initValues[v])
+    }
 
     inputList <- reactive({
       input$.update

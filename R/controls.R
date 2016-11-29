@@ -212,6 +212,7 @@ mwSelect <- function(choices, value = NULL, label = NULL, ..., multiple = FALSE)
     value <- if (multiple) character(0) else choices[1]
   }
   attr(res, "value") <- value
+  attr(res, "type") <- "select"
   res
 }
 
