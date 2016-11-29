@@ -253,7 +253,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     # Ensure that initial values of select inputs with multiple = TRUE are in
     # same order than the user asked.
     for (v in selectInputList) {
-      shiny::updateSelectInput(session, v, selected = initValues[v])
+      shiny::updateSelectInput(session, v, selected = initValues[[v]])
     }
 
     inputList <- reactive({
