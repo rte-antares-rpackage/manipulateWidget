@@ -8,6 +8,11 @@ HTMLWidgets.widget({
 
     var widgets = [];
 
+    function toArray(x) {
+      if (x.constructor !== Array) x = [x];
+      return x;
+    }
+
     function getWidgetFactory(name) {
       return HTMLWidgets.widgets.filter(function(x) {return x.name == name})[0];
     }
@@ -23,6 +28,9 @@ HTMLWidgets.widget({
       renderValue: function(x) {
         var nWidgets = x.widgetType.length;
         el.innerHTML = x.html;
+
+        x.elementId = toArray(x.elementId);
+        x.widgetType = toArray(x.widgetType);
 
         for (var i = 0; i < nWidgets; i++) {
           var child = document.getElementById(x.elementId[i]);
