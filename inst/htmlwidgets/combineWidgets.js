@@ -26,11 +26,11 @@ HTMLWidgets.widget({
     return {
 
       renderValue: function(x) {
-        var nWidgets = x.widgetType.length;
-        el.innerHTML = x.html;
-
         x.elementId = toArray(x.elementId);
         x.widgetType = toArray(x.widgetType);
+
+        var nWidgets = x.widgetType.length;
+        el.innerHTML = x.html;
 
         for (var i = 0; i < nWidgets; i++) {
           var child = document.getElementById(x.elementId[i]);
