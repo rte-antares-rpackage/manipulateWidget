@@ -67,6 +67,7 @@
 combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
                            rowsize = 1, colsize = 1, byrow = TRUE,
                            titleCSS = "",
+                           footer = NULL,
                            width = NULL, height = NULL) {
   widgets <- lapply(list(...), function(x) {
     if (is.null(x$preRenderHook)) return(x)
@@ -132,7 +133,9 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
     titleEl <- ""
   }
 
-  html <- sprintf('<div class="cw-container">%s%s</div>', titleEl, content)
+  if (is.null(footer)) footer <- ""
+  else footer <- paste0("<div>", footer, "</div>")
+  html <- sprintf('<div class="cw-container">%s%s%s</div>', titleEl, content, footer)
 
   data <- lapply(widgets, function(x) x$x)
   widgetType <- sapply(widgets, function(x) class(x)[1])
