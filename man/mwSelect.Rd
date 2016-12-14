@@ -4,7 +4,7 @@
 \alias{mwSelect}
 \title{Add a Select list input to a manipulateWidget gadget}
 \usage{
-mwSelect(choices, value = NULL, label = NULL, ...)
+mwSelect(choices, value = NULL, label = NULL, ..., multiple = FALSE)
 }
 \arguments{
 \item{choices}{Vector or list of choices. If it is named, then the names rather than the
@@ -15,7 +15,9 @@ values are displayed to the user.}
 \item{label}{Display label for the control. If \code{NULL}, the name of the corresponding
 variable is used.}
 
-\item{...}{Other arguments passed to function\code{\link[shiny]{selectInput}}}
+\item{...}{Other arguments passed to function\code{\link[shiny]{selectInput}}.}
+
+\item{multiple}{Is selection of multiple items allowed?}
 }
 \value{
 A function that will generate the input control.

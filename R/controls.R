@@ -168,7 +168,9 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #' @param value
 #'   Initial value of the input. If not specified, the first choice is used.
 #' @param ...
-#'   Other arguments passed to function\code{\link[shiny]{selectInput}}
+#'   Other arguments passed to function\code{\link[shiny]{selectInput}}.
+#' @param multiple
+#'   Is selection of multiple items allowed?
 #' @inheritParams mwSlider
 #'
 #' @return
@@ -285,7 +287,7 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
     if (is.null(label)) label <- id
     radioButtons(id, label, choices, value, width = width, ...)
   }
-  if (is.null(value)) value <- character(0)
+  if (is.null(value)) value <- choices[1]
   attr(res, "value") <- value
   res
 }

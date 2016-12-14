@@ -5,38 +5,44 @@
 \title{Combine several interactive plots}
 \usage{
 combineWidgets(..., nrow = NULL, ncol = NULL, title = NULL, rowsize = 1,
-  colsize = 1, byrow = TRUE, titleCSS = "", width = NULL,
-  height = NULL)
+  colsize = 1, byrow = TRUE, titleCSS = "", footer = NULL,
+  width = NULL, height = NULL)
 }
 \arguments{
 \item{...}{htmlwidgets to combine.}
 
-\item{nrow}{Number of rows of the layout. If \code{NULL}, the function will automatically
-take a value such that are at least as many cells in the layout as the number
-of htmlwidgets.}
+\item{nrow}{Number of rows of the layout. If \code{NULL}, the function will
+automatically take a value such that are at least as many cells in the
+layout as the number of htmlwidgets.}
 
-\item{ncol}{Number of columns of the layout.If \code{NULL}, the function will automatically
-take a value such that are at least as many cells in the layout as the number
-of htmlwidgets.}
+\item{ncol}{Number of columns of the layout.If \code{NULL}, the function will
+automatically take a value such that are at least as many cells in the
+layout as the number of htmlwidgets.}
 
 \item{title}{Title of the view.}
 
-\item{rowsize}{This argument controls the relative size of each row. For instance, if
-the layout has two rows and \code{rowsize = c(2,1)}, then the width of the
-first row will be twice the one of the second one. This argument is recycled
-to fit the number of rows.}
+\item{rowsize}{This argument controls the relative size of each row. For
+instance, if the layout has two rows and \code{rowsize = c(2,1)}, then the
+width of the first row will be twice the one of the second one. This
+argument is recycled to fit the number of rows.}
 
-\item{colsize}{Same as rowsize but for the height of the columns of the layout.}
+\item{colsize}{Same as rowsize but for the height of the columns of the
+layout.}
 
-\item{byrow}{If \code{TRUE}, then the layout is filled by row. Else it is filled by
-column.}
+\item{byrow}{If \code{TRUE}, then the layout is filled by row. Else it is
+filled by column.}
 
-\item{titleCSS}{A character containing css properties to modify the appearance of the title
-of the view.}
+\item{titleCSS}{A character containing css properties to modify the
+appearance of the title of the view.}
 
-\item{width}{Total width of the layout (optional, defaults to automatic sizing)}
+\item{footer}{Content to display under the combined widgets. It can be a
+single character string or html tags.}
 
-\item{height}{Total height of the layout (optional, defaults to automatic sizing)}
+\item{width}{Total width of the layout (optional, defaults to automatic
+sizing).}
+
+\item{height}{Total height of the layout (optional, defaults to automatic
+sizing).}
 }
 \value{
 A HTML widget.
@@ -45,9 +51,9 @@ A HTML widget.
 This function combines different htmlwidgets in a unique view.
 }
 \details{
-The function only allows table like layout : each row has the same number of
-columns and reciprocally. But it is possible to create more complex layout
-by nesting combined htmlwidgets. (see examples)
+The function only allows table like layout : each row has the same
+number of columns and reciprocally. But it is possible to create more complex
+layout by nesting combined htmlwidgets. (see examples)
 }
 \examples{
 if (require(plotly)) {
@@ -68,6 +74,20 @@ if (require(plotly)) {
       plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
       plot_ly(iris, x = ~Sepal.Width, type = "histogram", nbinsx = 20)
     )
+  )
+
+  # combineWidgets can also be used on a single widget to easily add to it a
+  # title and a footer.
+  require(shiny)
+  comments <- tags$div(
+    "Wow this plot is so ",
+    tags$span("amazing!!", style = "color:red;font-size:36px")
+  )
+
+  combineWidgets(
+    plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
+    title = "Distribution of Sepal Length",
+    footer = comments
   )
 }
 
