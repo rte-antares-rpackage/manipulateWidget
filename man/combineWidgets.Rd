@@ -9,7 +9,9 @@ combineWidgets(..., nrow = NULL, ncol = NULL, title = NULL, rowsize = 1,
   width = NULL, height = NULL)
 }
 \arguments{
-\item{...}{htmlwidgets to combine.}
+\item{...}{htmlwidgets to combine. If this list contains objects that are not
+htmlwidgets, the function tries to convert them into a character string which
+is interpreted as html content.}
 
 \item{nrow}{Number of rows of the layout. If \code{NULL}, the function will
 automatically take a value such that are at least as many cells in the
@@ -88,6 +90,20 @@ if (require(plotly)) {
     plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
     title = "Distribution of Sepal Length",
     footer = comments
+  )
+
+  # It is also possible to combine htmlwidgets with text or other html elements
+  myComment <- tags$div(
+    style="background-color:#eee;padding:10px;box-sizing:border-box",
+    tags$h2("Comment"),
+    tags$hr(),
+    "Here is a very clever comment about the awesome graphics you just saw."
+  )
+  combineWidgets(
+    plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
+    plot_ly(iris, x = ~Sepal.Width, type = "histogram", nbinsx = 20),
+    plot_ly(iris, x = ~Petal.Length, type = "histogram", nbinsx = 20),
+    myComment
   )
 }
 

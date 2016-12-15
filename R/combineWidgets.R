@@ -2,7 +2,9 @@
 #'
 #' This function combines different htmlwidgets in a unique view.
 #'
-#' @param ... htmlwidgets to combine.
+#' @param ... htmlwidgets to combine. If this list contains objects that are not
+#'   htmlwidgets, the function tries to convert them into a character string which
+#'   is interpreted as html content.
 #' @param nrow Number of rows of the layout. If \code{NULL}, the function will
 #'   automatically take a value such that are at least as many cells in the
 #'   layout as the number of htmlwidgets.
@@ -67,6 +69,20 @@
 #'     title = "Distribution of Sepal Length",
 #'     footer = comments
 #'   )
+#'
+#'   # It is also possible to combine htmlwidgets with text or other html elements
+#'   myComment <- tags$div(
+#'     style="height:100%;background-color:#eee;padding:10px;box-sizing:border-box",
+#'     tags$h2("Comment"),
+#'     tags$hr(),
+#'     "Here is a very clever comment about the awesome graphics you just saw."
+#'   )
+#'   combineWidgets(
+#'     plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
+#'     plot_ly(iris, x = ~Sepal.Width, type = "histogram", nbinsx = 20),
+#'     plot_ly(iris, x = ~Petal.Length, type = "histogram", nbinsx = 20),
+#'     myComment
+#'   )
 #' }
 #'
 #' @import htmlwidgets
@@ -78,7 +94,11 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
                            footer = NULL,
                            width = NULL, height = NULL) {
   widgets <- lapply(list(...), function(x) {
-    if (is.null(x$preRenderHook)) return(x)
+    if (is.atomic(x)) return(structure(list(x = as.character(x)), class = "html"))
+    if (is.null(x$preRenderHook)) {
+      if (is(x, "htmlwidget")) return(x)
+      else return(structure(list(x = as.character(x)), class = "html"))
+    }
     x$preRenderHook(x)
   })
   nwidgets <- length(widgets)
@@ -164,6 +184,7 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
   )
 
   deps <- lapply(widgets, function(x) {
+    if (class(x)[1] == "html") return(NULL)
     append(getDependency(class(x)[1], attr(x, "package")), x$dependencies)
   })
   deps <- do.call(c, deps)

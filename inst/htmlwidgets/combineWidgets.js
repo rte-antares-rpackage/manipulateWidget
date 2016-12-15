@@ -34,10 +34,15 @@ HTMLWidgets.widget({
 
         for (var i = 0; i < nWidgets; i++) {
           var child = document.getElementById(x.elementId[i]);
-          var widgetFactory = getWidgetFactory(x.widgetType[i]);
-          var w = widgetFactory.initialize(child, child.clientWidth, child.clientHeight);
-          widgetFactory.renderValue(child, x.data[i], w);
-          widgets.push({factory:widgetFactory, instance:w, el: child});
+
+          if (x.widgetType[i] == "html") {
+            child.innerHTML = x.data[i];
+          } else {
+            var widgetFactory = getWidgetFactory(x.widgetType[i]);
+            var w = widgetFactory.initialize(child, child.clientWidth, child.clientHeight);
+            widgetFactory.renderValue(child, x.data[i], w);
+            widgets.push({factory:widgetFactory, instance:w, el: child});
+          }
         }
 
         if (HTMLWidgets.shinyMode) {
