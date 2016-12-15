@@ -6,7 +6,8 @@
 \usage{
 combineWidgets(..., list = NULL, nrow = NULL, ncol = NULL, title = NULL,
   rowsize = 1, colsize = 1, byrow = TRUE, titleCSS = "",
-  footer = NULL, width = NULL, height = NULL)
+  header = NULL, footer = NULL, leftCol = NULL, rightCol = NULL,
+  width = NULL, height = NULL)
 }
 \arguments{
 \item{...}{htmlwidgets to combine. If this list contains objects that are not
@@ -42,8 +43,17 @@ filled by column.}
 \item{titleCSS}{A character containing css properties to modify the
 appearance of the title of the view.}
 
+\item{header}{Content to display between the title and the combined widgets.
+It can be a single character string or html tags.}
+
 \item{footer}{Content to display under the combined widgets. It can be a
 single character string or html tags.}
+
+\item{leftCol}{Content to display on the left of the combined widgets. It can
+be a single character string or html tags.}
+
+\item{rightCol}{Content to display on the right the combined widgets. It can
+be a single character string or html tags.}
 
 \item{width}{Total width of the layout (optional, defaults to automatic
 sizing).}
@@ -116,7 +126,7 @@ if (require(plotly)) {
   # are generated using a loop function like "lapply" or "replicate".
   #
   # The following code generates a list of 12 histograms and use combineWidgets
-  # to display them
+  # to display them.
   samples <- replicate(12, plot_ly(x = rnorm(100), type = "histogram", nbinsx = 20),
                        simplify = FALSE)
   combineWidgets(list = samples, title = "12 samples of the same distribution")

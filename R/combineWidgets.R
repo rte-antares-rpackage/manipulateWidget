@@ -26,8 +26,14 @@
 #'   filled by column.
 #' @param titleCSS A character containing css properties to modify the
 #'   appearance of the title of the view.
+#' @param header Content to display between the title and the combined widgets.
+#'   It can be a single character string or html tags.
 #' @param footer Content to display under the combined widgets. It can be a
 #'   single character string or html tags.
+#' @param leftCol Content to display on the left of the combined widgets. It can
+#'   be a single character string or html tags.
+#' @param rightCol Content to display on the right the combined widgets. It can
+#'   be a single character string or html tags.
 #'
 #' @param width Total width of the layout (optional, defaults to automatic
 #'   sizing).
@@ -93,7 +99,7 @@
 #'   # are generated using a loop function like "lapply" or "replicate".
 #'   #
 #'   # The following code generates a list of 12 histograms and use combineWidgets
-#'   # to display them
+#'   # to display them.
 #'   samples <- replicate(12, plot_ly(x = rnorm(100), type = "histogram", nbinsx = 20),
 #'                        simplify = FALSE)
 #'   combineWidgets(list = samples, title = "12 samples of the same distribution")
@@ -105,7 +111,8 @@
 combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = NULL,
                            rowsize = 1, colsize = 1, byrow = TRUE,
                            titleCSS = "",
-                           footer = NULL,
+                           header = NULL, footer = NULL,
+                           leftCol = NULL, rightCol = NULL,
                            width = NULL, height = NULL) {
   widgets <- lapply(c(list(...), list), function(x) {
     if (is.atomic(x)) return(structure(list(x = as.character(x)), class = "html"))
@@ -177,7 +184,15 @@ combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = N
 
   if (is.null(footer)) footer <- ""
   else footer <- paste0("<div>", footer, "</div>")
-  html <- sprintf('<div class="cw-container">%s%s%s</div>', titleEl, content, footer)
+  if (is.null(header)) header <- ""
+  else header <- paste0("<div>", header, "</div>")
+  if (is.null(leftCol)) leftCol <- ""
+  else leftCol <- paste0("<div style='height:100%'>", leftCol, "</div>")
+  if (is.null(rightCol)) rightCol <- ""
+  else rightCol <- paste0("<div style='height:100%'>", rightCol, "</div>")
+
+  html <- sprintf('<div class="cw-container">%s%s<div class="cw-subcontainer">%s%s%s</div>%s</div>',
+                  titleEl, header, leftCol, content, rightCol, footer)
 
   data <- lapply(widgets, function(x) x$x)
   widgetType <- sapply(widgets, function(x) class(x)[1])

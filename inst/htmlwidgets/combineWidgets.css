@@ -7,6 +7,15 @@
   height: 100%;
 }
 
+.cw-subcontainer {
+  flex:1;
+  -webkit-flex:1;
+  display: flex;
+  display: -webkit-flex;
+  flex-direction: row;
+  -webkit-flex-direction: row;
+}
+
 .cw-title {
   text-align: center;
   margin: 5px 0;
