@@ -4,14 +4,19 @@
 \alias{combineWidgets}
 \title{Combine several interactive plots}
 \usage{
-combineWidgets(..., nrow = NULL, ncol = NULL, title = NULL, rowsize = 1,
-  colsize = 1, byrow = TRUE, titleCSS = "", footer = NULL,
-  width = NULL, height = NULL)
+combineWidgets(..., list = NULL, nrow = NULL, ncol = NULL, title = NULL,
+  rowsize = 1, colsize = 1, byrow = TRUE, titleCSS = "",
+  footer = NULL, width = NULL, height = NULL)
 }
 \arguments{
 \item{...}{htmlwidgets to combine. If this list contains objects that are not
 htmlwidgets, the function tries to convert them into a character string which
 is interpreted as html content.}
+
+\item{list}{Instead of directly passing htmlwidgets to the function, one can
+pass a list of htmlwidgets and objects coercible to character. In particular,
+it can be usefull if multiple htmlwidgets have been generated using a loop
+function like \code{\link[base]{lapply}}.}
 
 \item{nrow}{Number of rows of the layout. If \code{NULL}, the function will
 automatically take a value such that are at least as many cells in the
@@ -94,7 +99,7 @@ if (require(plotly)) {
 
   # It is also possible to combine htmlwidgets with text or other html elements
   myComment <- tags$div(
-    style="background-color:#eee;padding:10px;box-sizing:border-box",
+    style="height:100\%;background-color:#eee;padding:10px;box-sizing:border-box",
     tags$h2("Comment"),
     tags$hr(),
     "Here is a very clever comment about the awesome graphics you just saw."
@@ -105,6 +110,16 @@ if (require(plotly)) {
     plot_ly(iris, x = ~Petal.Length, type = "histogram", nbinsx = 20),
     myComment
   )
+
+  # Instead of passing directly htmlwidgets to the function, one can pass
+  # a list containing htmlwidgets. This is especially useful when the widgets
+  # are generated using a loop function like "lapply" or "replicate".
+  #
+  # The following code generates a list of 12 histograms and use combineWidgets
+  # to display them
+  samples <- replicate(12, plot_ly(x = rnorm(100), type = "histogram", nbinsx = 20),
+                       simplify = FALSE)
+  combineWidgets(list = samples, title = "12 samples of the same distribution")
 }
 
 }

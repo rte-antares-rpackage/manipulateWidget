@@ -5,6 +5,10 @@
 #' @param ... htmlwidgets to combine. If this list contains objects that are not
 #'   htmlwidgets, the function tries to convert them into a character string which
 #'   is interpreted as html content.
+#' @param list Instead of directly passing htmlwidgets to the function, one can
+#'   pass a list of htmlwidgets and objects coercible to character. In particular,
+#'   it can be usefull if multiple htmlwidgets have been generated using a loop
+#'   function like \code{\link[base]{lapply}}.
 #' @param nrow Number of rows of the layout. If \code{NULL}, the function will
 #'   automatically take a value such that are at least as many cells in the
 #'   layout as the number of htmlwidgets.
@@ -83,17 +87,27 @@
 #'     plot_ly(iris, x = ~Petal.Length, type = "histogram", nbinsx = 20),
 #'     myComment
 #'   )
+#'
+#'   # Instead of passing directly htmlwidgets to the function, one can pass
+#'   # a list containing htmlwidgets. This is especially useful when the widgets
+#'   # are generated using a loop function like "lapply" or "replicate".
+#'   #
+#'   # The following code generates a list of 12 histograms and use combineWidgets
+#'   # to display them
+#'   samples <- replicate(12, plot_ly(x = rnorm(100), type = "histogram", nbinsx = 20),
+#'                        simplify = FALSE)
+#'   combineWidgets(list = samples, title = "12 samples of the same distribution")
 #' }
 #'
 #' @import htmlwidgets
 #'
 #' @export
-combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
+combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = NULL,
                            rowsize = 1, colsize = 1, byrow = TRUE,
                            titleCSS = "",
                            footer = NULL,
                            width = NULL, height = NULL) {
-  widgets <- lapply(list(...), function(x) {
+  widgets <- lapply(c(list(...), list), function(x) {
     if (is.atomic(x)) return(structure(list(x = as.character(x)), class = "html"))
     if (is.null(x$preRenderHook)) {
       if (is(x, "htmlwidget")) return(x)
