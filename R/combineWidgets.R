@@ -157,7 +157,10 @@ combineWidgets <- function(..., nrow = NULL, ncol = NULL, title = NULL,
     x,
     width = width,
     height = height,
-    package = 'manipulateWidget'
+    package = 'manipulateWidget',
+    sizingPolicy = htmlwidgets::sizingPolicy(
+      browser.fill = TRUE
+    )
   )
 
   deps <- lapply(widgets, function(x) {
