@@ -1,6 +1,6 @@
 Package: manipulateWidget
 Type: Package
-Title: Add More Interactivity to htmlWidgets
+Title: Add Even More Interactivity to interactive charts
 Version: 0.4.0
 Date: 2016-12-09
 Authors@R: c(
@@ -9,7 +9,7 @@ Authors@R: c(
     )
 Description: Like package 'manipulate' does for static graphics, this package
     helps to easily to add controls like slider, picker, checkboxes, etc. to an
-    interactive plot created with htmlWidget. This way one can use controls to
+    interactive chart created with htmlWidget. This way one can use controls to
     modify the input data or the parameters of a widget.
 Imports:
     shiny,

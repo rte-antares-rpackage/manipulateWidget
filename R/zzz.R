@@ -33,7 +33,7 @@
 #'
 #' The interface also contains a button "Done". When the user clicks on it, the
 #' last chart is returned. It can be stored in a variable, be modified by the
-#' user, saved as a html file with \code{[htmlwidgets]{saveWidget}} from package
+#' user, saved as a html file with \code{\link[htmlwidgets]{saveWidget}} from package
 #' \code{htmlwidgets} or converted to a static image file with package
 #' \code{webshot}.
 #'
