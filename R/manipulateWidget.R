@@ -4,7 +4,7 @@
 #'
 #' @description
 #' This function permits to add controls to an interactive plot created with
-#' packages like \code{dygraphs}, \code{highcharter} or \code{plotly}in order
+#' packages like \code{dygraphs}, \code{highcharter} or \code{plotly} in order
 #' to change the input data or the parameters of the plot.
 #'
 #' Technically, the function starts a shiny gadget. The R session is bloqued

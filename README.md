@@ -1,7 +1,7 @@
 Add more interactivity to interactive charts
 ================
 
-This R package is largely inspired by the `manipulate` package from Rstudio. It provides the function \``manipulateWidget` that can be used to createin a very easy way a graphical interface that let the user modify the data or the parameters of an interactive chart. Technically, the function generates a Shiny gadget, but the user does not even have to know what is Shiny.
+This R package is largely inspired by the `manipulate` package from Rstudio. It provides the function \``manipulateWidget` that can be used to create in a very easy way a graphical interface that let the user modify the data or the parameters of an interactive chart. Technically, the function generates a Shiny gadget, but the user does not even have to know what is Shiny.
 
 The package also provides the `combineWidgets` function to easily combine multiple interactive charts in a single view. Of course both functions can be used together.
 
@@ -199,6 +199,10 @@ By the way
 Here is the complete code to generate the animated example in the introduction:
 
 ``` r
+library(dygraphs)
+library(plotly)
+library(manipulateWidget)
+
 myPlotFun <- function(distribution, range, title) {
   randomFun <- switch(distribution, gaussian = rnorm, uniform = runif)
   myData <- data.frame(
