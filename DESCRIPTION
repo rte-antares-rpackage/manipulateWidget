@@ -20,6 +20,6 @@ Suggests:
   leaflet,
   plotly,
   xts
-License: GPL (>= 2) + file LICENSE
+License: GPL (>= 2) | file LICENSE
 LazyData: TRUE
 RoxygenNote: 5.0.1
