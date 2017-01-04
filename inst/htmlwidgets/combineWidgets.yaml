@@ -1,3 +1,4 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
 dependencies:
  - name: combineWidgetStyle
    version: 0.1
