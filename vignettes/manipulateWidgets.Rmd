@@ -4,7 +4,7 @@ author: "Francois Guillem"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Getting started with manipulateWidget}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,7 +20,7 @@ The package also provides the `combineWidgets` function to easily combine multip
 
 Here is an example that uses packages `dygraphs` and `plot_ly`.
 
-![An example of what one can do with manipulateWidgets](../img/fancy-example.gif)
+![An example of what one can do with manipulateWidgets](fancy-example.gif)
 
 ## Getting started
 
@@ -69,7 +69,7 @@ plotRandomTS <- function(id) {
 combineWidgets(plotRandomTS(1), plotRandomTS(2))
 ```
 
-The functions tries to find the best number of columns and rows. But one can control them with parameters `nrow`and `ncol`. It is also possible to control their relative size with parameters `rowsize` and `colsize`. To achieve complex layouts, it is possible to use nested combined widgets. Here is an example of a complex layout. (Note that this is only a screenshot of the result. In reality, these charts are interactive).
+The functions tries to find the best number of columns and rows. But one can control them with parameters `nrow`and `ncol`. It is also possible to control their relative size with parameters `rowsize` and `colsize`. To achieve complex layouts, it is possible to use nested combined widgets. Here is an example of a complex layout.
 
 ```{r combine_complex_layout, , out.width="100%"}
 combineWidgets(
@@ -120,7 +120,7 @@ manipulateWidget(
 )
 ```
 
-![Grouping inputs](../img/groups-inputs.gif)
+![Grouping inputs](groups-inputs.gif)
 
 ### Conditional inputs
 
@@ -146,7 +146,7 @@ manipulateWidget(
 )
 ```
 
-![Conditional inputs](../img/conditional-inputs.gif)
+![Conditional inputs](conditional-inputs.gif)
 
 
 ### Updating a widget
@@ -183,7 +183,7 @@ manipulateWidget(myMapFun(radius, color, .initial, .session),
 
 ```
 
-![Conditional inputs](../img/update-widget.gif)
+![Conditional inputs](update-widget.gif)
 
 ## By the way
 

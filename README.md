@@ -7,7 +7,7 @@ The package also provides the `combineWidgets` function to easily combine multip
 
 Here is an example that uses packages `dygraphs` and `plot_ly`.
 
-![An example of what one can do with manipulateWidgets](img/fancy-example.gif)
+![An example of what one can do with manipulateWidgets](vignettes/fancy-example.gif)
 
 Installation
 ------------
@@ -130,7 +130,7 @@ manipulateWidget(
 )
 ```
 
-![Grouping inputs](img/groups-inputs.gif)
+![Grouping inputs](vignettes/groups-inputs.gif)
 
 ### Conditional inputs
 
@@ -156,7 +156,7 @@ manipulateWidget(
 )
 ```
 
-![Conditional inputs](img/conditional-inputs.gif)
+![Conditional inputs](vignettes/conditional-inputs.gif)
 
 ### Updating a widget
 
@@ -191,7 +191,7 @@ manipulateWidget(myMapFun(radius, color, .initial, .session),
                  color = mwSelect(c("red", "blue", "green")))
 ```
 
-![Conditional inputs](img/update-widget.gif)
+![Conditional inputs](vignettes/update-widget.gif)
 
 By the way
 ----------
