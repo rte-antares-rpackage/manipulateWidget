@@ -1,8 +1,22 @@
 Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 0.4 (2016-12-16)
+
+BREAKING CHANGES:
+* Function combineWidgets has been entirely rewritten and now produces a htmlwidget that can be included as is in documents or shiny applications. The general behavior is the same, but some parameters have changed
+
+NEW FEATURES:
+* manipulateWidget() can now update an already rendered widget instead of overwriting it each time the user changes an input. This leads to better performance and user experience. Look at the documentation of manipulateWidget for further information.
+
+BUGFIXES:
+* manipulateWidgets() now preserves the order of the initial value of select inputs.
+* manipulateWidgets() now automatically finds the correct render and output functions. This solves in particular sizing problems.
+
 Changes in version 0.3 (2016-10-06)
+
 BREAKING CHANGES:
 * add a file LICENSE and copyright to sources files
+
 
 Changes in version 0.2 (2016-09-27)
 
