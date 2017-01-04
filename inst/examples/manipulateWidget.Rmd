@@ -1,0 +1,28 @@
+---
+title: "manipulateWidget Demo"
+output: html_document
+runtime: shiny
+---
+
+
+```{r, echo = FALSE, message = FALSE}
+library(plotly)
+library(manipulateWidget)
+mydata <- data.frame(x = 1:100, y = rnorm(100))
+
+myPlot <- function(type, lwd) {
+  if (type == "points") {
+    plot_ly(mydata, x= ~x, y = ~y, type = "scatter", mode = "markers")
+  } else {
+    plot_ly(mydata, x= ~x, y = ~y, type = "scatter", mode = "lines", 
+            line = list(width = lwd))
+  }
+}
+
+manipulateWidget(
+  myPlot(type, lwd),
+  type = mwSelect(c("points", "lines"), "points"),
+  lwd = mwSlider(1, 10, 1),
+  .display = list(lwd = type == "lines")
+)
+```

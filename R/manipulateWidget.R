@@ -173,6 +173,10 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .tabColumns = 2,
                              .viewer = c("pane", "window", "browser"),
                              .display = NULL) {
+
+  # check if we are in runtime shiny
+  isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
+
   .expr <- substitute(.expr)
   .display <- substitute(.display)
   .viewer <- match.arg(.viewer)
@@ -214,9 +218,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
 
-  # Stop here if R session is not in interactive mode.
-  if (!interactive()) return(initWidget)
-
   # Get shiny output and render functions
   if (is(initWidget, "htmlwidget")) {
     cl <- class(initWidget)[1]
@@ -241,7 +242,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .tabColumns = .tabColumns,
     .updateBtn = .updateBtn,
     .main = .main,
-    .content = do.call(outputFunction, outputArgs)
+    .content = do.call(outputFunction, outputArgs),
+    .titleBar = !isRuntimeShiny
   )
 
   controlNames <- .getControlNames(ui)
@@ -301,12 +303,15 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     })
   }
 
-  .viewer <- switch(.viewer,
-    pane = paneViewer(),
-    window = dialogViewer(.main),
-    browser = browserViewer()
-  )
-
-  runGadget(ui, server, viewer = .viewer)
-
+  if (isRuntimeShiny) {
+    shinyApp(ui = ui, server = server)
+  }
+  else {
+    .viewer <- switch(.viewer,
+      pane = paneViewer(),
+      window = dialogViewer(.main),
+      browser = browserViewer()
+    )
+    runGadget(ui, server, viewer = .viewer)
+  }
 }

@@ -7,6 +7,8 @@
 #'
 #' @param .content
 #' HTML of the main content of the application, where outputs are displayed.
+#' @param .titleBar
+#' Whether to include a title bar with controls in the widget
 #' @inheritParams manipulateWidget
 #'
 #' @return
@@ -17,7 +19,8 @@
 #'
 mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
-                 .content = htmlOutput("output", style = "height:100%;width:100%")) {
+                 .content = htmlOutput("output", style = "height:100%;width:100%"),
+                 .titleBar = TRUE) {
 
   .controlPos <- match.arg(.controlPos)
 
@@ -74,10 +77,16 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
 
   }
 
-  res <- miniPage(
-    gadgetTitleBar(.main),
-    ui
-  )
+  if (.titleBar) {
+    res <- miniPage(
+      gadgetTitleBar(.main),
+      ui
+    )
+  } else {
+    res <- miniPage(
+      ui
+    )
+  }
   attr(res, "controlNames") <- .getControlNames(ctrls)
   res
 }
