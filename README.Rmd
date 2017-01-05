@@ -1,7 +1,6 @@
 ---
 title: "Add more interactivity to interactive charts"
 output: github_document
-always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -22,13 +21,13 @@ Here is an example that uses packages `dygraphs` and `plot_ly`.
 
 ## Installation
 
-The package can be installed from Github with package `devtools`:
+The package can be installed from CRAN:
 
 ```{r eval=FALSE}
-devtools::install_github("rte-antares-rpackage/manipulateWidget")
+install.packages("manipulateWidget")
 ```
 
-To install the latest development version:
+You can also install the latest development version from github:
 
 ```{r eval=FALSE}
 devtools::install_github("rte-antares-rpackage/manipulateWidget", ref="develop")
