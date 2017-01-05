@@ -303,15 +303,20 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     })
   }
 
-  if (isRuntimeShiny) {
-    shinyApp(ui = ui, server = server)
-  }
-  else {
+  if (interactive()) {
+    # We are in an interactive session so we start a shiny gadget
     .viewer <- switch(.viewer,
       pane = paneViewer(),
       window = dialogViewer(.main),
       browser = browserViewer()
     )
     runGadget(ui, server, viewer = .viewer)
+  } else if (isRuntimeShiny) {
+    # We are in Rmarkdown document with shiny runtime. So we start a shiny app
+    shinyApp(ui = ui, server = server)
+  } else {
+    # Other cases (Rmarkdown or non interactive execution). We return the initial
+    # widget to not block the R execution.
+    initWidget
   }
 }
