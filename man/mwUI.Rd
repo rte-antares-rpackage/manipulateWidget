@@ -6,7 +6,8 @@
 \usage{
 mwUI(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
   .tabColumns = 2, .updateBtn = FALSE, .main = "",
-  .content = htmlOutput("output", style = "height:100\%;width:100\%"))
+  .content = htmlOutput("output", style = "height:100\%;width:100\%"),
+  .titleBar = TRUE)
 }
 \arguments{
 \item{...}{One or more named control arguments created with functions
@@ -30,6 +31,8 @@ the graphic is updated only when the user clicks on the update button.}
 \item{.main}{Title of the shiny gadget}
 
 \item{.content}{HTML of the main content of the application, where outputs are displayed.}
+
+\item{.titleBar}{Whether to include a title bar with controls in the widget}
 }
 \value{
 A \code{shiny.tag.list} object that can be used in function

@@ -1,5 +1,11 @@
 Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 0.5 (2017-XX-XX)
+
+NEW FEATURES:
+* ManipulateWidget can now be used in a R Markdown document with shiny runtime. Input controls are included in the final document so end users can play with their values directly. (contribution by JJ. Allaire)
+
+
 Changes in version 0.4 (2016-12-16)
 
 BREAKING CHANGES:
