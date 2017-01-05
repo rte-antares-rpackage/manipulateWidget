@@ -48,9 +48,11 @@ mwControlsUI <- function(..., .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
         attr(res, "controlNames") <- .getControlNames(ctrls)
 
       } else {
+        inputValue <- attr(f, "value")
+
         res <- conditionalPanel(
           condition = sprintf("input.%s_visible", id),
-          f(id, width = ifelse(.dir == "v", "100%", "180px"))
+          f(id, inputValue, width = ifelse(.dir == "v", "100%", "180px"))
         )
 
         attr(res, "controlNames") <- id
@@ -94,7 +96,6 @@ mwControlsUI <- function(..., .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
     }
   }
 
-  attr(res, "controlNames") <- .getControlNames(controls)
   res
 }
 
@@ -106,10 +107,5 @@ mwControlsUI <- function(..., .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
 .controlsRow <- function(controls) {
   controls$height <- "100px"
   do.call(fillRow, controls)
-}
-
-.getControlNames <- function(x) {
-  if (!is.null(attr(x, "controlNames"))) return(attr(x, "controlNames"))
-  unlist(lapply(x, function(e) attr(e, "controlNames")))
 }
 

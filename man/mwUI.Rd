@@ -7,7 +7,7 @@
 mwUI(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
   .tabColumns = 2, .updateBtn = FALSE, .main = "",
   .content = htmlOutput("output", style = "height:100\%;width:100\%"),
-  .titleBar = TRUE)
+  .titleBar = TRUE, .compare = NULL)
 }
 \arguments{
 \item{...}{One or more named control arguments created with functions

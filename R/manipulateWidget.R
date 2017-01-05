@@ -172,7 +172,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .controlPos = c("left", "top", "right", "bottom", "tab"),
                              .tabColumns = 2,
                              .viewer = c("pane", "window", "browser"),
-                             .display = NULL) {
+                             .display = NULL,
+                             .compare = NULL) {
 
   # check if we are in runtime shiny
   isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
@@ -182,6 +183,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .viewer <- match.arg(.viewer)
   .controlPos <- match.arg(.controlPos)
   .env <- parent.frame()
+  compareMode <- !is.null(.compare)
+  controlDesc <- getControlDesc(list(...))
 
   if (.controlPos == "tab") .updateBtn <- FALSE
 
@@ -196,25 +199,29 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   }
 
   # Evaluate a first time .expr to determine the class of the output
-  initValues <- list()
-  selectInputList <- c()
-  .getInitValues <- function(x, name = "") {
-    if (is.function(x)) {
-      input <- list(attr(x, "value"))
-      names(input) <- name
-      initValues <<- append(initValues, input)
+  initValues <- controlDesc$initValue
+  names(initValues) <- controlDesc$name
 
-      if (!is.null(attr(x, "type")) && attr(x, "type") == "select") {
-        selectInputList <<- append(selectInputList, name)
-      }
-    }
-    else mapply(.getInitValues, x=x, name = names(x))
-  }
-  .getInitValues(list(...))
+  selectInputList <- controlDesc$name[controlDesc$type == "select"]
 
   # Add a parameter indicating this is the first evaluation of
   initValues$.initial <- TRUE
   initValues$.session <- NULL
+  initValues$.output <- "output"
+
+  if (compareMode) {
+    initValues2 <- initValues
+    initValues2$.output <- "output2"
+
+    for (v in names(.compare)) {
+      if (!is.null(.compare[[v]])) {
+        initValues[[v]] <- .compare[[v]][[1]]
+        initValues2[[v]] <- .compare[[v]][[2]]
+      }
+    }
+
+    initWidget2 <- eval(.expr, envir = list2env(initValues2, parent = .env))
+  }
 
   initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
 
@@ -243,10 +250,9 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .updateBtn = .updateBtn,
     .main = .main,
     .content = do.call(outputFunction, outputArgs),
-    .titleBar = !isRuntimeShiny
+    .titleBar = !isRuntimeShiny,
+    .compare = .compare
   )
-
-  controlNames <- .getControlNames(ui)
 
   server <- function(input, output, session) {
     # Initialize the widget with its first evaluation
@@ -261,11 +267,11 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     inputList <- reactive({
       input$.update
 
-      res <- lapply(controlNames, function(s) {
+      res <- lapply(controlDesc$name, function(s) {
         if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
         else eval(parse(text = sprintf("input$%s", s)))
       })
-      names(res) <- controlNames
+      names(res) <- controlDesc$name
 
       res
     })

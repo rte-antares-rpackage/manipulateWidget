@@ -20,12 +20,13 @@
 mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
                  .content = htmlOutput("output", style = "height:100%;width:100%"),
-                 .titleBar = TRUE) {
+                 .titleBar = TRUE, .compare = NULL) {
 
   .controlPos <- match.arg(.controlPos)
 
   if (.controlPos == "tab") {
-    ctrls <- mwControlsUI(..., .dir = "v", .n = .tabColumns, .updateBtn = .updateBtn)
+    ctrls <- mwControlsUI(..., .dir = "v", .n = .tabColumns,
+                          .updateBtn = .updateBtn)
     ui <- miniTabstripPanel(
       miniTabPanel("Parameters", icon = icon("sliders"),
         miniContentPanel(
@@ -87,6 +88,6 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
       ui
     )
   }
-  attr(res, "controlNames") <- .getControlNames(ctrls)
+
   res
 }
