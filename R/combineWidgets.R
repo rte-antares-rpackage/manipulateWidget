@@ -107,8 +107,6 @@
 #'   combineWidgets(list = samples, title = "12 samples of the same distribution")
 #' }
 #'
-#' @import htmlwidgets
-#'
 #' @export
 combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = NULL,
                            rowsize = 1, colsize = 1, byrow = TRUE,
@@ -149,7 +147,7 @@ combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = N
     if (is.null(x)) res <- NULL
     else res <- x$elementId
 
-    if (is.null(res)) res <- paste0("widget", floor(runif(1, max = 1e9)))
+    if (is.null(res)) res <- paste0("widget", floor(stats::runif(1, max = 1e9)))
 
     res
   })

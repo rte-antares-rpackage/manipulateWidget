@@ -1,6 +1,6 @@
 Package: manipulateWidget
 Type: Package
-Title: Add Even More Interactivity to interactive charts
+Title: Add Even More Interactivity To Interactive Charts
 Version: 0.5.0
 Date: 2017-01-04
 Authors@R: c(
@@ -9,14 +9,15 @@ Authors@R: c(
     person("JJ", "Allaire", role = "ctb")
     )
 Description: Like package 'manipulate' does for static graphics, this package
-    helps to easily add controls like sliders, pickers, checkboxes, etc.  that 
+    helps to easily add controls like sliders, pickers, checkboxes, etc. that 
     can be used to modify the input data or the parameters of an interactive 
     chart created with htmlwidgets.
 Imports:
     shiny,
     miniUI,
     htmlwidgets,
-    knitr
+    knitr,
+    methods
 Suggests:
     dygraphs,
     leaflet,
@@ -27,3 +28,4 @@ License: GPL (>= 2) | file LICENSE
 LazyData: TRUE
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
+Encoding: UTF-8
