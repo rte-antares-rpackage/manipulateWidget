@@ -78,4 +78,8 @@
 #'
 #' @import shiny
 #' @import miniUI
+#' @import htmlwidgets
+#' @importFrom methods is
+#' @importFrom utils getFromNamespace
+#' @importFrom stats runif
 NULL
