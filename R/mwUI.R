@@ -5,8 +5,8 @@
 #' This function can be used if you desire to create a gadget that has the same
 #' UI as a manipulateWidget gadget but with a custom server logic.
 #'
-#' @param .content
-#' HTML of the main content of the application, where outputs are displayed.
+#' @param .outputFun
+#' The output function for the desired htmlwidget.
 #' @param .titleBar
 #' Whether to include a title bar with controls in the widget
 #' @inheritParams manipulateWidget
@@ -19,13 +19,36 @@
 #'
 mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
-                 .content = htmlOutput("output", style = "height:100%;width:100%"),
-                 .titleBar = TRUE, .compare = NULL) {
+                 .outputFun = NULL, .outputId = "output",
+                 .titleBar = TRUE, .compare = NULL, .compareDir = c("v", "h"),
+                 .controlList = NULL) {
 
   .controlPos <- match.arg(.controlPos)
+  .compareDir <- match.arg(.compareDir)
+  controls <- append(list(...), .controlList)
+
+  if (is.null(.compare)) {
+    commonControls <- controls
+
+    if(is.null(.outputFun)) {
+      .content <- htmlOutput(.outputId, style = "height:100%;width:100%")
+    } else {
+      .content <- .outputFun(.outputId, width = "100%", height = "100%")
+    }
+  } else {
+    controls <- comparisonControls(controls, .compare)
+    commonControls <- controls$common
+
+    .content <- fillCol(
+      mwUI(.controlList = controls$ind, .outputFun = .outputFun,
+           .outputId = .outputId, .titleBar = FALSE),
+      mwUI(.controlList = controls$ind2, .outputFun = .outputFun,
+           .outputId = paste0(.outputId, "2"), .titleBar = FALSE)
+    )
+  }
 
   if (.controlPos == "tab") {
-    ctrls <- mwControlsUI(..., .dir = "v", .n = .tabColumns,
+    ctrls <- mwControlsUI(commonControls, .dir = "v", .n = .tabColumns,
                           .updateBtn = .updateBtn)
     ui <- miniTabstripPanel(
       miniTabPanel("Parameters", icon = icon("sliders"),
@@ -41,7 +64,7 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     )
 
   } else if (.controlPos == "left") {
-    ctrls <- mwControlsUI(..., .dir = "v", .updateBtn = .updateBtn)
+    ctrls <- mwControlsUI(commonControls, .dir = "v", .updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillRow(flex = c(NA, 1),
               tags$div(style ="width:200px;height:100%;overflow-y:auto;", ctrls),
@@ -50,7 +73,7 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     )
 
   } else if (.controlPos == "top") {
-    ctrls <- mwControlsUI(..., .dir = "h",.updateBtn = .updateBtn)
+    ctrls <- mwControlsUI(commonControls, .dir = "h",.updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillCol(flex = c(NA, 1),
               ctrls,
@@ -59,7 +82,7 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     )
 
   } else if (.controlPos == "right") {
-    ctrls <- mwControlsUI(..., .dir = "v", .updateBtn = .updateBtn)
+    ctrls <- mwControlsUI(commonControls, .dir = "v", .updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillRow(flex = c(1, NA),
               .content,
@@ -68,7 +91,7 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     )
 
   } else if (.controlPos == "bottom") {
-    ctrls <- mwControlsUI(..., .dir = "h", .updateBtn = .updateBtn)
+    ctrls <- mwControlsUI(commonControls, .dir = "h", .updateBtn = .updateBtn)
     ui <- miniContentPanel(
       fillCol(flex = c(1, NA),
               .content,

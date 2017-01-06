@@ -18,10 +18,9 @@
 #'
 #' @export
 #'
-mwControlsUI <- function(..., .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
+mwControlsUI <- function(controls, .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
   .dir <- match.arg(.dir)
 
-  controls <- list(...)
   ids <- names(controls)
 
   controls <- mapply(

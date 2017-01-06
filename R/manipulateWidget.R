@@ -173,7 +173,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .tabColumns = 2,
                              .viewer = c("pane", "window", "browser"),
                              .display = NULL,
-                             .compare = NULL) {
+                             .compare = NULL,
+                             .compareDir = c("v", "h")) {
 
   # check if we are in runtime shiny
   isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
@@ -182,6 +183,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .display <- substitute(.display)
   .viewer <- match.arg(.viewer)
   .controlPos <- match.arg(.controlPos)
+  .compareDir <- match.arg(.compareDir)
   .env <- parent.frame()
   compareMode <- !is.null(.compare)
   controlDesc <- getControlDesc(list(...))
@@ -235,11 +237,9 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
     OutputFunName <- ls(getNamespace(pkg), pattern = "Output$")
     outputFunction <- getFromNamespace(OutputFunName, pkg)
-    outputArgs <- list(outputId = "output", height="100%")
   } else {
     renderFunction <- renderUI
-    outputFunction <- htmlOutput
-    outputArgs <- list(outputId = "output", style="width:100%;height:100%")
+    outputFunction <- NULL
   }
 
   # UI
@@ -249,9 +249,10 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .tabColumns = .tabColumns,
     .updateBtn = .updateBtn,
     .main = .main,
-    .content = do.call(outputFunction, outputArgs),
+    .outputFun = outputFunction,
     .titleBar = !isRuntimeShiny,
-    .compare = .compare
+    .compare = .compare,
+    .compareDir = .compareDir
   )
 
   server <- function(input, output, session) {
