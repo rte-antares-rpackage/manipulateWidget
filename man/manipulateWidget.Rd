@@ -7,7 +7,7 @@
 manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
   .viewer = c("pane", "window", "browser"), .display = NULL,
-  .compare = NULL)
+  .compare = NULL, .compareDir = c("v", "h"))
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class

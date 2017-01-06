@@ -5,9 +5,9 @@
 \title{Generate the UI of a manipulateWidget gadget}
 \usage{
 mwUI(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
-  .tabColumns = 2, .updateBtn = FALSE, .main = "",
-  .content = htmlOutput("output", style = "height:100\%;width:100\%"),
-  .titleBar = TRUE, .compare = NULL)
+  .tabColumns = 2, .updateBtn = FALSE, .main = "", .outputFun = NULL,
+  .outputId = "output", .titleBar = TRUE, .compare = NULL,
+  .compareDir = c("v", "h"), .controlList = NULL)
 }
 \arguments{
 \item{...}{One or more named control arguments created with functions
@@ -30,7 +30,7 @@ the graphic is updated only when the user clicks on the update button.}
 
 \item{.main}{Title of the shiny gadget}
 
-\item{.content}{HTML of the main content of the application, where outputs are displayed.}
+\item{.outputFun}{The output function for the desired htmlwidget.}
 
 \item{.titleBar}{Whether to include a title bar with controls in the widget}
 }
