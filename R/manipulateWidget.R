@@ -290,6 +290,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
       # Add parameters indicating the widget already exists
       inputValues$.initial <- FALSE
       inputValues$.session <- session
+      inputValues$.output <- "output"
 
       inputEnv <- list2env(inputValues, parent = .env)
 
@@ -335,6 +336,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
         # Add parameters indicating the widget already exists
         inputValues$.initial <- FALSE
         inputValues$.session <- session
+        inputValues$.output <- "output2"
 
         inputEnv <- list2env(inputValues, parent = .env)
 
