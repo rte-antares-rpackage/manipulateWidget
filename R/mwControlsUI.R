@@ -19,6 +19,8 @@
 #' @export
 #'
 mwControlsUI <- function(controls, .dir = c("v", "h"), .n = 1, .updateBtn = FALSE) {
+  if (length(controls) == 0) return(NULL)
+
   .dir <- match.arg(.dir)
 
   ids <- names(controls)

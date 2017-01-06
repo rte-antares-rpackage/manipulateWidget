@@ -47,7 +47,11 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     )
   }
 
-  if (.controlPos == "tab") {
+  if (length(commonControls) == 0) {
+    ui <- miniContentPanel(
+      .content
+    )
+  } else if (.controlPos == "tab") {
     ctrls <- mwControlsUI(commonControls, .dir = "v", .n = .tabColumns,
                           .updateBtn = .updateBtn)
     ui <- miniTabstripPanel(
