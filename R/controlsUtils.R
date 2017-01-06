@@ -55,19 +55,22 @@ filterControls <- function(controls, names, drop = FALSE) {
   filterControlsRecursive(controls)
 }
 
-# Private function that renames inputs
-renameControls <- function(controls, oldnames, newnames) {
-  names(newnames) <- oldnames
-  renameControlsRecursive <- function(x) {
-    names(x)[names(x) %in% oldnames] <- newnames[names(x)[names(x) %in% oldnames]]
+# Add a suffix to the name of each control without impacting the labels of the
+# inputs.
+addSuffixToControls <- function(controls, suffix) {
+  addSuffixToControlsRecursive <- function(x) {
     for (n in names(x)) {
       if (is.list(x[[n]])) {
-        x[[n]] <- renameControlsRecursive(x[[n]])
+        x[[n]] <- addSuffixToControlsRecursive(x[[n]])
+      }
+      if (is.null(attr(x[[n]], "label"))) {
+        attr(x[[n]], "label") <- n
       }
     }
+    names(x) <- paste0(names(x), suffix)
     return(x)
   }
-  renameControlsRecursive(controls)
+  addSuffixToControlsRecursive(controls)
 }
 
 # Private function that resets the initial values of some controls
@@ -105,7 +108,7 @@ comparisonControls <- function(controls, compare) {
   ind2 <- resetInitValues(ind2, initValues2)
 
   # Add a "2" at the end of the names of the inputs of the second chart
-  ind2 <- renameControls(ind2, names(compare), paste0(names(compare), 2))
+  ind2 <- addSuffixToControls(ind2, "2")
 
   list(common = common, ind = ind, ind2 = ind2)
 }

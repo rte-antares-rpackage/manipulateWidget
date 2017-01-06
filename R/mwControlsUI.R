@@ -26,7 +26,9 @@ mwControlsUI <- function(controls, .dir = c("v", "h"), .n = 1, .updateBtn = FALS
   controls <- mapply(
     function(f, id) {
       if(is.list(f)) {
-        ctrls <- do.call(mwControlsUI, f)
+        ctrls <- mwControlsUI(f)
+        label <- attr(f, "label")
+        if (is.null(label)) label <- id
         id <- gsub(" ", "-", id)
         res <- tags$div(
           class="panel panel-default",
@@ -35,7 +37,7 @@ mwControlsUI <- function(controls, .dir = c("v", "h"), .n = 1, .updateBtn = FALS
             style = "cursor: pointer;",
             "data-toggle"="collapse",
             "data-target"=paste0("#panel-body-", id),
-            id
+            label
           ),
           tags$div(
             class="panel-body collapse",
@@ -44,17 +46,15 @@ mwControlsUI <- function(controls, .dir = c("v", "h"), .n = 1, .updateBtn = FALS
           )
         )
 
-        attr(res, "controlNames") <- .getControlNames(ctrls)
-
       } else {
         inputValue <- attr(f, "value")
+        inputLabel <- attr(f, "label")
+        if (is.null(inputLabel)) inputLabel <- id
 
         res <- conditionalPanel(
           condition = sprintf("input.%s_visible", id),
-          f(id, inputValue, width = ifelse(.dir == "v", "100%", "180px"))
+          f(id, inputValue, inputLabel, width = ifelse(.dir == "v", "100%", "180px"))
         )
-
-        attr(res, "controlNames") <- id
       }
 
       res

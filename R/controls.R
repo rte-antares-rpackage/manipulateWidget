@@ -43,7 +43,7 @@
 #' @export
 #' @family controls
 mwSlider <- function(min, max, value, label = NULL, ...) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     tags$div(
       style = "padding:0 5px;",
@@ -52,7 +52,9 @@ mwSlider <- function(min, max, value, label = NULL, ...) {
   }
 
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "slider"
+
   res
 }
 
@@ -81,11 +83,12 @@ mwSlider <- function(min, max, value, label = NULL, ...) {
 #' @export
 #' @family controls
 mwText <- function(value = "", label = NULL, ...) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     textInput(id, label, value, width = width, ...)
   }
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "text"
   res
 }
@@ -116,11 +119,12 @@ mwText <- function(value = "", label = NULL, ...) {
 #' @export
 #' @family controls
 mwNumeric <- function(value, label = NULL, ...) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     numericInput(id, label, value, width = width, ...)
   }
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "numeric"
   res
 }
@@ -155,11 +159,12 @@ mwNumeric <- function(value, label = NULL, ...) {
 #' @export
 #' @family controls
 mwPassword <- function(value = "", label = NULL, ...) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     passwordInput(id, label, value, width = width, ...)
   }
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "password"
   res
 }
@@ -210,7 +215,7 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #' @export
 #' @family controls
 mwSelect <- function(choices, value = NULL, label = NULL, ..., multiple = FALSE) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     selectInput(id, label, choices, value, width = width, ..., multiple = multiple)
   }
@@ -218,6 +223,7 @@ mwSelect <- function(choices, value = NULL, label = NULL, ..., multiple = FALSE)
     value <- if (multiple) character(0) else choices[1]
   }
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "select"
   res
 }
@@ -249,11 +255,12 @@ mwSelect <- function(choices, value = NULL, label = NULL, ..., multiple = FALSE)
 #' @export
 #' @family controls
 mwCheckbox <- function(value = FALSE, label = NULL, ...) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     checkboxInput(id, label, value, width = width, ...)
   }
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "checkbox"
   res
 }
@@ -288,12 +295,13 @@ mwCheckbox <- function(value = FALSE, label = NULL, ...) {
 #' @export
 #' @family controls
 mwRadio <- function(choices, value = NULL, label = NULL, ...) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     radioButtons(id, label, choices, value, width = width, ...)
   }
   if (is.null(value)) value <- choices[1]
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "radio"
   res
 }
@@ -323,11 +331,12 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
 #' @export
 #' @family controls
 mwDate <- function(value = NULL, label = NULL, ...) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     dateInput(id, label, value, width = width, ...)
   }
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "date"
   res
 }
@@ -358,11 +367,12 @@ mwDate <- function(value = NULL, label = NULL, ...) {
 #' @export
 #' @family controls
 mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...) {
-  res <- function(id, value, width) {
+  res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     dateRangeInput(id, label, start = value[1], end = value[2], width = width, ...)
   }
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "dateRange"
   res
 }
@@ -398,11 +408,12 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 #' @export
 #' @family controls
 mwCheckboxGroup <- function(choices, value = c(), label = NULL, ...) {
-  res <-function(id, value, width) {
+  res <-function(id, value, label, width) {
     if (is.null(label)) label <- id
     checkboxGroupInput(id, label, choices, value, width = width, ...)
   }
   attr(res, "value") <- value
+  attr(res, "label") <- label
   attr(res, "type") <- "checkboxGroup"
   res
 }
