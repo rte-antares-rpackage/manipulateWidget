@@ -340,9 +340,12 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
         # Update the interface if parameter .display is set
         .displayBool <- eval(.display, envir = inputEnv)
-        names(.displayBool)[names(.displayBool) %in% names(.compare)] <- paste0(
-          names(.displayBool)[names(.displayBool) %in% names(.compare)], "2"
-        )
+        if (!is.null(.displayBool)) {
+          names(.displayBool)[names(.displayBool) %in% names(.compare)] <- paste0(
+            names(.displayBool)[names(.displayBool) %in% names(.compare)], "2"
+          )
+        }
+
         for (id in names(.displayBool)) {
           updateCheckboxInput(session, inputId = paste0(id, "_visible"),
                               value = .displayBool[[id]])
