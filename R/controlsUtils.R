@@ -30,7 +30,8 @@ getControlDesc <- function(controls) {
    name = inputNames,
    initValue = I(initValues),
    type = types,
-   level = groupLevel
+   level = groupLevel,
+   stringsAsFactors = FALSE
  )
 }
 

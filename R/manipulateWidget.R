@@ -206,10 +206,12 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   selectInputList <- controlDesc$name[controlDesc$type == "select"]
 
-  # Add a parameter indicating this is the first evaluation of
+  # Add a parameter indicating this is the first evaluation of .expr
   initValues$.initial <- TRUE
   initValues$.session <- NULL
   initValues$.output <- "output"
+
+  initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
 
   if (compareMode) {
     initValues2 <- initValues
@@ -223,9 +225,14 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     }
 
     initWidget2 <- eval(.expr, envir = list2env(initValues2, parent = .env))
-  }
 
-  initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
+    # names of the input for the second widget
+    namesInput2 <- controlDesc$name
+
+    namesInput2[namesInput2 %in% names(.compare)] <- paste0(
+      namesInput2[namesInput2 %in% names(.compare)], "2"
+    )
+  }
 
   # Get shiny output and render functions
   if (is(initWidget, "htmlwidget")) {
@@ -299,6 +306,55 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
         output$output <- renderFunction(res)
       }
     })
+
+    if (compareMode) {
+      # Initialize the widget with its first evaluation
+      output$output2 <- renderFunction(initWidget2)
+
+      # Ensure that initial values of select inputs with multiple = TRUE are in
+      # same order than the user asked.
+      for (v in selectInputList) {
+        shiny::updateSelectInput(session, v, selected = initValues[[v]])
+      }
+
+      inputList2 <- reactive({
+        input$.update
+
+        res <- lapply(namesInput2, function(s) {
+          if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
+          else eval(parse(text = sprintf("input$%s", s)))
+        })
+        names(res) <- controlDesc$name
+
+        res
+      })
+
+      observe({
+        # get input current values
+        inputValues <- inputList2()
+        # Add parameters indicating the widget already exists
+        inputValues$.initial <- FALSE
+        inputValues$.session <- session
+
+        inputEnv <- list2env(inputValues, parent = .env)
+
+        # Update the interface if parameter .display is set
+        .displayBool <- eval(.display, envir = inputEnv)
+        names(.displayBool)[names(.displayBool) %in% names(.compare)] <- paste0(
+          names(.displayBool)[names(.displayBool) %in% names(.compare)], "2"
+        )
+        for (id in names(.displayBool)) {
+          updateCheckboxInput(session, inputId = paste0(id, "_visible"),
+                              value = .displayBool[[id]])
+        }
+
+        # Output or update the widget
+        res <- eval(.expr, envir = inputEnv)
+        if (is(res, "htmlwidget")) {
+          output$output2 <- renderFunction(res)
+        }
+      })
+    }
 
     observeEvent(input$done, {
       inputValues <- inputList()
