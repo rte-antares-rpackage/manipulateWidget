@@ -367,7 +367,20 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
       inputValues$.session <- NULL
       inputEnv <- list2env(inputValues, parent = .env)
 
-      stopApp(eval(.expr, envir = inputEnv))
+      if (compareMode) {
+        inputValues2 <- inputList2()
+        inputValues2$.initial <- TRUE
+        inputValues2$.session <- NULL
+        inputEnv2 <- list2env(inputValues2, parent = .env)
+
+        stopApp(combineWidgets(
+          ncol = ifelse(.compareDir == "v", 1, 2),
+          eval(.expr, envir = inputEnv),
+          eval(.expr, envir = inputEnv2)
+        ))
+      } else {
+        stopApp(eval(.expr, envir = inputEnv))
+      }
     })
   }
 
