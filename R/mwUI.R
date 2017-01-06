@@ -39,12 +39,22 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     controls <- comparisonControls(controls, .compare)
     commonControls <- controls$common
 
-    .content <- fillCol(
-      mwUI(.controlList = controls$ind, .outputFun = .outputFun,
-           .outputId = .outputId, .titleBar = FALSE),
-      mwUI(.controlList = controls$ind2, .outputFun = .outputFun,
-           .outputId = paste0(.outputId, "2"), .titleBar = FALSE)
-    )
+    if (.compareDir == "v") {
+      .content <- fillCol(
+        mwUI(.controlList = controls$ind, .outputFun = .outputFun,
+             .outputId = .outputId, .titleBar = FALSE),
+        mwUI(.controlList = controls$ind2, .outputFun = .outputFun,
+             .outputId = paste0(.outputId, "2"), .titleBar = FALSE)
+      )
+    } else {
+      .content <- fillRow(
+        mwUI(.controlList = controls$ind, .outputFun = .outputFun,
+             .outputId = .outputId, .titleBar = FALSE, .controlPos = "top"),
+        mwUI(.controlList = controls$ind2, .outputFun = .outputFun,
+             .outputId = paste0(.outputId, "2"), .titleBar = FALSE, .controlPos = "top")
+      )
+    }
+
   }
 
   if (length(commonControls) == 0) {
