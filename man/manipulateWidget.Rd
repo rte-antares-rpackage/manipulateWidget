@@ -85,7 +85,7 @@ and rendered.
 Some packages provide functions to update a widget that has already been
 rendered. This is the case for instance for package \code{leaflet} with the
 function \code{\link[leaflet]{leafletProxy}}. To use such functions,
-\code{manipulateWidget} evaluates the parameter \code{.expr} with three extra
+\code{manipulateWidget} evaluates the parameter \code{.expr} with four extra
 variables:
 
 \itemize{
@@ -99,6 +99,10 @@ variables:
   }
   \item{\code{.output}:}{
     ID of the output in the shiny interface.
+  }
+  \item{\code{.id}:}{
+    Id of the chart. It can be used in comparison mode to make further
+    customization without the need to create additional input controls.
   }
 }
 

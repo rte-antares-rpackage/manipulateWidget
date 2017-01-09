@@ -68,7 +68,7 @@
 #' Some packages provide functions to update a widget that has already been
 #' rendered. This is the case for instance for package \code{leaflet} with the
 #' function \code{\link[leaflet]{leafletProxy}}. To use such functions,
-#' \code{manipulateWidget} evaluates the parameter \code{.expr} with three extra
+#' \code{manipulateWidget} evaluates the parameter \code{.expr} with four extra
 #' variables:
 #'
 #' \itemize{
@@ -82,6 +82,10 @@
 #'   }
 #'   \item{\code{.output}:}{
 #'     ID of the output in the shiny interface.
+#'   }
+#'   \item{\code{.id}:}{
+#'     Id of the chart. It can be used in comparison mode to make further
+#'     customization without the need to create additional input controls.
 #'   }
 #' }
 #'
@@ -239,12 +243,14 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   initValues$.initial <- TRUE
   initValues$.session <- NULL
   initValues$.output <- "output"
+  initValues$.id <- 1
 
   initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
 
   if (compareMode) {
     initValues2 <- initValues
     initValues2$.output <- "output2"
+    initValues2$.id <- 2
 
     for (v in names(.compare)) {
       if (!is.null(.compare[[v]])) {
@@ -320,6 +326,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
       inputValues$.initial <- FALSE
       inputValues$.session <- session
       inputValues$.output <- "output"
+      inputValues$.id <- 1
 
       inputEnv <- list2env(inputValues, parent = .env)
 
@@ -366,6 +373,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
         inputValues$.initial <- FALSE
         inputValues$.session <- session
         inputValues$.output <- "output2"
+        inputValues$.id <- 2
 
         inputEnv <- list2env(inputValues, parent = .env)
 
@@ -394,12 +402,14 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
       inputValues <- inputList()
       inputValues$.initial <- TRUE
       inputValues$.session <- NULL
+      inputValues$.id <- 1
       inputEnv <- list2env(inputValues, parent = .env)
 
       if (compareMode) {
         inputValues2 <- inputList2()
         inputValues2$.initial <- TRUE
         inputValues2$.session <- NULL
+        inputValues2$.id <- 2
         inputEnv2 <- list2env(inputValues2, parent = .env)
 
         stopApp(combineWidgets(
