@@ -17,7 +17,9 @@ Imports:
     miniUI,
     htmlwidgets,
     knitr,
-    methods
+    methods,
+    tools,
+    base64enc
 Suggests:
     dygraphs,
     leaflet,
