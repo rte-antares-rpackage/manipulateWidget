@@ -7,7 +7,8 @@
 mwUI(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
   .tabColumns = 2, .updateBtn = FALSE, .main = "", .outputFun = NULL,
   .outputId = "output", .titleBar = TRUE, .compare = NULL,
-  .compareLayout = c("v", "h"), .controlList = NULL)
+  .compareLayout = c("v", "h"), .controlList = NULL,
+  .container = miniUI::miniContentPanel, .style = "")
 }
 \arguments{
 \item{...}{One or more named control arguments created with functions
@@ -54,6 +55,10 @@ horizontal layout (one chart on the right of the other)}
 
 \item{.controlList}{List of input controls. This is an alternative to
 specifying directly the controls through the \code{...} arguments.}
+
+\item{.container}{tag function that will be used to enclose the UI.}
+
+\item{.style}{CSS style to apply to the container element.}
 }
 \value{
 A \code{shiny.tag.list} object that can be used in function

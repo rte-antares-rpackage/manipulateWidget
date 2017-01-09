@@ -10,6 +10,8 @@
 #' @param .titleBar Whether to include a title bar with controls in the widget
 #' @param .controlList List of input controls. This is an alternative to
 #'   specifying directly the controls through the \code{...} arguments.
+#' @param .container tag function that will be used to enclose the UI.
+#' @param .style CSS style to apply to the container element.
 #' @inheritParams manipulateWidget
 #'
 #' @return
@@ -22,7 +24,8 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
                  .outputFun = NULL, .outputId = "output",
                  .titleBar = TRUE, .compare = NULL, .compareLayout = c("v", "h"),
-                 .controlList = NULL) {
+                 .controlList = NULL, .container = miniUI::miniContentPanel,
+                 .style = "") {
 
   .controlPos <- match.arg(.controlPos)
   .compareLayout <- match.arg(.compareLayout)
@@ -43,24 +46,31 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     if (.compareLayout == "v") {
       .content <- fillCol(
         mwUI(.controlList = controls$ind, .outputFun = .outputFun,
-             .outputId = .outputId, .titleBar = FALSE),
+             .outputId = .outputId, .titleBar = FALSE, .container=fillRow,
+             .style = "margin-left:5px; padding: 0 0 5px 5px;border-left: solid 1px #ddd;"),
         mwUI(.controlList = controls$ind2, .outputFun = .outputFun,
-             .outputId = paste0(.outputId, "2"), .titleBar = FALSE)
+             .outputId = paste0(.outputId, "2"), .titleBar = FALSE,
+             .container=fillRow,
+             .style = "margin-left:5px; padding: 5px 0 0 5px;border-left: solid 1px #ddd;")
       )
     } else {
       .content <- fillRow(
         mwUI(.controlList = controls$ind, .outputFun = .outputFun,
-             .outputId = .outputId, .titleBar = FALSE, .controlPos = "top"),
+             .outputId = .outputId, .titleBar = FALSE, .controlPos = "top",
+             .container=fillRow,
+             .style = "margin-left:5px;padding-left:5px;border-left: solid 1px #ddd;"),
         mwUI(.controlList = controls$ind2, .outputFun = .outputFun,
-             .outputId = paste0(.outputId, "2"), .titleBar = FALSE, .controlPos = "top")
+             .outputId = paste0(.outputId, "2"), .titleBar = FALSE, .controlPos = "top",
+             .container = fillRow, .style = "padding-left:5px;")
       )
     }
 
   }
 
   if (length(commonControls) == 0) {
-    ui <- miniContentPanel(
-      .content
+    ui <- .container(
+      .content,
+      style = .style
     )
   } else if (.controlPos == "tab") {
     ctrls <- mwControlsUI(commonControls, .dir = "v", .n = .tabColumns,
@@ -80,7 +90,8 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
 
   } else if (.controlPos == "left") {
     ctrls <- mwControlsUI(commonControls, .dir = "v", .updateBtn = .updateBtn)
-    ui <- miniContentPanel(
+    ui <- .container(
+      style = .style,
       fillRow(flex = c(NA, 1),
               tags$div(style ="width:200px;height:100%;overflow-y:auto;", ctrls),
               .content
@@ -89,7 +100,8 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
 
   } else if (.controlPos == "top") {
     ctrls <- mwControlsUI(commonControls, .dir = "h",.updateBtn = .updateBtn)
-    ui <- miniContentPanel(
+    ui <- .container(
+      style = .style,
       fillCol(flex = c(NA, 1),
               ctrls,
               .content
@@ -98,7 +110,8 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
 
   } else if (.controlPos == "right") {
     ctrls <- mwControlsUI(commonControls, .dir = "v", .updateBtn = .updateBtn)
-    ui <- miniContentPanel(
+    ui <- .container(
+      style = .style,
       fillRow(flex = c(1, NA),
               .content,
               tags$div(style ="width:200px;height:100%;overflow-y:auto;", ctrls)
@@ -107,13 +120,13 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
 
   } else if (.controlPos == "bottom") {
     ctrls <- mwControlsUI(commonControls, .dir = "h", .updateBtn = .updateBtn)
-    ui <- miniContentPanel(
+    ui <- .container(
+      style = .style,
       fillCol(flex = c(1, NA),
               .content,
               ctrls
       )
     )
-
   }
 
   if (.titleBar) {
