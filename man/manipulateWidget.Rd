@@ -7,7 +7,7 @@
 manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
   .viewer = c("pane", "window", "browser"), .display = NULL,
-  .compare = NULL, .compareDir = c("v", "h"))
+  .compare = NULL, .compareLayout = c("v", "h"))
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -18,35 +18,51 @@ modified.}
 \code{\link{mwSlider}}, \code{\link{mwText}}, etc. The name of each control
 is the name of the variable the controls modifies in the expression. One
 can also create a group of inputs by passing a list of such control
-arguments. for instance
-\code{mygroup = list(txt = mwText(""), nb = mwNumeric(0))} creates a group
-of inputs named mygroup with two inputs named "txt" and "nb".}
+arguments. for instance \code{mygroup = list(txt = mwText(""), nb =
+mwNumeric(0))} creates a group of inputs named mygroup with two inputs
+named "txt" and "nb".}
 
 \item{.main}{Title of the shiny gadget}
 
-\item{.updateBtn}{Should an update button be added to the controls ? If \code{TRUE}, then
-the graphic is updated only when the user clicks on the update button.}
+\item{.updateBtn}{Should an update button be added to the controls ? If
+\code{TRUE}, then the graphic is updated only when the user clicks on the
+update button.}
 
-\item{.controlPos}{Where controls should be placed ? By default, they are placed in the left,
-next to the graphic. If \code{controlPos = "tab"}, two tabs are created:
-one containing controls and the other containing the graphic.}
+\item{.controlPos}{Where controls should be placed ? By default, they are
+placed in the left, next to the graphic. If \code{controlPos = "tab"}, two
+tabs are created: one containing controls and the other containing the
+graphic.}
 
-\item{.tabColumns}{If controls are placed in a distinct tab, how many columns should be
-used ? This parameter is used only if \code{controlPos = "tab"}}
+\item{.tabColumns}{If controls are placed in a distinct tab, how many columns
+should be used ? This parameter is used only if \code{controlPos = "tab"}}
 
-\item{.viewer}{Controls where the gadget should be displayed. \code{"pane"} corresponds to
-the Rstudio viewer, \code{"window"} to a dialog window, and \code{"browser"}
-to an external web browser.}
+\item{.viewer}{Controls where the gadget should be displayed. \code{"pane"}
+corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
+\code{"browser"} to an external web browser.}
 
-\item{.display}{A named list of conditions that evaluate to TRUE OR FALSE indicating when
-inputs should be displayed. These conditions are reevaluated each time a
-control it modified. By default, each control is displayed, but if the name
-of a control appears in this list, then the associated condition is
-evaluated. If the result is TRUE then the control is visible, else it is
-hidden.}
+\item{.display}{A named list of conditions that evaluate to TRUE OR FALSE
+indicating when inputs should be displayed. These conditions are
+reevaluated each time a control it modified. By default, each control is
+displayed, but if the name of a control appears in this list, then the
+associated condition is evaluated. If the result is TRUE then the control
+is visible, else it is hidden.}
+
+\item{.compare}{Sometimes one wants to compare the same chart but with two
+different sets of parameters. This is the purpose of this argument. It must
+be a named list whose names are the names of the inputs that should vary
+between the two charts. All other parameters are common to the two charts
+and changing their values will change the two charts. Each element of the
+list must be a vector or a list of length 2 with the initial values of the
+corresponding parameter for each chart. It can also be \code{NULL}. In this
+case, the parameter is initialized with the default value for the two
+charts.}
+
+\item{.compareLayout}{Used only when \code{.compare} is set. Possible values
+are "v" for vertical layout (one chart above the other) and "h" for
+horizontal layout (one chart on the right of the other)}
 }
 \value{
-The result of the expression evaluated with the last values of the control.
+The result of the expression evaluated with the last values of the controls.
 It should be an object of class \code{htmlWidget}.
 }
 \description{
@@ -69,7 +85,7 @@ and rendered.
 Some packages provide functions to update a widget that has already been
 rendered. This is the case for instance for package \code{leaflet} with the
 function \code{\link[leaflet]{leafletProxy}}. To use such functions,
-\code{manipulateWidget} evaluates the parameter \code{.expr} with two extra
+\code{manipulateWidget} evaluates the parameter \code{.expr} with three extra
 variables:
 
 \itemize{
@@ -81,9 +97,10 @@ variables:
   \item{\code{.session}:}{
     A shiny session object.
   }
+  \item{\code{.output}:}{
+    ID of the output in the shiny interface.
+  }
 }
-
-Moreover the ID of the rendered widget will always be "output".
 
 You can take a look at the last example to see how to use these two
 variables to update a leaflet widget.
@@ -96,6 +113,27 @@ if (require(dygraphs)) {
                    range = mwSlider(2001, 2100, c(2001, 2100)),
                    title = mwText("Fictive time series"))
 
+}
+
+# Comparison mode
+if (require(dygraphs)) {
+
+  mydata <- data.frame(
+    year = 2000+1:100,
+    series1 = rnorm(100),
+    series2 = rnorm(100),
+    series3 = rnorm(100)
+  )
+  manipulateWidget(
+    dygraph(mydata[range[1]:range[2] - 2000, c("year", series)], main = title),
+    range = mwSlider(2001, 2100, c(2001, 2100)),
+    series = mwSelect(c("series1", "series2", "series3")),
+    title = mwText("Fictive time series"),
+    .compare = list(
+      title = list("First chart", "Second chart"),
+      series = NULL
+    )
+  )
 }
 
 # Grouping inputs
@@ -156,19 +194,19 @@ if (require(leaflet)) {
   lon <- rnorm(10, sd = 20)
   lat <- rnorm(10, sd = 20)
 
-  myMapFun <- function(radius, color, initial, session) {
+  myMapFun <- function(radius, color, initial, session, output) {
     if (initial) {
       # Widget has not been rendered
       map <- leaflet() \%>\% addTiles()
     } else {
       # widget has already been rendered
-      map <- leafletProxy("output", session) \%>\% clearMarkers()
+      map <- leafletProxy(output, session) \%>\% clearMarkers()
     }
 
     map \%>\% addCircleMarkers(lon, lat, radius = radius, color = color)
   }
 
-  manipulateWidget(myMapFun(radius, color, .initial, .session),
+  manipulateWidget(myMapFun(radius, color, .initial, .session, .output),
                    radius = mwSlider(5, 30, 10),
                    color = mwSelect(c("red", "blue", "green")))
 

@@ -5,10 +5,11 @@
 #' This function can be used if you desire to create a gadget that has the same
 #' UI as a manipulateWidget gadget but with a custom server logic.
 #'
-#' @param .outputFun
-#' The output function for the desired htmlwidget.
-#' @param .titleBar
-#' Whether to include a title bar with controls in the widget
+#' @param .outputFun The output function for the desired htmlwidget.
+#' @param .outputId Id of the output element in the shiny interface.
+#' @param .titleBar Whether to include a title bar with controls in the widget
+#' @param .controlList List of input controls. This is an alternative to
+#'   specifying directly the controls through the \code{...} arguments.
 #' @inheritParams manipulateWidget
 #'
 #' @return
@@ -20,11 +21,11 @@
 mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
                  .outputFun = NULL, .outputId = "output",
-                 .titleBar = TRUE, .compare = NULL, .compareDir = c("v", "h"),
+                 .titleBar = TRUE, .compare = NULL, .compareLayout = c("v", "h"),
                  .controlList = NULL) {
 
   .controlPos <- match.arg(.controlPos)
-  .compareDir <- match.arg(.compareDir)
+  .compareLayout <- match.arg(.compareLayout)
   controls <- append(list(...), .controlList)
 
   if (is.null(.compare)) {
@@ -39,7 +40,7 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     controls <- comparisonControls(controls, .compare)
     commonControls <- controls$common
 
-    if (.compareDir == "v") {
+    if (.compareLayout == "v") {
       .content <- fillCol(
         mwUI(.controlList = controls$ind, .outputFun = .outputFun,
              .outputId = .outputId, .titleBar = FALSE),

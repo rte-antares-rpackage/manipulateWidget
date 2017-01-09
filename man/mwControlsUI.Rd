@@ -4,16 +4,19 @@
 \alias{mwControlsUI}
 \title{Generate controls UI of a manipulateWidget gadget}
 \usage{
-mwControlsUI(controls, .dir = c("v", "h"), .n = 1, .updateBtn = FALSE)
+mwControlsUI(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = FALSE)
 }
 \arguments{
+\item{controlList}{List of input controls.}
+
 \item{.dir}{In which direction should the controls be positioned ? "v" for vertical
 and "h" for horizontal.}
 
 \item{.n}{Number of columns if \code{.dir == "v"} else number of lines.}
 
-\item{.updateBtn}{Should an update button be added to the controls ? If \code{TRUE}, then
-the graphic is updated only when the user clicks on the update button.}
+\item{.updateBtn}{Should an update button be added to the controls ? If
+\code{TRUE}, then the graphic is updated only when the user clicks on the
+update button.}
 }
 \value{
 A \code{shiny.tag.list} that can be used to construct a UI for a shiny
