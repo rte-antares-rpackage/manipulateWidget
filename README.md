@@ -1,6 +1,8 @@
 Add more interactivity to interactive charts
 ================
 
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget)
+
 This R package is largely inspired by the `manipulate` package from Rstudio. It provides the function \``manipulateWidget` that can be used to create in a very easy way a graphical interface that let the user modify the data or the parameters of an interactive chart. Technically, the function generates a Shiny gadget, but the user does not even have to know what is Shiny.
 
 The hard part for the user is to write a code that generates an interactive chart. Once this is done, he only has to describe what parameter of the code should be modified by what input control. For instance, consider the following code that identifies clusters in the iris data set and uses package `plotly` to generate an interactive scatter plot.
@@ -58,13 +60,13 @@ All functionalities of this package can be replicated with other packages like [
 Installation
 ------------
 
-The package can be installed from Github with package `devtools`:
+The package can be installed from CRAN:
 
 ``` r
-devtools::install_github("rte-antares-rpackage/manipulateWidget")
+install.packages("manipulateWidget")
 ```
 
-To install the latest development version:
+You can also install the latest development version from github:
 
 ``` r
 devtools::install_github("rte-antares-rpackage/manipulateWidget", ref="develop")
