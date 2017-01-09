@@ -39,6 +39,8 @@ getControlDesc <- function(controls) {
 # If drop = TRUE, controls whose name is in "names" are removed, else they
 # are kept and all other controls are removed.
 filterControls <- function(controls, names, drop = FALSE) {
+  if (length(controls) == 0) return(controls)
+
   filterControlsRecursive <- function(x) {
     for (n in names(x)) {
       if (is.list(x[[n]])) {
@@ -58,6 +60,7 @@ filterControls <- function(controls, names, drop = FALSE) {
 # Add a suffix to the name of each control without impacting the labels of the
 # inputs.
 addSuffixToControls <- function(controls, suffix) {
+  if (length(controls) == 0) return(controls)
   addSuffixToControlsRecursive <- function(x) {
     for (n in names(x)) {
       if (is.list(x[[n]])) {
@@ -75,6 +78,7 @@ addSuffixToControls <- function(controls, suffix) {
 
 # Private function that resets the initial values of some controls
 resetInitValues <- function(controls, values) {
+  if (length(controls) == 0) return(controls)
   resetInitValuesRecursive <- function(x) {
     for (n in names(x)) {
       if (is.list(x[[n]])) {
