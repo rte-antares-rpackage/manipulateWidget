@@ -11,11 +11,56 @@ library(webshot)
 
 This R package is largely inspired by the `manipulate` package from Rstudio. It provides the function ``manipulateWidget` that can be used to create in a very easy way a graphical interface that let the user modify the data or the parameters of an interactive chart. Technically, the function generates a Shiny gadget, but the user does not even have to know what is Shiny.
 
-The package also provides the `combineWidgets` function to easily combine multiple interactive charts in a single view. Of course both functions can be used together.
+The hard part for the user is to write a code that generates an interactive charts. Once this is
+done, he only has to describe what parameter of the code should be modified by what input control. For instance, consider the following code that identifies clusters in the iris data set and uses package `plotly` to generate an interactive scatter plot. 
 
-Here is an example that uses packages `dygraphs` and `plot_ly`.
+```{r kmeans, message=FALSE}
+library(plotly)
+data(iris)
 
-![An example of what one can do with manipulateWidgets](vignettes/fancy-example.gif)
+plotClusters <- function(xvar, yvar, nclusters) {
+  clusters <- kmeans(iris[, 1:4], centers = nclusters)
+  clusters <- paste("Cluster", clusters$cluster)
+  
+  plot_ly(x = ~iris[[xvar]], y = ~iris[[yvar]], color = ~clusters,
+          type = "scatter", mode = "markers") %>% 
+    layout(xaxis = list(title=xvar), yaxis = list(title=yvar))
+}
+
+plotClusters("Sepal.Width", "Sepal.Length", 3)
+```
+
+Once this code has been written, it is very easy to produce a UI that lets the user change the values of the three parameters of the function `plotClusters`:
+
+```{r eval = FALSE}
+varNames <- names(iris)[1:4]
+
+manipulateWidget(
+  plotClusters(xvar, yvar, nclusters),
+  xvar = mwSelect(varNames),
+  yvar = mwSelect(varNames, value = "Sepal.Width"),
+  nclusters = mwSlider(1, 10, value = 3)
+)
+```
+
+
+![An example of output of manipulateWidget](vignettes/example-kmeans.gif)
+
+The package also provides the `combineWidgets` function to easily combine multiple interactive charts in a single view. Of course both functions can be used together: here is an example that uses packages `dygraphs` and `plot_ly` (code at the end of the page).
+
+![Combining widgets and some html content](vignettes/fancy-example.gif)
+
+## Why should you use it?
+
+All functionalities of this package can be replicated with other packages like [shiny](https://shiny.rstudio.com/), [flexdashboard](http://rmarkdown.rstudio.com/flexdashboard/), [crosstalk](http://rstudio.github.io/crosstalk/) and others. So why another package?
+
+`manipulateWidget` has three advantages:
+
+* It is easy and fast to use. Only a few lines of `R` are necessary to create a user interface.
+* Code can be included in any R script. No need to create a dedicated .R or .Rmd file. 
+* It works with all htmlwidgets. In contrast, `crosstalk` only supports a few of them.
+
+`manipulateWidget` can be especially powerful for users who are exploring some data set and want to quickly build a graphical tool to see what is in their data. `manipulateWidget` has also some advanced features that can be used with almost no additional code and that could seduce some package developers: grouping inputs, conditional inputs and comparison mode (See "advanced usage" section).
 
 ## Installation
 
@@ -66,7 +111,7 @@ help(package = "manipulateWidget")
 
 ## Combining widgets
 
-The `combineWidgets` function gives an easy way to combine interactive charts (like `par(mfrow = c(...))` or `layout` for static plots). To do it, one has simply to pass to the function the widgets to combine. In the next example, we visualize two random time series with dygraphs and combine them.
+The `combineWidgets` function gives an easy way to combine interactive charts (like `par(mfrow = c(...))` or `layout` for static plots). To do it, one has simply to pass to the function the widgets to combine. In the next example, we visualize two random time series with `dygraphs` and combine them.
 
 ```{r combine, warning=FALSE}
 library(dygraphs)
@@ -192,7 +237,32 @@ manipulateWidget(myMapFun(radius, color, .initial, .session),
 
 ```
 
-![Conditional inputs](vignettes/update-widget.gif)
+![Update a widget](vignettes/update-widget.gif)
+
+## Comparison mode
+
+Sometimes one wants to compare two similar charts to visualize the impact of some parameter or to compare different data sets. `manipulateWidget` has an argument to perform such comparison without writing much code: `.compare`. One just has to write the code to generate one chart and use this argument to specify which parameters should vary between the two charts. Here is a toy example that uses `dygraphs`.
+
+```{r eval=FALSE}
+mydata <- data.frame(
+  timeId = 1:100,
+  series1 = rnorm(100),
+  series2 = rnorm(100),
+  series3 = rnorm(100)
+)
+manipulateWidget(
+  dygraph(mydata[range[1]:range[2], c("timeId", series)], main = title),
+  range = mwSlider(1, 100, c(1, 100)),
+  series = mwSelect(c("series1", "series2", "series3")),
+  title = mwText(),
+  .compare = list(
+    title = list("First chart", "Second chart"),
+    series = NULL
+  )
+)
+```
+
+![Comparison mode](vignettes/comparison.gif)
 
 ## By the way
 
