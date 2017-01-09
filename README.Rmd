@@ -11,7 +11,7 @@ library(webshot)
 
 This R package is largely inspired by the `manipulate` package from Rstudio. It provides the function ``manipulateWidget` that can be used to create in a very easy way a graphical interface that let the user modify the data or the parameters of an interactive chart. Technically, the function generates a Shiny gadget, but the user does not even have to know what is Shiny.
 
-The hard part for the user is to write a code that generates an interactive charts. Once this is
+The hard part for the user is to write a code that generates an interactive chart. Once this is
 done, he only has to describe what parameter of the code should be modified by what input control. For instance, consider the following code that identifies clusters in the iris data set and uses package `plotly` to generate an interactive scatter plot. 
 
 ```{r kmeans, message=FALSE}
@@ -239,7 +239,7 @@ manipulateWidget(myMapFun(radius, color, .initial, .session),
 
 ![Update a widget](vignettes/update-widget.gif)
 
-## Comparison mode
+### Comparison mode
 
 Sometimes one wants to compare two similar charts to visualize the impact of some parameter or to compare different data sets. `manipulateWidget` has an argument to perform such comparison without writing much code: `.compare`. One just has to write the code to generate one chart and use this argument to specify which parameters should vary between the two charts. Here is a toy example that uses `dygraphs`.
 
@@ -263,6 +263,12 @@ manipulateWidget(
 ```
 
 ![Comparison mode](vignettes/comparison.gif)
+
+### Using `manipulateWidget` in a document
+
+`manipulateWidget` uses Shiny, so it does not work in a "normal" Rmarkdown document. If one uses the function in a code chunck, the htmlwidget will be outputed with the default values of the parameters and there will be no interface to modify the parameters.
+
+Nevertheless, it is possible to include a shiny application in a document with the runtime: shiny (see http://rmarkdown.rstudio.com/authoring_shiny.html). In such setting `manipulateWidget` works normally and the document can be published on a shiny server to let final users play with the parameters of the document.
 
 ## By the way
 
