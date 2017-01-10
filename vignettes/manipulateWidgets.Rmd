@@ -32,7 +32,7 @@ plotClusters <- function(xvar, yvar, nclusters) {
     layout(xaxis = list(title=xvar), yaxis = list(title=yvar))
 }
 
-plotClusters("Sepal.Width", "Sepal.Length", 3)
+# plotClusters("Sepal.Width", "Sepal.Length", 3)
 ```
 
 Once this code has been written, it is very easy to produce a UI that lets the user change the values of the three parameters of the function `plotClusters`:
