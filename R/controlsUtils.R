@@ -9,6 +9,7 @@
 # contained in a group, 3 if it is contained in a group contained in a group,
 # etc.
 getControlDesc <- function(controls) {
+ if (length(controls) == 0) return(data.frame())
  inputNames <- c()
  initValues <- list()
  types <- c()
