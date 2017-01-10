@@ -47,10 +47,9 @@ HTMLWidgets.widget({
           }
         }
 
-        if (HTMLWidgets.shinyMode) {
-          // I don't why, but is necessary when launching a shiny gadget in the Rstudio viewer
-          setTimeout(resizeAll, 1);
-        }
+        // Sometimes widgets are rendered before the size of all html element has
+        // been computed. Adding a small delay fixes this problem.
+        setTimeout(resizeAll, 5);
 
       },
 

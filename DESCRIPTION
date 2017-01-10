@@ -19,7 +19,8 @@ Imports:
     knitr,
     methods,
     tools,
-    base64enc
+    base64enc,
+    grDevices
 Suggests:
     dygraphs,
     leaflet,
