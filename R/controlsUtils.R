@@ -14,6 +14,8 @@ getControlDesc <- function(controls) {
  initValues <- list()
  types <- c()
  groupLevel <- c()
+ multiple <- c()
+ choices <- list()
 
  getControlDescRecursive <- function(x, name = "", level = 0) {
    if (is.function(x)) {
@@ -22,6 +24,9 @@ getControlDesc <- function(controls) {
      initValues <<- append(initValues, value)
      types <<- append(types, attr(x, "type"))
      groupLevel <<- append(groupLevel, level)
+     m <- if (is.null(attr(x, "multiple"))) NA else attr(x, "multiple")
+     multiple <<- append(multiple, m)
+     choices <<- append(choices, list(attr(x, "choices")))
    }
    else mapply(getControlDescRecursive, x=x, name = names(x), level = level + 1)
  }
@@ -32,6 +37,8 @@ getControlDesc <- function(controls) {
    initValue = I(initValues),
    type = types,
    level = groupLevel,
+   multiple = multiple,
+   choices = I(choices),
    stringsAsFactors = FALSE
  )
 }

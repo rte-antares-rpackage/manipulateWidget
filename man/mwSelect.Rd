@@ -4,7 +4,8 @@
 \alias{mwSelect}
 \title{Add a Select list input to a manipulateWidget gadget}
 \usage{
-mwSelect(choices, value = NULL, label = NULL, ..., multiple = FALSE)
+mwSelect(choices = value, value = NULL, label = NULL, ...,
+  multiple = FALSE)
 }
 \arguments{
 \item{choices}{Vector or list of choices. If it is named, then the names rather than the

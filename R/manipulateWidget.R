@@ -41,6 +41,9 @@
 #'   displayed, but if the name of a control appears in this list, then the
 #'   associated condition is evaluated. If the result is TRUE then the control
 #'   is visible, else it is hidden.
+#' @param .choices A named list of expressions that return a character vector.
+#'   This parameter can be used to dinamically update the choices of a given
+#'   input control conditionally to the value of the other controls.
 #' @param .compare Sometimes one wants to compare the same chart but with two
 #'   different sets of parameters. This is the purpose of this argument. It must
 #'   be a named list whose names are the names of the inputs that should vary
@@ -206,6 +209,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .tabColumns = 2,
                              .viewer = c("pane", "window", "browser"),
                              .display = NULL,
+                             .choices = NULL,
                              .compare = NULL,
                              .compareLayout = c("v", "h")) {
 
@@ -214,6 +218,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   .expr <- substitute(.expr)
   .display <- substitute(.display)
+  .choices <- substitute(.choices)
   .viewer <- match.arg(.viewer)
   .controlPos <- match.arg(.controlPos)
   .compareLayout <- match.arg(.compareLayout)
@@ -260,13 +265,9 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     }
 
     initWidget2 <- eval(.expr, envir = list2env(initValues2, parent = .env))
-
-    # names of the input for the second widget
-    namesInput2 <- controlDesc$name
-
-    namesInput2[namesInput2 %in% names(.compare)] <- paste0(
-      namesInput2[namesInput2 %in% names(.compare)], "2"
-    )
+  } else {
+    initWidget2 = NULL
+    initValues2 <- NULL
   }
 
   # Get shiny output and render functions
@@ -297,131 +298,12 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .compareLayout = .compareLayout
   )
 
-  server <- function(input, output, session) {
-    # Initialize the widget with its first evaluation
-    output$output <- renderFunction(initWidget)
-
-    # Ensure that initial values of select inputs with multiple = TRUE are in
-    # same order than the user asked.
-    for (v in selectInputList) {
-      shiny::updateSelectInput(session, v, selected = initValues[[v]])
-    }
-
-    inputList <- reactive({
-      input$.update
-
-      res <- lapply(controlDesc$name, function(s) {
-        if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
-        else eval(parse(text = sprintf("input$%s", s)))
-      })
-      names(res) <- controlDesc$name
-
-      res
-    })
-
-    observe({
-      # get input current values
-      inputValues <- inputList()
-      # Add parameters indicating the widget already exists
-      inputValues$.initial <- FALSE
-      inputValues$.session <- session
-      inputValues$.output <- "output"
-      inputValues$.id <- 1
-
-      inputEnv <- list2env(inputValues, parent = .env)
-
-      # Update the interface if parameter .display is set
-      .displayBool <- eval(.display, envir = inputEnv)
-      for (id in names(.displayBool)) {
-        updateCheckboxInput(session, inputId = paste0(id, "_visible"),
-                            value = .displayBool[[id]])
-      }
-
-      # Output or update the widget
-      res <- eval(.expr, envir = inputEnv)
-      if (is(res, "htmlwidget")) {
-        output$output <- renderFunction(res)
-      }
-    })
-
-    if (compareMode) {
-      # Initialize the widget with its first evaluation
-      output$output2 <- renderFunction(initWidget2)
-
-      # Ensure that initial values of select inputs with multiple = TRUE are in
-      # same order than the user asked.
-      for (v in selectInputList) {
-        shiny::updateSelectInput(session, v, selected = initValues[[v]])
-      }
-
-      inputList2 <- reactive({
-        input$.update
-
-        res <- lapply(namesInput2, function(s) {
-          if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
-          else eval(parse(text = sprintf("input$%s", s)))
-        })
-        names(res) <- controlDesc$name
-
-        res
-      })
-
-      observe({
-        # get input current values
-        inputValues <- inputList2()
-        # Add parameters indicating the widget already exists
-        inputValues$.initial <- FALSE
-        inputValues$.session <- session
-        inputValues$.output <- "output2"
-        inputValues$.id <- 2
-
-        inputEnv <- list2env(inputValues, parent = .env)
-
-        # Update the interface if parameter .display is set
-        .displayBool <- eval(.display, envir = inputEnv)
-        if (!is.null(.displayBool)) {
-          names(.displayBool)[names(.displayBool) %in% names(.compare)] <- paste0(
-            names(.displayBool)[names(.displayBool) %in% names(.compare)], "2"
-          )
-        }
-
-        for (id in names(.displayBool)) {
-          updateCheckboxInput(session, inputId = paste0(id, "_visible"),
-                              value = .displayBool[[id]])
-        }
-
-        # Output or update the widget
-        res <- eval(.expr, envir = inputEnv)
-        if (is(res, "htmlwidget")) {
-          output$output2 <- renderFunction(res)
-        }
-      })
-    }
-
-    observeEvent(input$done, {
-      inputValues <- inputList()
-      inputValues$.initial <- TRUE
-      inputValues$.session <- NULL
-      inputValues$.id <- 1
-      inputEnv <- list2env(inputValues, parent = .env)
-
-      if (compareMode) {
-        inputValues2 <- inputList2()
-        inputValues2$.initial <- TRUE
-        inputValues2$.session <- NULL
-        inputValues2$.id <- 2
-        inputEnv2 <- list2env(inputValues2, parent = .env)
-
-        stopApp(combineWidgets(
-          ncol = ifelse(.compareLayout == "v", 1, 2),
-          eval(.expr, envir = inputEnv),
-          eval(.expr, envir = inputEnv2)
-        ))
-      } else {
-        stopApp(eval(.expr, envir = inputEnv))
-      }
-    })
-  }
+  server <- mwServer(.expr, initWidget, initWidget2,
+                     initValues, initValues2,
+                     renderFunction,
+                     controlDesc, .display, .choices,
+                     .compare, .compareLayout,
+                     .updateBtn, .env)
 
   if (interactive()) {
     # We are in an interactive session so we start a shiny gadget

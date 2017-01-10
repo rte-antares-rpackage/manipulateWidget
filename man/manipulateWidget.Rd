@@ -7,7 +7,7 @@
 manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
   .viewer = c("pane", "window", "browser"), .display = NULL,
-  .compare = NULL, .compareLayout = c("v", "h"))
+  .choices = NULL, .compare = NULL, .compareLayout = c("v", "h"))
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -46,6 +46,10 @@ reevaluated each time a control it modified. By default, each control is
 displayed, but if the name of a control appears in this list, then the
 associated condition is evaluated. If the result is TRUE then the control
 is visible, else it is hidden.}
+
+\item{.choices}{A named list of expressions that return a character vector.
+This parameter can be used to dinamically update the choices of a given
+input control conditionally to the value of the other controls.}
 
 \item{.compare}{Sometimes one wants to compare the same chart but with two
 different sets of parameters. This is the purpose of this argument. It must

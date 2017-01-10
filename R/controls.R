@@ -214,7 +214,7 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwSelect <- function(choices, value = NULL, label = NULL, ..., multiple = FALSE) {
+mwSelect <- function(choices = value, value = NULL, label = NULL, ..., multiple = FALSE) {
   res <- function(id, value, label, width) {
     if (is.null(label)) label <- id
     selectInput(id, label, choices, value, width = width, ..., multiple = multiple)
@@ -225,6 +225,8 @@ mwSelect <- function(choices, value = NULL, label = NULL, ..., multiple = FALSE)
   attr(res, "value") <- value
   attr(res, "label") <- label
   attr(res, "type") <- "select"
+  attr(res, "multiple") <- multiple
+  attr(res, "choices") <- choices
   res
 }
 
