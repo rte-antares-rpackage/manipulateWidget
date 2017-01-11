@@ -41,13 +41,8 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
     })
 
     observe({
-      # get input current values
-      inputValues <- inputList()
-      inputEnv <- getInputEnv(inputValues, session, "output", 1, .env)
-
+      inputEnv <- getInputEnv(inputList(), session, "output", 1, .env)
       controlDesc <<- updateInputs(session, input, controlDesc, .display, .choices, inputEnv, suffix = "")
-
-      # Output or update the widget
       outputWidget(.expr, output, renderFunction, inputEnv)
     })
 
@@ -57,8 +52,8 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
 
       # Ensure that initial values of select inputs with multiple = TRUE are in
       # same order than the user asked.
-      for (v in selectInputList) {
-        shiny::updateSelectInput(session, v, selected = initValues[[v]])
+      for (v in selectInputList2) {
+        shiny::updateSelectInput(session, v, selected = initValues2[[v]])
       }
 
       inputList2 <- reactive({
@@ -74,50 +69,25 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
       })
 
       observe({
-        # get input current values
-        # get input current values
-        inputValues <- inputList2()
-        inputEnv <- getInputEnv(inputValues, session, "output2", 2, .env)
-
-        # Update the interface if parameter .display is set
-        .displayBool <- eval(.display, envir = inputEnv)
-        if (!is.null(.displayBool)) {
-          names(.displayBool)[names(.displayBool) %in% names(.compare)] <- paste0(
-            names(.displayBool)[names(.displayBool) %in% names(.compare)], "2"
-          )
-        }
-
-        for (id in names(.displayBool)) {
-          updateCheckboxInput(session, inputId = paste0(id, "_visible"),
-                              value = .displayBool[[id]])
-        }
-
-        # Output or update the widget
+        inputEnv <- getInputEnv(inputList2(), session, "output2", 2, .env)
+        controlDesc2 <<- updateInputs(session, input, controlDesc2, .display, .choices, inputEnv, suffix = "2")
         outputWidget(.expr, output, renderFunction, inputEnv)
       })
     }
 
     observeEvent(input$done, {
-      inputValues <- inputList()
-      inputValues$.initial <- TRUE
-      inputValues$.session <- NULL
-      inputValues$.id <- 1
-      inputEnv <- list2env(inputValues, parent = .env)
+      inputEnv <- getInputEnv(inputList(), NULL, output, 1, .env, TRUE)
 
-      if (compareMode) {
-        inputValues2 <- inputList2()
-        inputValues2$.initial <- TRUE
-        inputValues2$.session <- NULL
-        inputValues2$.id <- 2
-        inputEnv2 <- list2env(inputValues2, parent = .env)
+      if (!compareMode) {
+        stopApp(eval(.expr, envir = inputEnv))
+      } else {
+        inputEnv2 <- getInputEnv(inputList2(), NULL, output, 2, .env, TRUE)
 
         stopApp(combineWidgets(
           ncol = ifelse(.compareLayout == "v", 1, 2),
           eval(.expr, envir = inputEnv),
           eval(.expr, envir = inputEnv2)
         ))
-      } else {
-        stopApp(eval(.expr, envir = inputEnv))
       }
     })
   }
@@ -140,51 +110,47 @@ outputWidget <- function(.expr, output, renderFunction, env) {
 }
 
 updateInputs <- function(session, input, controlDesc, .display, .choices, env, suffix = "") {
-  # Update the interface if parameter .display is set
+  # Set visibility of inputs when parameter .display is set
   .displayBool <- eval(.display, envir = env)
-  if (length(.displayBool) == 0) return(controlDesc)
+  if (length(.displayBool) > 0) {
+    names(.displayBool) <- ifelse(
+      names(.displayBool) %in% names(.choices),
+      paste0(names(.displayBool), suffix),
+      names(.displayBool)
+    )
 
-  names(.displayBool) <- ifelse(
-    names(.displayBool) %in% names(.choices),
-    paste0(names(.displayBool), suffix),
-    names(.displayBool)
-  )
-
-  for (id in names(.displayBool)) {
-    updateCheckboxInput(session, inputId = paste0(id, "_visible"),
-                        value = .displayBool[[id]])
+    for (id in names(.displayBool)) {
+      updateCheckboxInput(session, inputId = paste0(id, "_visible"),
+                          value = .displayBool[[id]])
+    }
   }
 
-  #Update choices if parameter .choices is set (and modifies some input)
+  #Update choices of select inputs if parameter .choices is set
   newChoices <- eval(.choices, envir = env)
-  names(newChoices) <- ifelse(
-    names(newChoices) %in% names(.choices),
-    paste0(names(newChoices), suffix),
-    names(newChoices)
-  )
 
-  for (id in names(newChoices)) {
-    possibleChoices <- unlist(newChoices[[id]])
-    desc <- controlDesc[controlDesc$name == id,]
+  for (param in names(newChoices)) {
+    inputId <- paste0(param, suffix)
+    possibleChoices <- unlist(newChoices[[param]])
+    desc <- controlDesc[controlDesc$name == inputId,]
 
-    if (identical(newChoices[[id]], desc$choices[[1]])) {
+    if (identical(newChoices[[param]], desc$choices[[1]])) {
       next
     }
 
     if (desc$multiple) {
-      newValue <- intersect(env[[id]], possibleChoices)
+      newValue <- intersect(env[[param]], possibleChoices)
     } else {
-      if (env[[id]] %in% possibleChoices) {
-        newValue <- env[[id]]
+      if (env[[param]] %in% possibleChoices) {
+        newValue <- env[[param]]
       } else {
         newValue <- possibleChoices[1]
       }
     }
 
-    updateSelectInput(session, id, choices = newChoices[[id]],
+    updateSelectInput(session, inputId, choices = newChoices[[param]],
                       selected = newValue)
 
-    controlDesc$choices[controlDesc$name == id] <- list(newChoices[[id]])
+    controlDesc$choices[controlDesc$name == inputId] <- list(newChoices[[param]])
   }
 
   return(controlDesc)
