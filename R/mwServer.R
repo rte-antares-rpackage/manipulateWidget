@@ -5,20 +5,26 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
                      .updateBtn,
                      .env) {
 
-  compareMode <- !is.null(initWidget2)
-  selectInputList <- controlDesc$name[controlDesc$type == "select"]
-
-  if (compareMode) {
-    controlDesc2 <- controlDesc
-    controlDesc2$name <- ifelse(
-      controlDesc2$name %in% names(.compare),
-      paste0(controlDesc2$name, "2"),
-      controlDesc2$name
-    )
-    selectInputList2 <- controlDesc2$name[controlDesc$type == "select"]
-  }
-
   function(input, output, session) {
+    compareMode <- !is.null(initWidget2)
+    selectInputList <- subset(controlDesc, type == "select" & multiple)$name
+
+    # Since the widget has already been created with the initial values, we want
+    # to skip the first evaluation of the widget by the server function. This is
+    # why we create the following variable.
+    firstEval <- TRUE
+
+    if (compareMode) {
+      controlDesc2 <- controlDesc
+      controlDesc2$name <- ifelse(
+        controlDesc2$name %in% names(.compare),
+        paste0(controlDesc2$name, "2"),
+        controlDesc2$name
+      )
+      selectInputList2 <- subset(controlDesc2, type == "select" & multiple)$name
+      firstEval2 <- TRUE
+    }
+
     # Initialize the widget with its first evaluation
     output$output <- renderFunction(initWidget)
 
@@ -42,19 +48,17 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
 
     observe({
       inputEnv <- getInputEnv(inputList(), session, "output", 1, .env)
-      controlDesc <<- updateInputs(session, input, controlDesc, .display, .choices, inputEnv, suffix = "")
-      outputWidget(.expr, output, renderFunction, inputEnv)
+      if (firstEval) {
+        firstEval <<- FALSE
+      } else {
+        controlDesc <<- updateInputs(session, input, controlDesc, .display, .choices, inputEnv, suffix = "")
+        outputWidget(.expr, output, renderFunction, inputEnv)
+      }
     })
 
     if (compareMode) {
       # Initialize the widget with its first evaluation
       output$output2 <- renderFunction(initWidget2)
-
-      # Ensure that initial values of select inputs with multiple = TRUE are in
-      # same order than the user asked.
-      for (v in selectInputList2) {
-        shiny::updateSelectInput(session, v, selected = initValues2[[v]])
-      }
 
       inputList2 <- reactive({
         input$.update
@@ -68,10 +72,21 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
         res
       })
 
+      # Ensure that initial values of select inputs with multiple = TRUE are in
+      # same order than the user asked.
+      for (v in selectInputList) {
+        inputId <- paste0(v, "2")
+        shiny::updateSelectInput(session, inputId, selected = initValues2[[v]])
+      }
+
       observe({
         inputEnv <- getInputEnv(inputList2(), session, "output2", 2, .env)
-        controlDesc2 <<- updateInputs(session, input, controlDesc2, .display, .choices, inputEnv, suffix = "2")
-        outputWidget(.expr, output, renderFunction, inputEnv)
+        if (firstEval2) {
+          firstEval2 <<- FALSE
+        } else {
+          controlDesc2 <<- updateInputs(session, input, controlDesc2, .display, .choices, inputEnv, suffix = "2")
+          outputWidget(.expr, output, renderFunction, inputEnv)
+        }
       })
     }
 
