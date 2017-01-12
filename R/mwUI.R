@@ -23,7 +23,7 @@
 mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
                  .outputFun = NULL, .outputId = "output",
-                 .titleBar = TRUE, .compare = NULL, .compareLayout = c("v", "h"),
+                 .titleBar = TRUE, .choices = NULL, .compare = NULL, .compareLayout = c("v", "h"),
                  .controlList = NULL, .container = miniUI::miniContentPanel,
                  .style = "") {
 
@@ -31,17 +31,17 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
   .compareLayout <- match.arg(.compareLayout)
   controls <- append(list(...), .controlList)
 
-  if (is.null(.compare)) {
-    commonControls <- controls
+  controls <- comparisonControls(controls, .compare, .choices)
+  commonControls <- controls$common
 
+  if (is.null(.compare)) {
     if(is.null(.outputFun)) {
       .content <- htmlOutput(.outputId, style = "height:100%;width:100%")
     } else {
       .content <- .outputFun(.outputId, width = "100%", height = "100%")
     }
   } else {
-    controls <- comparisonControls(controls, .compare)
-    commonControls <- controls$common
+
 
     if (.compareLayout == "v") {
       .content <- fillCol(

@@ -7,7 +7,7 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
 
   function(input, output, session) {
     compareMode <- !is.null(initWidget2)
-    selectInputList <- subset(controlDesc, type == "select" & multiple)$name
+    selectInputList <- controlDesc[controlDesc$type == "select" & controlDesc$multiple, "name"]
 
     # Since the widget has already been created with the initial values, we want
     # to skip the first evaluation of the widget by the server function. This is
@@ -21,7 +21,7 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
         paste0(controlDesc2$name, "2"),
         controlDesc2$name
       )
-      selectInputList2 <- subset(controlDesc2, type == "select" & multiple)$name
+      selectInputList2 <- controlDesc2[controlDesc2$type == "select" & controlDesc2$multiple, "name"]
       firstEval2 <- TRUE
     }
 

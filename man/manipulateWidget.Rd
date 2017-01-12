@@ -48,7 +48,7 @@ associated condition is evaluated. If the result is TRUE then the control
 is visible, else it is hidden.}
 
 \item{.choices}{A named list of expressions that return a character vector.
-This parameter can be used to dinamically update the choices of a given
+This parameter can be used to dynamically update the choices of a given
 input control conditionally to the value of the other controls.}
 
 \item{.compare}{Sometimes one wants to compare the same chart but with two

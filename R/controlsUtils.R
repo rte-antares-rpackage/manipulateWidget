@@ -27,8 +27,9 @@ getControlDesc <- function(controls) {
      m <- if (is.null(attr(x, "multiple"))) NA else attr(x, "multiple")
      multiple <<- append(multiple, m)
      choices <<- append(choices, list(attr(x, "choices")))
-   }
-   else mapply(getControlDescRecursive, x=x, name = names(x), level = level + 1)
+   } else if (length(x) == 0) {
+     return()
+   } else mapply(getControlDescRecursive, x=x, name = names(x), level = level + 1)
  }
  getControlDescRecursive(controls)
 
@@ -85,7 +86,7 @@ addSuffixToControls <- function(controls, suffix) {
 }
 
 # Private function that resets the initial values of some controls
-resetInitValues <- function(controls, values) {
+resetInitValues <- function(controls, values, choices = NULL) {
   if (length(controls) == 0) return(controls)
   resetInitValuesRecursive <- function(x) {
     for (n in names(x)) {
@@ -94,6 +95,16 @@ resetInitValues <- function(controls, values) {
       } else {
         if (n %in% names(values) && ! is.null(values[[n]])) {
           attr(x[[n]], "value") <- values[[n]]
+        }
+        if (n %in% names(choices) && !is.null(choices[[n]])) {
+          attr(x[[n]], "choices") <- choices[[n]]
+          if (attr(x[[n]], "multiple")) {
+            attr(x[[n]], "value") <- intersect(attr(x[[n]], "value"), choices[[n]])
+          } else {
+            if (is.null(attr(x[[n]], "value")) || ! attr(x[[n]], "value") %in% choices[[n]]) {
+              attr(x[[n]], "value") <- choices[[n]][[1]]
+            }
+          }
         }
       }
     }
@@ -106,7 +117,7 @@ resetInitValues <- function(controls, values) {
 # - common: list of common controls
 # - ind: list of individual controls for the first chart to compare
 # - ind2: list of individual controls for the seconde chart to compare
-comparisonControls <- function(controls, compare) {
+comparisonControls <- function(controls, compare, choices = NULL) {
   common <- filterControls(controls, names(compare), drop = TRUE)
   ind <- filterControls(controls, names(compare))
   ind2 <- ind
@@ -116,9 +127,12 @@ comparisonControls <- function(controls, compare) {
   initValues2 <- lapply(compare, function(x) {if(is.null(x)) x else x[[2]]})
 
   # Reset initial values of input controls
-  ind <- resetInitValues(ind, initValues1)
-  ind2 <- resetInitValues(ind2, initValues2)
+  choices1 <- eval(choices, list2env(initValues1, parent = parent.frame()))
+  choices2 <- eval(choices, list2env(initValues2, parent = parent.frame()))
 
+  ind <- resetInitValues(ind, initValues1, choices1)
+  ind2 <- resetInitValues(ind2, initValues2, choices2)
+  common <- resetInitValues(common, NULL, choices1)
   # Add a "2" at the end of the names of the inputs of the second chart
   ind2 <- addSuffixToControls(ind2, "2")
 

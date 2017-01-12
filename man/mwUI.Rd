@@ -6,8 +6,8 @@
 \usage{
 mwUI(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
   .tabColumns = 2, .updateBtn = FALSE, .main = "", .outputFun = NULL,
-  .outputId = "output", .titleBar = TRUE, .compare = NULL,
-  .compareLayout = c("v", "h"), .controlList = NULL,
+  .outputId = "output", .titleBar = TRUE, .choices = NULL,
+  .compare = NULL, .compareLayout = c("v", "h"), .controlList = NULL,
   .container = miniUI::miniContentPanel, .style = "")
 }
 \arguments{
@@ -38,6 +38,10 @@ update button.}
 \item{.outputId}{Id of the output element in the shiny interface.}
 
 \item{.titleBar}{Whether to include a title bar with controls in the widget}
+
+\item{.choices}{A named list of expressions that return a character vector.
+This parameter can be used to dynamically update the choices of a given
+input control conditionally to the value of the other controls.}
 
 \item{.compare}{Sometimes one wants to compare the same chart but with two
 different sets of parameters. This is the purpose of this argument. It must

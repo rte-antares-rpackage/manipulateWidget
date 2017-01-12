@@ -42,7 +42,7 @@
 #'   associated condition is evaluated. If the result is TRUE then the control
 #'   is visible, else it is hidden.
 #' @param .choices A named list of expressions that return a character vector.
-#'   This parameter can be used to dinamically update the choices of a given
+#'   This parameter can be used to dynamically update the choices of a given
 #'   input control conditionally to the value of the other controls.
 #' @param .compare Sometimes one wants to compare the same chart but with two
 #'   different sets of parameters. This is the purpose of this argument. It must
@@ -224,7 +224,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .compareLayout <- match.arg(.compareLayout)
   .env <- parent.frame()
   compareMode <- !is.null(.compare)
-  controlDesc <- getControlDesc(list(...))
 
   if (.controlPos == "tab") .updateBtn <- FALSE
 
@@ -239,6 +238,9 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   }
 
   # Evaluate a first time .expr to determine the class of the output
+  controls <- comparisonControls(list(...), .compare, .choices)
+  controlDesc <- getControlDesc(controls[c("common", "ind")])
+
   initValues <- controlDesc$initValue
   names(initValues) <- controlDesc$name
 
@@ -253,7 +255,11 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
 
   if (compareMode) {
-    initValues2 <- initValues
+    controlDesc2 <- getControlDesc(controls[c("common", "ind2")])
+    initValues2 <- controlDesc2$initValue
+    names(initValues2) <- controlDesc$name
+    initValues2$.initial <- TRUE
+    initValues2$.session <- NULL
     initValues2$.output <- "output2"
     initValues2$.id <- 2
 
@@ -294,6 +300,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .main = .main,
     .outputFun = outputFunction,
     .titleBar = !isRuntimeShiny,
+    .choices = .choices,
     .compare = .compare,
     .compareLayout = .compareLayout
   )

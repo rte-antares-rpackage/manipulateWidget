@@ -52,11 +52,18 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
       } else {
         inputValue <- attr(f, "value")
         inputLabel <- attr(f, "label")
+        choices <- attr(f, "choices")
         if (is.null(inputLabel)) inputLabel <- id
 
         res <- conditionalPanel(
           condition = sprintf("input.%s_visible", id),
-          f(id, inputValue, inputLabel, width = ifelse(.dir == "v", "100%", "180px"))
+          if (!is.null(choices)) {
+            f(id, inputValue, inputLabel, choices = choices,
+              width = ifelse(.dir == "v", "100%", "180px"))
+          } else {
+            f(id, inputValue, inputLabel, width = ifelse(.dir == "v", "100%", "180px"))
+          }
+
         )
       }
 
