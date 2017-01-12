@@ -8,7 +8,7 @@ HTMLWidgets.widget({
 
   factory: function(el, width, height) {
 
-    var widgets = [];
+    var widgets = {};
 
     function toArray(x) {
       if (x.constructor !== Array) x = [x];
@@ -20,9 +20,15 @@ HTMLWidgets.widget({
     }
 
     function resizeAll() {
-      widgets.forEach(function(x) {
-        x.factory.resize(x.el, x.el.clientWidth, x.el.clientHeight, x.instance);
-      });
+      for (var k in widgets) {
+        var widgetEl = document.getElementById(k);
+        if (!widgetEl) {
+          delete widgets[k];
+        } else {
+          var x = widgets[k];
+          x.factory.resize(widgetEl, widgetEl.clientWidth, widgetEl.clientHeight, x.instance);
+        }
+      }
     }
 
     return {
@@ -43,7 +49,7 @@ HTMLWidgets.widget({
             var widgetFactory = getWidgetFactory(x.widgetType[i]);
             var w = widgetFactory.initialize(child, child.clientWidth, child.clientHeight);
             widgetFactory.renderValue(child, x.data[i], w);
-            widgets.push({factory:widgetFactory, instance:w, el: child});
+            widgets[x.elementId[i]] = {factory:widgetFactory, instance:w};
           }
         }
 
