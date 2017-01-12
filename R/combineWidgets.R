@@ -124,6 +124,8 @@ combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = N
   })
   nwidgets <- length(widgets)
 
+  if (nwidgets == 0) return(combineWidgets(""))
+
   # Get number of rows and cols
   if (!is.null(nrow) && !is.null(ncol) && nrow * ncol < nwidgets) {
     stop("There are too much widgets compared to the number of rows and columns")
