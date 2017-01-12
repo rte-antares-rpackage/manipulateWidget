@@ -114,115 +114,51 @@ combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = N
                            header = NULL, footer = NULL,
                            leftCol = NULL, rightCol = NULL,
                            width = NULL, height = NULL) {
-  widgets <- lapply(c(list(...), list), function(x) {
-    if (is.atomic(x)) return(structure(list(x = as.character(x)), class = "html"))
-    if (is.null(x$preRenderHook)) {
-      if (is(x, "htmlwidget")) return(x)
-      else return(structure(list(x = as.character(x)), class = "html"))
-    }
-    x$preRenderHook(x)
-  })
-  nwidgets <- length(widgets)
 
-  if (nwidgets == 0) return(combineWidgets(""))
+  widgets <- c(list(...), list)
+  if (length(widgets) == 0) return(combineWidgets(""))
 
-  # Get number of rows and cols
-  if (!is.null(nrow) && !is.null(ncol) && nrow * ncol < nwidgets) {
-    stop("There are too much widgets compared to the number of rows and columns")
-  } else if (is.null(nrow) && !is.null(ncol)) {
-    nrow <- ceiling(nwidgets / ncol)
-  } else if (!is.null(nrow) && is.null(ncol)) {
-    ncol <- ceiling(nwidgets / nrow)
-  } else if (is.null(nrow) && is.null(ncol)) {
-    nrow <- ceiling(sqrt(nwidgets))
-    ncol <- ceiling(nwidgets / nrow)
-  }
-
-  ncells <- nrow * ncol
-
-  # Relative size of rows and cols
-  rowsize <- rep(rowsize, length.out=nrow)
-  colsize <- rep(colsize, length.out = ncol)
-
-  # Get the html ID of each widget
-  elementId <- sapply(widgets[1:ncells], function(x) {
-    if (is.null(x)) res <- NULL
-    else res <- x$elementId
-
-    if (is.null(res)) res <- paste0("widget", floor(stats::runif(1, max = 1e9)))
-
-    res
-  })
-
-  # Construct the html of the combined widget
-  dirClass <- ifelse(byrow, "cw-by-row", "cw-by-col")
-
-  widgetEL <- mapply(
-    function(id, size) {
-      sprintf('<div class="cw-col" style="flex:%s;-webkit-flex:%s">
-                 <div id="%s" class="cw-widget" style="width:100%%;height:100%%"></div>
-               </div>',
-              size, size, id)
-    },
-    id = elementId,
-    size = rep(colsize, length.out = ncells)
-  )
-
-  rowsEl <- lapply(1:nrow, function(i) {
-    content <- widgetEL[((i-1) * ncol + 1):(i * ncol)]
-    sprintf('<div class="cw-row %s" style="flex:%s;-webkit-flex:%s">%s</div>',
-            dirClass, rowsize[i], rowsize[i], paste(content, collapse = ""))
-  })
-
-  content <- sprintf('<div class="cw-content %s">%s</div>',
-                     dirClass, paste(rowsEl, collapse = ""))
-
-  if(!is.null(title) && !title == "") {
-    titleEl <- sprintf('<div><h2 class="cw-title" style="%s">%s</h2></div>',
-                       titleCSS, title)
-  } else {
-    titleEl <- ""
-  }
-
-  if (is.null(footer)) footer <- ""
-  else footer <- paste0("<div>", footer, "</div>")
-  if (is.null(header)) header <- ""
-  else header <- paste0("<div>", header, "</div>")
-  if (is.null(leftCol)) leftCol <- ""
-  else leftCol <- paste0("<div style='height:100%'>", leftCol, "</div>")
-  if (is.null(rightCol)) rightCol <- ""
-  else rightCol <- paste0("<div style='height:100%'>", rightCol, "</div>")
-
-  html <- sprintf('<div class="cw-container">%s%s<div class="cw-subcontainer">%s%s%s</div>%s</div>',
-                  titleEl, header, leftCol, content, rightCol, footer)
-
-  data <- lapply(widgets, function(x) x$x)
-  widgetType <- sapply(widgets, function(x) class(x)[1])
-
-
-  x <- list(data = data, widgetType = widgetType, elementId = elementId, html = html);
-
-  # create widget
-  combinedWidget <- htmlwidgets::createWidget(
+  # create empty widget
+  res <- htmlwidgets::createWidget(
     name = 'combineWidgets',
-    x,
+    x = NULL,
     width = width,
     height = height,
     package = 'manipulateWidget',
     sizingPolicy = htmlwidgets::sizingPolicy(
       browser.fill = TRUE
-    )
+    ),
+    preRenderHook = preRenderCombinedWidgets
   )
 
+  # Add dependencies of embedded widgets
   deps <- lapply(widgets, function(x) {
-    if (class(x)[1] == "html") return(NULL)
+    if (is.null(attr(x, "package"))) return(NULL)
     append(getDependency(class(x)[1], attr(x, "package")), x$dependencies)
   })
   deps <- do.call(c, deps)
 
-  combinedWidget$dependencies <- deps
+  res$dependencies <- deps
 
-  combinedWidget
+  # Add widget list and parameters
+  res$widgets <- widgets
+  res$params <- list(
+    nrow = nrow,
+    ncol = ncol,
+    title = title,
+    rowsize = rowsize,
+    colsize = colsize,
+    byrow = byrow,
+    titleCSS = titleCSS,
+    header = header,
+    footer = footer,
+    leftCol = leftCol,
+    rightCol = rightCol,
+    width = width,
+    height = height
+  )
+
+  res
 }
 
 #' Shiny bindings for combineWidgets
@@ -251,4 +187,96 @@ combineWidgetsOutput <- function(outputId, width = '100%', height = '400px'){
 renderCombineWidgets <- function(expr, env = parent.frame(), quoted = FALSE) {
   if (!quoted) { expr <- substitute(expr) } # force quoted
   htmlwidgets::shinyRenderWidget(expr, combineWidgetsOutput, env, quoted = TRUE)
+}
+
+# Private function used to prerender a combinedWidgets object
+preRenderCombinedWidgets <- function(x) {
+  widgets <- lapply(x$widgets, function(w) {
+    if (is.atomic(w)) return(structure(list(x = as.character(w)), class = "html"))
+    if (is.null(w$preRenderHook)) {
+      if (is(w, "htmlwidget")) return(w)
+      else return(structure(list(x = as.character(w)), class = "html"))
+    }
+    w$preRenderHook(w)
+  })
+  nwidgets <- length(x$widgets)
+
+  # Get number of rows and cols
+  nrow <- x$params$nrow
+  ncol <- x$params$ncol
+  if (!is.null(nrow) && !is.null(ncol) && nrow * ncol < nwidgets) {
+    stop("There are too much widgets compared to the number of rows and columns")
+  } else if (is.null(nrow) && !is.null(ncol)) {
+    nrow <- ceiling(nwidgets / ncol)
+  } else if (!is.null(nrow) && is.null(ncol)) {
+    ncol <- ceiling(nwidgets / nrow)
+  } else if (is.null(nrow) && is.null(ncol)) {
+    nrow <- ceiling(sqrt(nwidgets))
+    ncol <- ceiling(nwidgets / nrow)
+  }
+
+  ncells <- nrow * ncol
+
+  # Relative size of rows and cols
+  rowsize <- rep(x$params$rowsize, length.out=nrow)
+  colsize <- rep(x$params$colsize, length.out = ncol)
+
+  # Get the html ID of each widget
+  elementId <- sapply(widgets[1:ncells], function(w) {
+    if (is.null(w)) res <- NULL
+    else res <- w$elementId
+
+    if (is.null(res)) res <- paste0("widget", floor(stats::runif(1, max = 1e9)))
+
+    res
+  })
+
+  # Construct the html of the combined widget
+  dirClass <- ifelse(x$params$byrow, "cw-by-row", "cw-by-col")
+
+  widgetEL <- mapply(
+    function(id, size) {
+      sprintf('<div class="cw-col" style="flex:%s;-webkit-flex:%s">
+              <div id="%s" class="cw-widget" style="width:100%%;height:100%%"></div>
+              </div>',
+              size, size, id)
+    },
+    id = elementId,
+    size = rep(colsize, length.out = ncells)
+  )
+
+  rowsEl <- lapply(1:nrow, function(i) {
+    content <- widgetEL[((i-1) * ncol + 1):(i * ncol)]
+    sprintf('<div class="cw-row %s" style="flex:%s;-webkit-flex:%s">%s</div>',
+            dirClass, rowsize[i], rowsize[i], paste(content, collapse = ""))
+  })
+
+  content <- sprintf('<div class="cw-content %s">%s</div>',
+                     dirClass, paste(rowsEl, collapse = ""))
+
+  if(!is.null(x$params$title) && !x$params$title == "") {
+    titleEl <- sprintf('<div><h2 class="cw-title" style="%s">%s</h2></div>',
+                       x$params$titleCSS, x$params$title)
+  } else {
+    titleEl <- ""
+  }
+
+  if (is.null(x$params$footer)) footer <- ""
+  else footer <- paste0("<div>", x$params$footer, "</div>")
+  if (is.null(x$params$header)) header <- ""
+  else header <- paste0("<div>", x$params$header, "</div>")
+  if (is.null(x$params$leftCol)) leftCol <- ""
+  else leftCol <- paste0("<div style='height:100%'>", x$params$leftCol, "</div>")
+  if (is.null(x$params$rightCol)) rightCol <- ""
+  else rightCol <- paste0("<div style='height:100%'>", x$params$rightCol, "</div>")
+
+  html <- sprintf('<div class="cw-container">%s%s<div class="cw-subcontainer">%s%s%s</div>%s</div>',
+                  titleEl, header, leftCol, content, rightCol, footer)
+
+  data <- lapply(widgets, function(w) w$x)
+  widgetType <- sapply(widgets, function(w) class(w)[1])
+
+  x$x <- list(data = data, widgetType = widgetType, elementId = elementId, html = html);
+
+  x
 }
