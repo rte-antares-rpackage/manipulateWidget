@@ -6,7 +6,7 @@
 \usage{
 mwUI(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
   .tabColumns = 2, .updateBtn = FALSE, .main = "", .outputFun = NULL,
-  .outputId = "output", .titleBar = TRUE, .choices = NULL,
+  .outputId = "output", .titleBar = TRUE, .updateInputs = NULL,
   .compare = NULL, .compareLayout = c("v", "h"), .controlList = NULL,
   .container = miniUI::miniContentPanel, .style = "")
 }
@@ -39,7 +39,7 @@ update button.}
 
 \item{.titleBar}{Whether to include a title bar with controls in the widget}
 
-\item{.choices}{A named list of expressions that return a character vector.
+\item{.updateInputs}{A named list of expressions that return a character vector.
 This parameter can be used to dynamically update the choices of a given
 input control conditionally to the value of the other controls.}
 

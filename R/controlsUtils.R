@@ -15,7 +15,7 @@ getControlDesc <- function(controls) {
  types <- c()
  groupLevel <- c()
  multiple <- c()
- choices <- list()
+ params <- list()
 
  getControlDescRecursive <- function(x, name = "", level = 0) {
    if (is.function(x)) {
@@ -26,7 +26,7 @@ getControlDesc <- function(controls) {
      groupLevel <<- append(groupLevel, level)
      m <- if (is.null(attr(x, "params")$multiple)) NA else attr(x, "params")$multiple
      multiple <<- append(multiple, m)
-     choices <<- append(choices, list(attr(x, "params")$choices))
+     params <<- append(params, list(attr(x, "params")))
    } else if (length(x) == 0) {
      return()
    } else mapply(getControlDescRecursive, x=x, name = names(x), level = level + 1)
@@ -39,7 +39,7 @@ getControlDesc <- function(controls) {
    type = types,
    level = groupLevel,
    multiple = multiple,
-   choices = I(choices),
+   params = I(params),
    stringsAsFactors = FALSE
  )
 }
@@ -108,7 +108,7 @@ initValue <- function(x) {
 
   if (type == "slider") {
     attr(x, "params")$value <- params$min
-    return(newValue)
+    return(x)
   }
 
   stop("Can not find initial value")
@@ -166,12 +166,16 @@ comparisonControls <- function(controls, compare, updateInputs = NULL) {
   ind2 <- ind
 
   # extract the initial values of the individual parameters of each chart
+  controlsDesc <- getControlDesc(controls)
+  initValues <- controlsDesc$initValue
+  names(initValues) <- controlsDesc$name
+
   initValues1 <- lapply(compare, function(x) {if(is.null(x)) x else x[[1]]})
   initValues2 <- lapply(compare, function(x) {if(is.null(x)) x else x[[2]]})
 
   # Reset initial values of input controls
-  newParams1 <- eval(updateInputs, list2env(initValues1, parent = parent.frame()))
-  newParams2 <- eval(updateInputs, list2env(initValues2, parent = parent.frame()))
+  newParams1 <- eval(updateInputs, list2env(initValues, parent = parent.frame()))
+  newParams2 <- eval(updateInputs, list2env(initValues, parent = parent.frame()))
 
   ind <- resetInitValues(ind, initValues1, newParams1)
   ind2 <- resetInitValues(ind2, initValues2, newParams2)

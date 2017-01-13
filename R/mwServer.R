@@ -1,7 +1,7 @@
 mwServer <- function(.expr, initWidget, initWidget2 = NULL,
                      initValues, initValues2 = NULL,
                      renderFunction,
-                     controlDesc, .display, .choices, .compare, .compareLayout,
+                     controlDesc, .display, .updateInputs, .compare, .compareLayout,
                      .updateBtn,
                      .env) {
 
@@ -51,7 +51,8 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
       if (firstEval) {
         firstEval <<- FALSE
       } else {
-        controlDesc <<- updateInputs(session, input, controlDesc, .display, .choices, inputEnv, suffix = "")
+        controlDesc <<- updateInputs(session, input, controlDesc, .display,
+                                     .compare, .updateInputs, inputEnv, suffix = "")
         outputWidget(.expr, output, renderFunction, inputEnv)
       }
     })
@@ -84,7 +85,8 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
         if (firstEval2) {
           firstEval2 <<- FALSE
         } else {
-          controlDesc2 <<- updateInputs(session, input, controlDesc2, .display, .choices, inputEnv, suffix = "2")
+          controlDesc2 <<- updateInputs(session, input, controlDesc2, .display,
+                                        .compare, .updateInputs, inputEnv, suffix = "2")
           outputWidget(.expr, output, renderFunction, inputEnv)
         }
       })
@@ -124,12 +126,12 @@ outputWidget <- function(.expr, output, renderFunction, env) {
   }
 }
 
-updateInputs <- function(session, input, controlDesc, .display, .choices, env, suffix = "") {
+updateInputs <- function(session, input, controlDesc, .display, .compare, .updateInputs, env, suffix = "") {
   # Set visibility of inputs when parameter .display is set
   .displayBool <- eval(.display, envir = env)
   if (length(.displayBool) > 0) {
     names(.displayBool) <- ifelse(
-      names(.displayBool) %in% names(.choices),
+      names(.displayBool) %in% names(.compare),
       paste0(names(.displayBool), suffix),
       names(.displayBool)
     )
@@ -141,31 +143,52 @@ updateInputs <- function(session, input, controlDesc, .display, .choices, env, s
   }
 
   #Update choices of select inputs if parameter .choices is set
-  newChoices <- eval(.choices, envir = env)
+  newParams <- eval(.updateInputs, envir = env)
 
-  for (param in names(newChoices)) {
-    inputId <- paste0(param, suffix)
-    possibleChoices <- unlist(newChoices[[param]])
+  for (n in names(newParams)) {
+    inputId <- paste0(n, suffix)
     desc <- controlDesc[controlDesc$name == inputId,]
+    updateInputFun <- switch(
+      desc$type,
+      slider = updateSliderInput,
+      text = updateTextInput,
+      numeric = updateNumericInput,
+      password = updatePasswordInput,
+      select = updateSelectizeInput
+    )
 
-    if (identical(newChoices[[param]], desc$choices[[1]])) {
-      next
-    }
-
-    if (desc$multiple) {
-      newValue <- intersect(env[[param]], possibleChoices)
-    } else {
-      if (env[[param]] %in% possibleChoices) {
-        newValue <- env[[param]]
-      } else {
-        newValue <- possibleChoices[1]
+    for (p in names(newParams[[n]])) {
+      if (identical(newParams[[n]][[p]], desc$params[[1]][[p]])) {
+        next
       }
+      args <- newParams[[n]][[p]]
+      args$session <- session
+      args$inputId <- inputId
+      do.call(updateInputFun, args)
+
+      controlDesc$params[controlDesc$name == inputId][[1]][[p]] <-  newParams[[n]][[p]]
     }
-
-    updateSelectInput(session, inputId, choices = newChoices[[param]],
-                      selected = newValue)
-
-    controlDesc$choices[controlDesc$name == inputId] <- list(newChoices[[param]])
+    # possibleChoices <- unlist(newChoices[[n]])
+    # desc <- controlDesc[controlDesc$name == inputId,]
+    #
+    # if (identical(newChoices[[n]], desc$choices[[1]])) {
+    #   next
+    # }
+    #
+    # if (desc$multiple) {
+    #   newValue <- intersect(env[[n]], possibleChoices)
+    # } else {
+    #   if (env[[n]] %in% possibleChoices) {
+    #     newValue <- env[[n]]
+    #   } else {
+    #     newValue <- possibleChoices[1]
+    #   }
+    # }
+    #
+    # updateSelectInput(session, inputId, choices = newChoices[[n]],
+    #                   selected = newValue)
+    #
+    # controlDesc$choices[controlDesc$name == inputId] <- list(newChoices[[n]])
   }
 
   return(controlDesc)

@@ -41,7 +41,7 @@
 #'   displayed, but if the name of a control appears in this list, then the
 #'   associated condition is evaluated. If the result is TRUE then the control
 #'   is visible, else it is hidden.
-#' @param .choices A named list of expressions that return a character vector.
+#' @param .updateInputs A named list of expressions that return a character vector.
 #'   This parameter can be used to dynamically update the choices of a given
 #'   input control conditionally to the value of the other controls.
 #' @param .compare Sometimes one wants to compare the same chart but with two
@@ -209,7 +209,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .tabColumns = 2,
                              .viewer = c("pane", "window", "browser"),
                              .display = NULL,
-                             .choices = NULL,
+                             .updateInputs = NULL,
                              .compare = NULL,
                              .compareLayout = c("v", "h")) {
 
@@ -218,7 +218,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   .expr <- substitute(.expr)
   .display <- substitute(.display)
-  .choices <- substitute(.choices)
+  .updateInputs <- substitute(.updateInputs)
   .viewer <- match.arg(.viewer)
   .controlPos <- match.arg(.controlPos)
   .compareLayout <- match.arg(.compareLayout)
@@ -238,7 +238,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   }
 
   # Evaluate a first time .expr to determine the class of the output
-  controls <- comparisonControls(list(...), .compare, .choices)
+  controls <- comparisonControls(list(...), .compare, .updateInputs)
   controlDesc <- getControlDesc(controls[c("common", "ind")])
 
   initValues <- controlDesc$initValue
@@ -300,7 +300,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .main = .main,
     .outputFun = outputFunction,
     .titleBar = !isRuntimeShiny,
-    .choices = .choices,
+    .updateInputs = .updateInputs,
     .compare = .compare,
     .compareLayout = .compareLayout
   )
@@ -308,7 +308,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   server <- mwServer(.expr, initWidget, initWidget2,
                      initValues, initValues2,
                      renderFunction,
-                     controlDesc, .display, .choices,
+                     controlDesc, .display, .updateInputs,
                      .compare, .compareLayout,
                      .updateBtn, .env)
 

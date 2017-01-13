@@ -7,7 +7,7 @@
 manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
   .viewer = c("pane", "window", "browser"), .display = NULL,
-  .choices = NULL, .compare = NULL, .compareLayout = c("v", "h"))
+  .updateInputs = NULL, .compare = NULL, .compareLayout = c("v", "h"))
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -47,7 +47,7 @@ displayed, but if the name of a control appears in this list, then the
 associated condition is evaluated. If the result is TRUE then the control
 is visible, else it is hidden.}
 
-\item{.choices}{A named list of expressions that return a character vector.
+\item{.updateInputs}{A named list of expressions that return a character vector.
 This parameter can be used to dynamically update the choices of a given
 input control conditionally to the value of the other controls.}
 
