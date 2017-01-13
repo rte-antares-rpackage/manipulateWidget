@@ -30,7 +30,7 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
     function(f, id) {
       if(is.list(f)) {
         ctrls <- mwControlsUI(f)
-        label <- attr(f, "label")
+        label <- attr(f, "params")$label
         if (is.null(label)) label <- id
         id <- gsub(" ", "-", id)
         res <- tags$div(
@@ -50,20 +50,13 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
         )
 
       } else {
-        inputValue <- attr(f, "value")
-        inputLabel <- attr(f, "label")
-        choices <- attr(f, "choices")
-        if (is.null(inputLabel)) inputLabel <- id
+        params <- attr(f, "params")
+        params$inputId <- id
+        params$width <- ifelse(.dir == "v", "100%", "180px")
 
         res <- conditionalPanel(
           condition = sprintf("input.%s_visible", id),
-          if (!is.null(choices)) {
-            f(id, inputValue, inputLabel, choices = choices,
-              width = ifelse(.dir == "v", "100%", "180px"))
-          } else {
-            f(id, inputValue, inputLabel, width = ifelse(.dir == "v", "100%", "180px"))
-          }
-
+          f(params)
         )
       }
 
