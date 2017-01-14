@@ -2,7 +2,7 @@
 
 # manipulateWidget 0.5.0.9000 (2017-XX-XX)
 
-## New Feature
+## New Features
 
 * `manipulateWidget()` can now be used in a R Markdown document with shiny runtime. Input controls are included in the final document so end users can play with their values directly. (contribution by JJ. Allaire)
 * `manipulateWidget()` has two new arguments `.compare` and `.compareLayout` to create a comparison interface. When `.compare` is set, two charts are outputed with some common and some individual input controls (see vignette).
