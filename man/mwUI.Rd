@@ -39,9 +39,11 @@ update button.}
 
 \item{.titleBar}{Whether to include a title bar with controls in the widget}
 
-\item{.updateInputs}{A named list of expressions that return a character vector.
-This parameter can be used to dynamically update the choices of a given
-input control conditionally to the value of the other controls.}
+\item{.updateInputs}{This parameter is similar to `.display` and can be used
+to dynamically update input controls. It must be a named list where names
+correspond to names of input controls and values are named lists of
+expressions where names correspond to arguments of the input generator
+function.}
 
 \item{.compare}{Sometimes one wants to compare the same chart but with two
 different sets of parameters. This is the purpose of this argument. It must
