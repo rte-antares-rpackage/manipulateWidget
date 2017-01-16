@@ -5,7 +5,10 @@ mwControlFactory <- function(type, inputFunction, params, valueVar = NULL) {
 
   res <- function(params) {
     if (!is.null(valueVar)) {
-      params[[valueVar]] <- params$value
+      if (length(valueVar) == 1) params[[valueVar]] <- params$value
+      else {
+        for (i in 1:length(valueVar)) params[[valueVar[i]]] <- params$value[[i]]
+      }
       params$value <- NULL
     }
     if (is.null(params$label)) params$label <- params$inputId
@@ -214,7 +217,7 @@ mwPassword <- function(value = "", label = NULL, ...) {
 mwSelect <- function(choices = value, value = NULL, label = NULL, ..., multiple = FALSE) {
   mwControlFactory(
     "select", selectizeInput,
-    list(choices = choices, value = value, label = label, ..., multiple = FALSE),
+    list(choices = choices, value = value, label = label, ..., multiple = multiple),
     valueVar = "selected"
   )
 }
@@ -348,7 +351,8 @@ mwDate <- function(value = NULL, label = NULL, ...) {
 mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...) {
   mwControlFactory(
     "dateRange", dateRangeInput,
-    list(value = value, label = label, ...)
+    list(value = value, label = label, ...),
+    valueVar = c("start", "end")
   )
 }
 
@@ -385,7 +389,8 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 mwCheckboxGroup <- function(choices, value = c(), label = NULL, ...) {
   mwControlFactory(
     "checkboxGroup", checkboxGroupInput,
-    list(choices = choices, value = value, label = label, ...)
+    list(choices = choices, value = value, label = label, ...),
+    valueVar = "selected"
   )
 }
 

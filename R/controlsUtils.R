@@ -28,6 +28,7 @@ getControlDesc <- function(controls) {
 
  getControlDescRecursive <- function(x, name = "", level = 0) {
    if (is.function(x)) {
+     x <- initValue(x)
      value <- list(attr(x, "params")$value)
      inputNames <<- append(inputNames, name)
      initValues <<- append(initValues, value)
