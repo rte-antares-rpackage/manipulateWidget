@@ -154,41 +154,25 @@ updateInputs <- function(session, input, controlDesc, .display, .compare, .updat
       text = updateTextInput,
       numeric = updateNumericInput,
       password = updatePasswordInput,
-      select = updateSelectizeInput
+      select = updateSelectizeInput,
+      checkbox = updateCheckboxInput,
+      radio = updateRadioButtons,
+      date = updateDateInput,
+      dateRange = updateDateRangeInput,
+      checkboxGroup = updateCheckboxGroupInput
     )
 
     for (p in names(newParams[[n]])) {
       if (identical(newParams[[n]][[p]], desc$params[[1]][[p]])) {
         next
       }
-      args <- newParams[[n]][[p]]
+      args <- newParams[[n]][p]
       args$session <- session
       args$inputId <- inputId
       do.call(updateInputFun, args)
 
       controlDesc$params[controlDesc$name == inputId][[1]][[p]] <-  newParams[[n]][[p]]
     }
-    # possibleChoices <- unlist(newChoices[[n]])
-    # desc <- controlDesc[controlDesc$name == inputId,]
-    #
-    # if (identical(newChoices[[n]], desc$choices[[1]])) {
-    #   next
-    # }
-    #
-    # if (desc$multiple) {
-    #   newValue <- intersect(env[[n]], possibleChoices)
-    # } else {
-    #   if (env[[n]] %in% possibleChoices) {
-    #     newValue <- env[[n]]
-    #   } else {
-    #     newValue <- possibleChoices[1]
-    #   }
-    # }
-    #
-    # updateSelectInput(session, inputId, choices = newChoices[[n]],
-    #                   selected = newValue)
-    #
-    # controlDesc$choices[controlDesc$name == inputId] <- list(newChoices[[n]])
   }
 
   return(controlDesc)

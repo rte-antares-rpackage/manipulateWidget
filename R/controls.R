@@ -1,7 +1,7 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
-mwControlFactory <- function(type, inputFunction, params, postProcessing = I,
-                             valueVar = NULL) {
+# Private function used to create input generator functions.
+mwControlFactory <- function(type, inputFunction, params, valueVar = NULL) {
 
   res <- function(params) {
     if (!is.null(valueVar)) {
@@ -9,7 +9,7 @@ mwControlFactory <- function(type, inputFunction, params, postProcessing = I,
       params$value <- NULL
     }
     if (is.null(params$label)) params$label <- params$inputId
-    postProcessing(do.call(inputFunction, params))
+    do.call(inputFunction, params)
   }
 
   attr(res, "params") <- params
@@ -61,9 +61,9 @@ mwControlFactory <- function(type, inputFunction, params, postProcessing = I,
 #' @family controls
 mwSlider <- function(min, max, value, label = NULL, ...) {
   mwControlFactory(
-    "slider", sliderInput,
-    list(min = min, max = max, value = value, label = label, ...),
-    function(x) {tags$div(style = "padding:0 5px;", x)}
+    "slider",
+    function(...) {tags$div(style = "padding:0 5px;", sliderInput(...))},
+    list(min = min, max = max, value = value, label = label, ...)
   )
 }
 

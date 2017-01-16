@@ -1,10 +1,19 @@
+# Set or update the elements of a list given the elements of another list.
+mergeList <- function(x, y) {
+  for (n in names(y)) {
+    x[[n]] <- y[[n]]
+  }
+  x
+}
+
 # Internal function that extracts the name, initial value and type of input
 # controls defined by the user.
 # This function is required because of the fact that the user can group controls
 # and even create nested groups so it is a bit hard to know what are the
 # available controls.
 #
-# Returns a data.frame with columns "name", "initValue", "type" and "level".
+# Returns a data.frame with columns "name", "initValue", "type", "level",
+# "multiple" and "params".
 # "level" is equal to 1 if the input is not contained in a group, 2 if it is
 # contained in a group, 3 if it is contained in a group contained in a group,
 # etc.
@@ -123,7 +132,7 @@ initValueIsValid <- function(x) {
   }
 
   if (type == "slider") {
-    return(all(params$value >= params$min & params$value <= params$min) )
+    return(all(params$value >= params$min & params$value <= params$max) )
   }
 
   TRUE
@@ -171,11 +180,13 @@ comparisonControls <- function(controls, compare, updateInputs = NULL) {
   names(initValues) <- controlsDesc$name
 
   initValues1 <- lapply(compare, function(x) {if(is.null(x)) x else x[[1]]})
+  initValues1 <- mergeList(initValues, initValues1)
   initValues2 <- lapply(compare, function(x) {if(is.null(x)) x else x[[2]]})
+  initValues2 <- mergeList(initValues, initValues2)
 
   # Reset initial values of input controls
-  newParams1 <- eval(updateInputs, list2env(initValues, parent = parent.frame()))
-  newParams2 <- eval(updateInputs, list2env(initValues, parent = parent.frame()))
+  newParams1 <- eval(updateInputs, list2env(initValues1, parent = parent.frame()))
+  newParams2 <- eval(updateInputs, list2env(initValues2, parent = parent.frame()))
 
   ind <- resetInitValues(ind, initValues1, newParams1)
   ind2 <- resetInitValues(ind2, initValues2, newParams2)
