@@ -153,7 +153,7 @@ updateInputs <- function(session, input, controlDesc, .display, .compare, .updat
       slider = updateSliderInput,
       text = updateTextInput,
       numeric = updateNumericInput,
-      password = updatePasswordInput,
+      password = updateTextInput,
       select = updateSelectizeInput,
       checkbox = updateCheckboxInput,
       radio = updateRadioButtons,
