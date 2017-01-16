@@ -169,6 +169,17 @@ updateInputs <- function(session, input, controlDesc, .display, .compare, .updat
       args <- newParams[[n]][p]
       args$session <- session
       args$inputId <- inputId
+
+      # Special case: update value of select input when choices are modified
+      if (p == "choices" & desc$type == "select") {
+        if (desc$multiple) {
+          args$selected <- intersect(env[[n]], newParams[[n]][[p]])
+        } else {
+          if (env[[n]] %in% newParams[[n]][[p]]) {
+            args$selected <- env[[n]]
+          }
+        }
+      }
       do.call(updateInputFun, args)
 
       controlDesc$params[controlDesc$name == inputId][[1]][[p]] <-  newParams[[n]][[p]]
