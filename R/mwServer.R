@@ -48,11 +48,11 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
 
     observe({
       inputEnv <- getInputEnv(inputList(), session, "output", 1, .env)
+      controlDesc <<- updateInputs(session, input, controlDesc, .display,
+                                   .compare, .updateInputs, inputEnv, suffix = "")
       if (firstEval) {
         firstEval <<- FALSE
       } else {
-        controlDesc <<- updateInputs(session, input, controlDesc, .display,
-                                     .compare, .updateInputs, inputEnv, suffix = "")
         outputWidget(.expr, output, renderFunction, inputEnv)
       }
     })
@@ -82,11 +82,11 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
 
       observe({
         inputEnv <- getInputEnv(inputList2(), session, "output2", 2, .env)
+        controlDesc2 <<- updateInputs(session, input, controlDesc2, .display,
+                                      .compare, .updateInputs, inputEnv, suffix = "2")
         if (firstEval2) {
           firstEval2 <<- FALSE
         } else {
-          controlDesc2 <<- updateInputs(session, input, controlDesc2, .display,
-                                        .compare, .updateInputs, inputEnv, suffix = "2")
           outputWidget(.expr, output, renderFunction, inputEnv)
         }
       })
