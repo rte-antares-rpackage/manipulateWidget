@@ -41,7 +41,10 @@
 #'   sizing).
 #' @param height Total height of the layout (optional, defaults to automatic
 #'   sizing).
-#' @return A HTML widget.
+#' @return A htmlwidget object of class \code{combineWidget}. Individual widgets
+#'   are stored in element \code{widgets} and can be extracted or updated. This
+#'   is useful when a function returns a \code{combineWidgets} object but user
+#'   wants to keep only one widget or to update one of them (see examples).
 #'
 #' @details The function only allows table like layout : each row has the same
 #' number of columns and reciprocally. But it is possible to create more complex
@@ -95,6 +98,24 @@
 #'     plot_ly(iris, x = ~Petal.Length, type = "histogram", nbinsx = 20),
 #'     myComment
 #'   )
+#'
+#'   # Updating individual widgets.
+#'   myWidget <- combineWidgets(
+#'     plot_ly(iris, x = ~Sepal.Length, type = "histogram", nbinsx = 20),
+#'     plot_ly(iris, x = ~Sepal.Width, type = "histogram", nbinsx = 20),
+#'     ncol = 2
+#'   )
+#'   myWidget
+#'
+#'
+#'   myWidget$widgets[[1]] <- myWidget$widgets[[1]] %>%
+#'     layout(title = "Histogram of Sepal Length")
+#'
+#'   myWidget$widgets[[2]] <- myWidget$widgets[[2]] %>%
+#'     layout(title = "Histogram of Sepal Width")
+#'
+#'   myWidget
+#'
 #'
 #'   # Instead of passing directly htmlwidgets to the function, one can pass
 #'   # a list containing htmlwidgets. This is especially useful when the widgets
@@ -191,7 +212,7 @@ renderCombineWidgets <- function(expr, env = parent.frame(), quoted = FALSE) {
 
 # Private function used to prerender a combinedWidgets object
 preRenderCombinedWidgets <- function(x) {
-  widgets <- lapply(x$widgets, function(w) {
+  widgets <- lapply(unname(x$widgets), function(w) {
     if (is.atomic(w)) return(structure(list(x = as.character(w)), class = "html"))
     if (is.null(w$preRenderHook)) {
       if (is(w, "htmlwidget")) return(w)
