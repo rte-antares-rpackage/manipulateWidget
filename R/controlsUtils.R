@@ -170,8 +170,8 @@ initValueIsValid <- function(x) {
     if (length(params$value) == 0) return(FALSE)
     if (is.na(params$value) ) return(TRUE)
     if (!is.numeric(params$value)) return(FALSE)
-    if (!is.na(params$min) && params$value < params$min) return(FALSE)
-    if (!is.na(params$max) && params$value > params$max) return(FALSE)
+    if (!is.null(params$min) && params$value < params$min) return(FALSE)
+    if (!is.null(params$max) && params$value > params$max) return(FALSE)
     return(TRUE)
   }
 
