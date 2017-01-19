@@ -97,11 +97,15 @@ addSuffixToControls <- function(controls, suffix) {
   addSuffixToControlsRecursive(controls)
 }
 
+# Checks that a control has a valid initial value and if not set it to a default
+# value.
 initValue <- function(x) {
+  # Return the control as is if value is set and is valid
   if (!is.null(attr(x, "params")$value) & initValueIsValid(x)) {
     return(x)
   }
 
+  # Set the initial value of the control and return it
   type <- attr(x, "type")
   params <- attr(x, "params")
   multiple <- params$multiple
@@ -121,9 +125,39 @@ initValue <- function(x) {
     return(x)
   }
 
-  stop("Can not find initial value")
+  if (type == "numeric") {
+    attr(x, "params")$value <- NA_real_
+    return(x)
+  }
+
+  if (type %in%  c("text", "password")) {
+    if (is.null(params$value) || is.na(params$value )) {
+      attr(x, "params")$value <- ""
+    } else {
+      attr(x, "params")$value <- as.character(params$value)[1]
+    }
+    return(x)
+  }
+
+  if (type == "checkbox") {
+    attr(x, "params")$value <- FALSE
+    return(x)
+  }
+
+  if (type == "date") {
+    attr(x, "params")$value <- as.character(Sys.Date())
+    return(x)
+  }
+
+  if (type == "dateRange") {
+    attr(x, "params")$value <- c(as.character(Sys.Date()), as.character(Sys.Date()))
+    return(x)
+  }
+
+  stop("Something got wrong when trying to set initial values")
 }
 
+# Private function that indicates if the initial value of a control is valid.
 initValueIsValid <- function(x) {
   type <- attr(x, "type")
   params <- attr(x, "params")
@@ -132,11 +166,29 @@ initValueIsValid <- function(x) {
     return(all(params$value %in% params$choices))
   }
 
-  if (type == "slider") {
-    return(all(params$value >= params$min & params$value <= params$max) )
+  if (type == "numeric") {
+    if (length(params$value) == 0) return(FALSE)
+    if (is.na(params$value) ) return(TRUE)
+    if (!is.numeric(params$value)) return(FALSE)
+    if (!is.na(params$min) && params$value < params$min) return(FALSE)
+    if (!is.na(params$max) && params$value > params$max) return(FALSE)
+    return(TRUE)
   }
 
-  TRUE
+  if (type == "slider") {
+    return(all(params$value >= params$min & params$value <= params$max))
+  }
+
+  if (type == "checkbox") {
+    return(is.logical(params$value))
+  }
+
+  if (type %in% c("text", "password")) {
+    return(is.character(params$value))
+  }
+
+  # TODO: type = "date" and type = "dateRange"
+  return(TRUE)
 }
 
 # Private function that resets the initial values of some controls
