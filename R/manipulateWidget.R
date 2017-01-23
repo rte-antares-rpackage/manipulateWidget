@@ -58,7 +58,9 @@
 #' @param .compareLayout Used only when \code{.compare} is set. Possible values
 #'   are "v" for vertical layout (one chart above the other) and "h" for
 #'   horizontal layout (one chart on the right of the other)
-#'
+#' @param .env Environment used to evaluate the inital values of controls. This
+#'   parameter may have an impact on the result only when \code{.updateInputs}
+#'   is used.
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the controls.
@@ -240,7 +242,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   }
 
   # Evaluate a first time .expr to determine the class of the output
-  controls <- comparisonControls(list(...), .compare, .updateInputs)
+  controls <- comparisonControls(list(...), .compare, .updateInputs, env = .env)
   controlDesc <- getControlDesc(controls[c("common", "ind")])
 
   initValues <- controlDesc$initValue
@@ -304,7 +306,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .titleBar = !isRuntimeShiny,
     .updateInputs = .updateInputs,
     .compare = .compare,
-    .compareLayout = .compareLayout
+    .compareLayout = .compareLayout,
+    .env = .env
   )
 
   server <- mwServer(.expr, initWidget, initWidget2,

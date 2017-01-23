@@ -222,7 +222,7 @@ resetInitValues <- function(controls, values, newParams = NULL) {
 # - common: list of common controls
 # - ind: list of individual controls for the first chart to compare
 # - ind2: list of individual controls for the seconde chart to compare
-comparisonControls <- function(controls, compare, updateInputs = NULL) {
+comparisonControls <- function(controls, compare, updateInputs = NULL, env) {
   common <- filterControls(controls, names(compare), drop = TRUE)
   ind <- filterControls(controls, names(compare))
   ind2 <- ind
@@ -238,8 +238,8 @@ comparisonControls <- function(controls, compare, updateInputs = NULL) {
   initValues2 <- mergeList(initValues, initValues2)
 
   # Reset initial values of input controls
-  newParams1 <- eval(updateInputs, list2env(initValues1, parent = parent.frame()))
-  newParams2 <- eval(updateInputs, list2env(initValues2, parent = parent.frame()))
+  newParams1 <- eval(updateInputs, list2env(initValues1, parent = env))
+  newParams2 <- eval(updateInputs, list2env(initValues2, parent = env))
 
   ind <- resetInitValues(ind, initValues1, newParams1)
   ind2 <- resetInitValues(ind2, initValues2, newParams2)

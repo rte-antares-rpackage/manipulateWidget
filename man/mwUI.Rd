@@ -8,7 +8,8 @@ mwUI(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
   .tabColumns = 2, .updateBtn = FALSE, .main = "", .outputFun = NULL,
   .outputId = "output", .titleBar = TRUE, .updateInputs = NULL,
   .compare = NULL, .compareLayout = c("v", "h"), .controlList = NULL,
-  .container = miniUI::miniContentPanel, .style = "")
+  .container = miniUI::miniContentPanel, .style = "",
+  .env = parent.frame())
 }
 \arguments{
 \item{...}{One or more named control arguments created with functions

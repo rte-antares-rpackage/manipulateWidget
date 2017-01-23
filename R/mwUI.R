@@ -25,13 +25,13 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .outputFun = NULL, .outputId = "output",
                  .titleBar = TRUE, .updateInputs = NULL, .compare = NULL, .compareLayout = c("v", "h"),
                  .controlList = NULL, .container = miniUI::miniContentPanel,
-                 .style = "") {
+                 .style = "", .env = parent.frame()) {
 
   .controlPos <- match.arg(.controlPos)
   .compareLayout <- match.arg(.compareLayout)
   controls <- append(list(...), .controlList)
 
-  controls <- comparisonControls(controls, .compare, .updateInputs)
+  controls <- comparisonControls(controls, .compare, .updateInputs, env = .env)
   commonControls <- controls$common
 
   if (is.null(.compare)) {
