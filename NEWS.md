@@ -1,5 +1,10 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
+# ManipulateWidget 0.5.1 (2017-01-23)
+
+## BUGFIXES
+* Fixed a scope problem occuring when manipulateWidget was used inside a function and parameter `.updateInputs` was used.
+
 # manipulateWidget 0.5.0 (2017-01-18)
 
 ## New Features

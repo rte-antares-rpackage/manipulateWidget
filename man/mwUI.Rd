@@ -66,6 +66,10 @@ specifying directly the controls through the \code{...} arguments.}
 \item{.container}{tag function that will be used to enclose the UI.}
 
 \item{.style}{CSS style to apply to the container element.}
+
+\item{.env}{Environment used to evaluate the inital values of controls. This
+parameter may have an impact on the result only when \code{.updateInputs}
+is used.}
 }
 \value{
 A \code{shiny.tag.list} object that can be used in function

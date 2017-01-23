@@ -58,9 +58,6 @@
 #' @param .compareLayout Used only when \code{.compare} is set. Possible values
 #'   are "v" for vertical layout (one chart above the other) and "h" for
 #'   horizontal layout (one chart on the right of the other)
-#' @param .env Environment used to evaluate the inital values of controls. This
-#'   parameter may have an impact on the result only when \code{.updateInputs}
-#'   is used.
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the controls.

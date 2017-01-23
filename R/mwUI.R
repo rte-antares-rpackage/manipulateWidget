@@ -12,6 +12,9 @@
 #'   specifying directly the controls through the \code{...} arguments.
 #' @param .container tag function that will be used to enclose the UI.
 #' @param .style CSS style to apply to the container element.
+#' @param .env Environment used to evaluate the inital values of controls. This
+#'   parameter may have an impact on the result only when \code{.updateInputs}
+#'   is used.
 #' @inheritParams manipulateWidget
 #'
 #' @return
