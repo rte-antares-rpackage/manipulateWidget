@@ -223,7 +223,7 @@ resetInitValues <- function(controls, values, newParams = NULL) {
 # - ind: list of individual controls for the first chart to compare
 # - ind2: list of individual controls for the seconde chart to compare
 comparisonControls <- function(controls, compare, updateInputs = NULL, env) {
-  if (length(controls) == 0) return(list())
+  if (length(controls) == 0) return(list(common = list(), ind1 = list(), ind2 = list()))
   common <- filterControls(controls, names(compare), drop = TRUE)
   ind <- filterControls(controls, names(compare))
   ind2 <- ind

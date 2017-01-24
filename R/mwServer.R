@@ -146,7 +146,9 @@ updateInputs <- function(session, input, controlDesc, .display, .compare, .updat
   newParams <- eval(.updateInputs, envir = env)
 
   for (n in names(newParams)) {
-    inputId <- paste0(n, suffix)
+    # TODO: in comparison mode, common inputs are updated twice.
+    if (n %in% names(.compare)) inputId <- paste0(n, suffix)
+    else inputId <- n
     desc <- controlDesc[controlDesc$name == inputId,]
     updateInputFun <- switch(
       desc$type,
