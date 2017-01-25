@@ -2,8 +2,15 @@
 
 # ManipulateWidget 0.5.1 (2017-01-23)
 
-## BUGFIXES
+## New Features
+
+* Variable `.id` is now available when evaluating the initial properties of the input controls. This can be useful in comparison mode, for instance to set different choices for a select input. 
+
+## Bug fixes
+
 * Fixed a scope problem occuring when manipulateWidget was used inside a function and parameter `.updateInputs` was used.
+* Fixed a crash that could occur when parameters `.compare` and `.updateInputs` were used together.
+
 
 # manipulateWidget 0.5.0 (2017-01-18)
 
