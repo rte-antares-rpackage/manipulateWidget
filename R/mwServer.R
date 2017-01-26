@@ -96,11 +96,11 @@ mwServer <- function(.expr, initWidget, initWidget2 = NULL,
       inputEnv <- getInputEnv(inputList(), NULL, output, 1, .env, TRUE)
 
       if (!compareMode) {
-        stopApp(eval(.expr, envir = inputEnv))
+        shiny::stopApp(eval(.expr, envir = inputEnv))
       } else {
         inputEnv2 <- getInputEnv(inputList2(), NULL, output, 2, .env, TRUE)
 
-        stopApp(combineWidgets(
+        shiny::stopApp(combineWidgets(
           ncol = ifelse(.compareLayout == "v", 1, 2),
           eval(.expr, envir = inputEnv),
           eval(.expr, envir = inputEnv2)
@@ -137,8 +137,8 @@ updateInputs <- function(session, input, controlDesc, .display, .compare, .updat
     )
 
     for (id in names(.displayBool)) {
-      updateCheckboxInput(session, inputId = paste0(id, "_visible"),
-                          value = .displayBool[[id]])
+      shiny::updateCheckboxInput(session, inputId = paste0(id, "_visible"),
+                                 value = .displayBool[[id]])
     }
   }
 
@@ -152,16 +152,16 @@ updateInputs <- function(session, input, controlDesc, .display, .compare, .updat
     desc <- controlDesc[controlDesc$name == inputId,]
     updateInputFun <- switch(
       desc$type,
-      slider = updateSliderInput,
-      text = updateTextInput,
-      numeric = updateNumericInput,
-      password = updateTextInput,
-      select = updateSelectizeInput,
-      checkbox = updateCheckboxInput,
-      radio = updateRadioButtons,
-      date = updateDateInput,
-      dateRange = updateDateRangeInput,
-      checkboxGroup = updateCheckboxGroupInput
+      slider = shiny::updateSliderInput,
+      text = shiny::updateTextInput,
+      numeric = shiny::updateNumericInput,
+      password = shiny::updateTextInput,
+      select = shiny::updateSelectizeInput,
+      checkbox = shiny::updateCheckboxInput,
+      radio = shiny::updateRadioButtons,
+      date = shiny::updateDateInput,
+      dateRange = shiny::updateDateRangeInput,
+      checkboxGroup = shiny::updateCheckboxGroupInput
     )
 
     for (p in names(newParams[[n]])) {

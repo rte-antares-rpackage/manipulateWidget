@@ -65,7 +65,7 @@ mwControlFactory <- function(type, inputFunction, params, valueVar = NULL) {
 mwSlider <- function(min, max, value, label = NULL, ...) {
   mwControlFactory(
     "slider",
-    function(...) {tags$div(style = "padding:0 5px;", sliderInput(...))},
+    function(...) {tags$div(style = "padding:0 5px;", shiny::sliderInput(...))},
     list(min = min, max = max, value = value, label = label, ...)
   )
 }
@@ -96,7 +96,7 @@ mwSlider <- function(min, max, value, label = NULL, ...) {
 #' @family controls
 mwText <- function(value = "", label = NULL, ...) {
   mwControlFactory(
-    "text", textInput,
+    "text", shiny::textInput,
     list(value = value, label = label, ...)
   )
 }
@@ -128,7 +128,7 @@ mwText <- function(value = "", label = NULL, ...) {
 #' @family controls
 mwNumeric <- function(value, label = NULL, ...) {
   mwControlFactory(
-    "numeric", numericInput,
+    "numeric", shiny::numericInput,
     list(value = value, label = label, ...)
   )
 }
@@ -164,7 +164,7 @@ mwNumeric <- function(value, label = NULL, ...) {
 #' @family controls
 mwPassword <- function(value = "", label = NULL, ...) {
   mwControlFactory(
-    "password", passwordInput,
+    "password", shiny::passwordInput,
     list(value = value, label = label, ...)
   )
 }
@@ -216,7 +216,7 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #' @family controls
 mwSelect <- function(choices = value, value = NULL, label = NULL, ..., multiple = FALSE) {
   mwControlFactory(
-    "select", selectizeInput,
+    "select", shiny::selectizeInput,
     list(choices = choices, value = value, label = label, ..., multiple = multiple),
     valueVar = "selected"
   )
@@ -250,7 +250,7 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ..., multiple 
 #' @family controls
 mwCheckbox <- function(value = FALSE, label = NULL, ...) {
   mwControlFactory(
-    "checkbox", checkboxInput,
+    "checkbox", shiny::checkboxInput,
     list(value = value, label = label, ...)
   )
 }
@@ -286,7 +286,7 @@ mwCheckbox <- function(value = FALSE, label = NULL, ...) {
 #' @family controls
 mwRadio <- function(choices, value = NULL, label = NULL, ...) {
   mwControlFactory(
-    "radio", radioButtons,
+    "radio", shiny::radioButtons,
     list(choices = choices, value = value, label = label, ...),
     valueVar = "selected"
   )
@@ -318,7 +318,7 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
 #' @family controls
 mwDate <- function(value = NULL, label = NULL, ...) {
   mwControlFactory(
-    "date", dateInput,
+    "date", shiny::dateInput,
     list(value = value, label = label, ...)
   )
 }
@@ -350,7 +350,7 @@ mwDate <- function(value = NULL, label = NULL, ...) {
 #' @family controls
 mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...) {
   mwControlFactory(
-    "dateRange", dateRangeInput,
+    "dateRange", shiny::dateRangeInput,
     list(value = value, label = label, ...),
     valueVar = c("start", "end")
   )
@@ -388,7 +388,7 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 #' @family controls
 mwCheckboxGroup <- function(choices, value = c(), label = NULL, ...) {
   mwControlFactory(
-    "checkboxGroup", checkboxGroupInput,
+    "checkboxGroup", shiny::checkboxGroupInput,
     list(choices = choices, value = value, label = label, ...),
     valueVar = "selected"
   )

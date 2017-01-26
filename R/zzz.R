@@ -75,10 +75,9 @@
 #'
 #' @rdname manipulateWidget-package
 #' @docType package
-#'
-#' @import shiny
-#' @import miniUI
-#' @import htmlwidgets
+#' @importFrom shiny tags observe observeEvent reactive
+#' @importFrom miniUI miniContentPanel miniPage miniTabPanel miniTabstripPanel gadgetTitleBar
+#' @importFrom htmlwidgets getDependency
 #' @importFrom methods is
 #' @importFrom utils getFromNamespace
 #' @importFrom stats runif

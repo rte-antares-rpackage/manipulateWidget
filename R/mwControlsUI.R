@@ -54,7 +54,7 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
         params$inputId <- id
         params$width <- ifelse(.dir == "v", "100%", "180px")
 
-        res <- conditionalPanel(
+        res <- shiny::conditionalPanel(
           condition = sprintf("input.%s_visible", id),
           f(params)
         )
@@ -67,14 +67,18 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
   )
 
   vis_checkboxes <- lapply(ids, function(id) {
-    checkboxInput(paste0(id, "_visible"), "", value = TRUE)
+    shiny::checkboxInput(paste0(id, "_visible"), "", value = TRUE)
   })
   vis_checkboxes$style <- "display:none"
 
   controls <- append(controls, list(do.call(tags$div, vis_checkboxes)))
 
-  if (.updateBtn) controls <- append(controls, list(actionButton(".update", "Update",
-                                                                 class = "btn-primary")))
+  if (.updateBtn) {
+    controls <- append(
+      controls,
+      list(shiny::actionButton(".update", "Update", class = "btn-primary"))
+    )
+  }
 
 
   if (.dir == "v") {
@@ -84,7 +88,7 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
       controlCols <- lapply(1:.n, function(i) {
         .controlsCol(controls[((i-1) * nrows + 1):(i * nrows)])
       })
-      res <- do.call(fillRow, controlCols)
+      res <- do.call(shiny::fillRow, controlCols)
     }
 
   } else { # dir == "h"
@@ -94,7 +98,7 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
       controlRows <- lapply(1:.n, function(i) {
         .controlsRow(controls[((i-1) * ncols + 1):(i * ncols)])
       })
-      res <- do.call(fillCol, controlRows)
+      res <- do.call(shiny::fillCol, controlRows)
     }
   }
 
@@ -103,11 +107,11 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
 
 .controlsCol <- function(controls) {
   #controls$style <- "width:200px;"
-  do.call(div, controls)
+  do.call(tags$div, controls)
 }
 
 .controlsRow <- function(controls) {
   controls$height <- "100px"
-  do.call(fillRow, controls)
+  do.call(shiny::fillRow, controls)
 }
 
