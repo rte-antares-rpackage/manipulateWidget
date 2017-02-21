@@ -44,4 +44,3 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwPassword}}, \code{\link{mwSelect}},
   \code{\link{mwSlider}}, \code{\link{mwText}}
 }
-

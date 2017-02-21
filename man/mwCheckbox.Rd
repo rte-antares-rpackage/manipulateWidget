@@ -41,4 +41,3 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwRadio}}, \code{\link{mwSelect}},
   \code{\link{mwSlider}}, \code{\link{mwText}}
 }
-

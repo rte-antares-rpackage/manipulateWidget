@@ -79,4 +79,3 @@ A \code{shiny.tag.list} object that can be used in function
 This function can be used if you desire to create a gadget that has the same
 UI as a manipulateWidget gadget but with a custom server logic.
 }
-

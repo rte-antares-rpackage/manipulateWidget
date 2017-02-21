@@ -115,6 +115,7 @@ variables:
 You can take a look at the last example to see how to use these two
 variables to update a leaflet widget.
 }
+
 \examples{
 if (require(dygraphs)) {
 
@@ -223,4 +224,3 @@ if (require(leaflet)) {
 }
 
 }
-

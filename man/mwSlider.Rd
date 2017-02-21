@@ -55,4 +55,3 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwPassword}}, \code{\link{mwRadio}},
   \code{\link{mwSelect}}, \code{\link{mwText}}
 }
-

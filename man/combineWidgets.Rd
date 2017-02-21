@@ -154,4 +154,3 @@ if (require(plotly)) {
 }
 
 }
-

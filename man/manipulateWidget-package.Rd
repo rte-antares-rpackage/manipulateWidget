@@ -74,4 +74,3 @@ especially the examples of \code{\link{manipulateWidget}} and
 \seealso{
 \code{\link{manipulateWidget}}, \code{\link{combineWidgets}}
 }
-

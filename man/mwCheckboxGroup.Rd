@@ -45,4 +45,3 @@ Other controls: \code{\link{mwCheckbox}},
   \code{\link{mwRadio}}, \code{\link{mwSelect}},
   \code{\link{mwSlider}}, \code{\link{mwText}}
 }
-

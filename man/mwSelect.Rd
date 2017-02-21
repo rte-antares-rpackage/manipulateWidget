@@ -61,4 +61,3 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwPassword}}, \code{\link{mwRadio}},
   \code{\link{mwSlider}}, \code{\link{mwText}}
 }
-
