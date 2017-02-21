@@ -54,13 +54,13 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
         params$inputId <- id
         params$width <- ifelse(.dir == "v", "100%", "180px")
 
-        res <- shiny::conditionalPanel(
-          condition = sprintf("input.%s_visible", id),
-          f(params)
-        )
+        res <- f(params)
       }
 
-      res
+      shiny::conditionalPanel(
+        condition = sprintf("input.%s_visible", id),
+        res
+      )
     },
     f = controlList, id = ids,
     SIMPLIFY = FALSE, USE.NAMES = FALSE

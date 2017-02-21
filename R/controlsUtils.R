@@ -39,11 +39,19 @@ getControlDesc <- function(controls) {
      params <<- append(params, list(attr(x, "params")))
    } else if (length(x) == 0) {
      return()
-   } else mapply(getControlDescRecursive, x=x, name = names(x), level = level + 1)
+   } else {
+     inputNames <<- append(inputNames, name)
+     initValues <<- append(initValues, list(NULL))
+     types <<- append(types, "group")
+     groupLevel <<- append(groupLevel, level)
+     multiple <<- append(multiple, NA)
+     params <<- append(params, list(NULL))
+     mapply(getControlDescRecursive, x=x, name = names(x), level = level + 1)
+   }
  }
- getControlDescRecursive(controls)
+ getControlDescRecursive(controls, ".root")
 
- data.frame(
+ res <- data.frame(
    name = inputNames,
    initValue = I(initValues),
    type = types,
@@ -52,6 +60,9 @@ getControlDesc <- function(controls) {
    params = I(params),
    stringsAsFactors = FALSE
  )
+
+ res <- res[res$type != "group",]
+ res
 }
 
 # Internal function that filters a list of controls given a vector of names.

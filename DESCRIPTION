@@ -12,8 +12,8 @@ Description: Like package 'manipulate' does for static graphics, this package
     helps to easily add controls like sliders, pickers, checkboxes, etc. that 
     can be used to modify the input data or the parameters of an interactive 
     chart created with package 'htmlwidgets'.
-BugReports: https://github.com/rte-antares-rpackage/manipulateWidget/issues
 URL: https://github.com/rte-antares-rpackage/manipulateWidget
+BugReports: https://goo.gl/pV7o5c
 License: GPL (>= 2) | file LICENSE
 Imports:
     shiny,
@@ -31,6 +31,6 @@ Suggests:
     xts,
     rmarkdown
 LazyData: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0
 VignetteBuilder: knitr
 Encoding: UTF-8
