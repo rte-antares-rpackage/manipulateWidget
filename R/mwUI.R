@@ -5,6 +5,7 @@
 #' This function can be used if you desire to create a gadget that has the same
 #' UI as a manipulateWidget gadget but with a custom server logic.
 #'
+#' @param controls Object returned by preprocessControls
 #' @param .outputFun The output function for the desired htmlwidget.
 #' @param .outputId Id of the output element in the shiny interface.
 #' @param .titleBar Whether to include a title bar with controls in the widget
@@ -21,23 +22,21 @@
 #' A \code{shiny.tag.list} object that can be used in function
 #' \code{\link[shiny]{runGadget}} as ui parameter.
 #'
-#' @export
+#' @noRd
 #'
-mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
+mwUI <- function(.controlList, .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
                  .outputFun = NULL, .outputId = "output",
-                 .titleBar = TRUE, .updateInputs = NULL, .compare = NULL, .compareLayout = c("v", "h"),
-                 .controlList = NULL, .container = miniUI::miniContentPanel,
-                 .style = "", .env = parent.frame()) {
+                 .titleBar = TRUE, .updateInputs = NULL, nmod = 1, .compareLayout = c("v", "h"),
+                 .container = miniUI::miniContentPanel,
+                 .style = "") {
 
   .controlPos <- match.arg(.controlPos)
   .compareLayout <- match.arg(.compareLayout)
-  controls <- append(list(...), .controlList)
 
-  controls <- comparisonControls(controls, .compare, .updateInputs, env = .env)
-  commonControls <- controls$common
+  commonControls <- .controlList$shared
 
-  if (is.null(.compare)) {
+  if (nmod == 1) {
     if(is.null(.outputFun)) {
       .content <- shiny::htmlOutput(.outputId, style = "height:100%;width:100%")
     } else {
@@ -45,29 +44,31 @@ mwUI <- function(..., .controlPos = c("left", "top", "right", "bottom", "tab"),
     }
   } else {
 
-
     if (.compareLayout == "v") {
       .content <- shiny:: fillCol(
-        mwUI(.controlList = controls$ind, .outputFun = .outputFun,
+        mwUI(.controlList = list(shared = .controlList$ind[[1]]),
+             nmod = 1, .outputFun = .outputFun,
              .outputId = .outputId, .titleBar = FALSE, .container=shiny:: fillRow,
              .style = "margin-left:5px; padding: 0 0 5px 5px;border-left: solid 1px #ddd;"),
-        mwUI(.controlList = controls$ind2, .outputFun = .outputFun,
+        mwUI(.controlList = list(shared = .controlList$ind[[2]]),
+             nmod = 1, .outputFun = .outputFun,
              .outputId = paste0(.outputId, "2"), .titleBar = FALSE,
              .container=shiny:: fillRow,
              .style = "margin-left:5px; padding: 5px 0 0 5px;border-left: solid 1px #ddd;")
       )
     } else {
       .content <- shiny:: fillRow(
-        mwUI(.controlList = controls$ind, .outputFun = .outputFun,
+        mwUI(.controlList = list(shared = .controlList$ind[[1]]),
+             nmod = 1, .outputFun = .outputFun,
              .outputId = .outputId, .titleBar = FALSE, .controlPos = "top",
              .container=shiny:: fillRow,
              .style = "margin-left:5px;padding-left:5px;border-left: solid 1px #ddd;"),
-        mwUI(.controlList = controls$ind2, .outputFun = .outputFun,
+        mwUI(.controlList = list(shared = .controlList$ind[[2]]),
+             nmod = 1, .outputFun = .outputFun,
              .outputId = paste0(.outputId, "2"), .titleBar = FALSE, .controlPos = "top",
              .container = shiny:: fillRow, .style = "padding-left:5px;")
       )
     }
-
   }
 
   if (length(commonControls) == 0) {
