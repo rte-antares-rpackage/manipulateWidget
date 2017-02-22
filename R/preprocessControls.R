@@ -1,3 +1,33 @@
+#' Private function that transforms the list of inputs as it is expressed by the
+#' user in a convenient object.
+#'
+#' @param controls list of controls
+#' @param compare
+#' @param update non evaluated list
+#' @param env environment
+#'
+#' @return
+#' An object with the following structure:
+#' -nmod: number of modules (1 for no comparison, 2 for a single comparison, etc.)
+#' - inputs: A data.frame containing a description of all inputs that will be
+#'    created in the UI. It contains the following columns:
+#'    - name: parameter name
+#'    - initValue: initial value of the parameter
+#'    - type: type of input
+#'    - level: level in the UI (1 = root element)
+#'    - multiple: only for select input. Are multiple values allowed?
+#'    - params: parameters for the input
+#'    - inputId: Id of the input in the UI
+#'    - mod: module index. For convenience, shared controls are in the first module.
+#'    - env: environment
+#' - env:
+#'    - shared: environment containing the value of shared inputs
+#'    - ind: list of environments, one for each module
+#' - controls:
+#'    - shared: list of shared inputs
+#'    - ind: list of list of individual inputs (one for each module)
+#'
+#' @noRd
 preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   # Initialize object returned by the function
   res <- list(
@@ -25,6 +55,8 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
     }
   }
 
+  res$nmod <- nmod
+
   # Init environments and control list for each module
   for (i in seq_len(nmod)) {
     res$env$ind[[i]] <- new.env(parent = res$env$shared)
@@ -39,6 +71,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
 
   controlsDesc <- getControlDesc(controls)
   controlsDesc$inputId <- controlsDesc$name
+  controlsDesc$mod <- 1
 
   controlsDescShared <- subset(controlsDesc, !name %in% names(compare))
   tmp <- list()
@@ -55,11 +88,13 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
     controlsDescInd <- lapply(seq_len(nmod), function(i) {
       out <- controlsDescInd
       out$inputId <- paste0(out$inputId, i)
+      out$mod <- i
 
       tmp <- list()
       for (j in seq_len(nrow(out))) {
         if (out$name[j] %in% names(compare) && !is.null(compare[[out$name[j]]])) {
           value <- compare[[out$name[j]]][[i]]
+          out$initValue[[j]] <- value
         } else {
           value <- out$initValue[[j]]
         }
@@ -77,45 +112,119 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   # Correct initial values #####################################################
 
   # First check of initial values
+  res$inputs$initValue <- getInitValue(res$inputs)
+  for (i in seq_len(nrow(res$inputs))) {
+    assign(res$inputs$name[i], res$inputs$initValue[[i]], envir = res$inputs$env[[i]])
+  }
+
   # Process the update parameter
+  for (i in seq_len(nmod)) {
+    updatedParams <- eval(update, envir = res$env$ind[[i]])
+    for (n in names(updatedParams)) {
+      j <- which(res$inputs$name == n & res$inputs$mod == i)
+      if (length(j) == 1) {
+        res$inputs$params[[j]] <- mergeList(res$inputs$params[[j]], updatedParams[[n]])
+      }
+    }
+  }
+
   # Second check of initial values
+  res$inputs$initValue <- getInitValue(res$inputs)
+  for (i in seq_len(nrow(res$inputs))) {
+    assign(res$inputs$name[i], res$inputs$initValue[[i]], envir = res$inputs$env[[i]])
+  }
+
+  # List of controls for UI ####################################################
+
+  res$controls$shared <- filterControls(controls, names(compare), drop = TRUE)
+  res$controls$shared <- setValueAndParams(res$controls$shared, res$inputs)
+
+  for (i in seq_len(nmod)) {
+    res$controls$ind[[i]] <- filterControls(controls, names(compare))
+    res$controls$ind[[i]] <- addSuffixToControls(res$controls$ind[[i]], i)
+    res$controls$ind[[i]] <- setValueAndParams(res$controls$ind[[i]], res$inputs)
+  }
 
   res
 }
 
-comparisonControls <- function(controls, compare, updateInputs = NULL, env) {
-  if (length(controls) == 0) return(list(common = list(), ind1 = list(), ind2 = list()))
-  common <- filterControls(controls, names(compare), drop = TRUE)
-  ind <- filterControls(controls, names(compare))
-  ind2 <- ind
+getInitValue <- function(desc) {
+  type <- desc$type
+  value <- desc$initValue
+  params <- desc$params
+  lapply(seq_along(type), function(i) {
+    v <- value[[i]]
+    p <- params[[i]]
 
-  # extract the initial values of the individual parameters of each chart
-  controlsDesc <- getControlDesc(controls)
-  initValues <- controlsDesc$initValue
-  names(initValues) <- controlsDesc$name
+    if (type[i] == "slider") {
+      v[v < p$min] <- p$min
+      v[v > p$max] <- p$max
+    } else if (type[i] %in% c("text", "password")) {
+      if (is.null(v) || is.na(v)) {
+        v <- ""
+      } else {
+        v <- as.character(v)
+      }
+    } else if (type[i] == "numeric") {
+      if (length(v) == 0 || !is.numeric(v)) {
+        v <- NA_real_
+      }
+      if (!is.na(v)) {
+        if (!is.null(p$min) && v < p$min) {
+          v <- p$min
+        }
+        if (!is.null(p$max) && v > p$max) {
+          v <- p$max
+        }
+      }
+    } else if (type[i] == "select") {
+      if (is.null(v) || !all(v %in% p$choices)) {
+        if (is.null(p$multiple) || !p$multiple) {
+          v <- p$choices[[1]]
+        } else {
+          v <- intersect(v, p$choices)
+        }
+      }
+    } else if (type[i] == "checkbox") {
+      if (is.null(v) || !is.logical(v)) {
+        v <- FALSE
+      }
+    } else if (type[i] == "radio") {
+      if (is.null(v) || !all(v %in% p$choices)) {
+        v <- p$choices[[1]]
+      }
+    } else if (type[i] == "date") {
 
-  initValues1 <- lapply(compare, function(x) {if(is.null(x)) x else x[[1]]})
-  initValues1 <- mergeList(initValues, initValues1)
-  initValues2 <- lapply(compare, function(x) {if(is.null(x)) x else x[[2]]})
-  initValues2 <- mergeList(initValues, initValues2)
+    } else if (type[i] == "dateRange") {
 
-  # Reset initial values of input controls
-  env1 <- list2env(initValues1, parent = env)
-  env1$.id <- 1
-  env1$.initial <- TRUE
-  env1$.session <- FALSE
-  newParams1 <- eval(updateInputs, env1)
-  env2 <- list2env(initValues2, parent = env)
-  env2$.id <- 2
-  env2$.initial <- TRUE
-  env2$.session <- FALSE
-  newParams2 <- eval(updateInputs, env2)
+    } else if (type[i] == "checkboxGroup") {
+      if (is.null(v) || !all(v %in% p$choices)) {
+        v <- intersect(v, p$choices)
+      }
+    }
 
-  ind <- resetInitValues(ind, initValues1, newParams1)
-  ind2 <- resetInitValues(ind2, initValues2, newParams2)
-  common <- resetInitValues(common, NULL, newParams1)
-  # Add a "2" at the end of the names of the inputs of the second chart
-  ind2 <- addSuffixToControls(ind2, "2")
+    v
+  })
+}
 
-  list(common = common, ind = ind, ind2 = ind2)
+setValueAndParams <- function(controls, desc) {
+  name <- desc$inputId
+  initValue <- desc$initValue
+  params <- desc$params
+
+  setValueAndParamsIter <- function(x) {
+    for (n in names(x)) {
+      if (is.list(x[[n]])) {
+        x[[n]] <- setValueAndParamsIter(x[[n]])
+      } else {
+        i <- which(name == n)
+        attr(x[[n]], "params") <- params[[i]]
+        attr(x[[n]], "params")$value <- initValue[[i]]
+      }
+    }
+
+    x
+  }
+
+  setValueAndParamsIter(controls)
 }
