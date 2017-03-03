@@ -119,6 +119,8 @@ mwServer <- function(.expr, controls, widgets,
 
     observeEvent(input$done, {
       widgets <- lapply(controls$env$ind, function(e) {
+        assign(".initial", TRUE, envir = e)
+        assign(".session", session, envir = e)
         eval(.expr, envir = e)
       })
       if (length(widgets) == 1) shiny::stopApp(widgets[[1]])
