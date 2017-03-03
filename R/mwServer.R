@@ -54,6 +54,53 @@ mwServer <- function(.expr, controls, widgets,
           }
         }
 
+        # Update parameters
+        newParams <- eval(.updateInputs, envir = moduleEnv())
+
+        for (n in names(newParams)) {
+          inputDesc <- subset(desc, name == n)
+          updateInputFun <- switch(
+            inputDesc$type,
+            slider = shiny::updateSliderInput,
+            text = shiny::updateTextInput,
+            numeric = shiny::updateNumericInput,
+            password = shiny::updateTextInput,
+            select = shiny::updateSelectizeInput,
+            checkbox = shiny::updateCheckboxInput,
+            radio = shiny::updateRadioButtons,
+            date = shiny::updateDateInput,
+            dateRange = shiny::updateDateRangeInput,
+            checkboxGroup = shiny::updateCheckboxGroupInput
+          )
+
+          # For each parameter, check if its value has changed in order to avoid
+          # useless updates of inputs that can be annoying for users. If it has
+          # changed, update the corresponding parameter.
+          for (p in names(newParams[[n]])) {
+            if (identical(newParams[[n]][[p]], desc$params[[1]][[p]])) {
+              next
+            }
+            args <- newParams[[n]][p]
+            args$session <- session
+            args$inputId <- inputDesc$inputId
+
+            # Special case: update value of select input when choices are modified
+            if (p == "choices" & inputDesc$type == "select") {
+              actualSelection <- get(n, envir = moduleEnv())
+              if (inputDesc$multiple) {
+                args$selected <- intersect(actualSelection, newParams[[n]][[p]])
+              } else {
+                if (actualSelection %in% newParams[[n]][[p]]) {
+                  args$selected <- actualSelection
+                }
+              }
+            }
+            do.call(updateInputFun, args)
+
+            controls$inputs$params[controls$inputs$name == inputDesc$inputId][[1]][[p]] <-  newParams[[n]][[p]]
+          }
+        }
+
         # Update widgets
         res <- eval(.expr, envir = moduleEnv())
         if (is(res, "htmlwidget")) {
@@ -129,21 +176,6 @@ mwServer <- function(.expr, controls, widgets,
 }
 
 updateInputs <- function(session, input, controlDesc, .display, .compare, .updateInputs, env, suffix = "") {
-  # Set visibility of inputs when parameter .display is set
-  .displayBool <- eval(.display, envir = env)
-  if (length(.displayBool) > 0) {
-    names(.displayBool) <- ifelse(
-      names(.displayBool) %in% names(.compare),
-      paste0(names(.displayBool), suffix),
-      names(.displayBool)
-    )
-
-    for (id in names(.displayBool)) {
-      shiny::updateCheckboxInput(session, inputId = paste0(id, "_visible"),
-                                 value = .displayBool[[id]])
-    }
-  }
-
   #Update choices of select inputs if parameter .choices is set
   newParams <- eval(.updateInputs, envir = env)
 
