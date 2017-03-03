@@ -4,11 +4,6 @@ mwServer <- function(.expr, controls, widgets,
                      .updateBtn) {
 
   function(input, output, session) {
-    # Since the widget has already been created with the initial values, we want
-    # to skip the first evaluation of the widget by the server function. This is
-    # why we create the following variable.
-    firstEval <- TRUE
-
     # Ensure that initial values of select inputs with multiple = TRUE are in
     # same order than the user asked.
     selectInputList <- subset(controls$inputs, type == "select" & multiple)$name
@@ -17,7 +12,6 @@ mwServer <- function(.expr, controls, widgets,
     }
 
     updateModule <- function(i) {
-      print(i)
       # Initialize the widgets with their first evaluation
       output[[paste0("output", i)]] <- renderFunction(widgets[[i]])
 
@@ -38,8 +32,6 @@ mwServer <- function(.expr, controls, widgets,
 
       # Update inputs and widget of the module
       observe({
-        print(paste("Updating module", i))
-
         # Show/hide controls
         displayBool <- eval(.display, envir = moduleEnv())
         if (length(displayBool) > 0) {
@@ -54,57 +46,69 @@ mwServer <- function(.expr, controls, widgets,
           }
         }
 
-        # Update parameters
-        newParams <- eval(.updateInputs, envir = moduleEnv())
+        # Skip first evaluation, since widgets have already been rendered with
+        # initial parameters
+        if (get(".initial", envir = moduleEnv())) {
 
-        for (n in names(newParams)) {
-          inputDesc <- subset(desc, name == n)
-          updateInputFun <- switch(
-            inputDesc$type,
-            slider = shiny::updateSliderInput,
-            text = shiny::updateTextInput,
-            numeric = shiny::updateNumericInput,
-            password = shiny::updateTextInput,
-            select = shiny::updateSelectizeInput,
-            checkbox = shiny::updateCheckboxInput,
-            radio = shiny::updateRadioButtons,
-            date = shiny::updateDateInput,
-            dateRange = shiny::updateDateRangeInput,
-            checkboxGroup = shiny::updateCheckboxGroupInput
-          )
+          assign(".initial", FALSE, envir = moduleEnv())
+          assign(".session", session, envir = moduleEnv())
 
-          # For each parameter, check if its value has changed in order to avoid
-          # useless updates of inputs that can be annoying for users. If it has
-          # changed, update the corresponding parameter.
-          for (p in names(newParams[[n]])) {
-            if (identical(newParams[[n]][[p]], desc$params[[1]][[p]])) {
-              next
-            }
-            args <- newParams[[n]][p]
-            args$session <- session
-            args$inputId <- inputDesc$inputId
+        } else {
 
-            # Special case: update value of select input when choices are modified
-            if (p == "choices" & inputDesc$type == "select") {
-              actualSelection <- get(n, envir = moduleEnv())
-              if (inputDesc$multiple) {
-                args$selected <- intersect(actualSelection, newParams[[n]][[p]])
-              } else {
-                if (actualSelection %in% newParams[[n]][[p]]) {
-                  args$selected <- actualSelection
+          print(paste("Updating module", i))
+          # Update parameters
+          newParams <- eval(.updateInputs, envir = moduleEnv())
+
+          for (n in names(newParams)) {
+            inputDesc <- subset(desc, name == n)
+            updateInputFun <- switch(
+              inputDesc$type,
+              slider = shiny::updateSliderInput,
+              text = shiny::updateTextInput,
+              numeric = shiny::updateNumericInput,
+              password = shiny::updateTextInput,
+              select = shiny::updateSelectizeInput,
+              checkbox = shiny::updateCheckboxInput,
+              radio = shiny::updateRadioButtons,
+              date = shiny::updateDateInput,
+              dateRange = shiny::updateDateRangeInput,
+              checkboxGroup = shiny::updateCheckboxGroupInput
+            )
+
+            # For each parameter, check if its value has changed in order to avoid
+            # useless updates of inputs that can be annoying for users. If it has
+            # changed, update the corresponding parameter.
+            for (p in names(newParams[[n]])) {
+              if (identical(newParams[[n]][[p]], desc$params[[1]][[p]])) {
+                next
+              }
+              args <- newParams[[n]][p]
+              args$session <- session
+              args$inputId <- inputDesc$inputId
+
+              # Special case: update value of select input when choices are modified
+              if (p == "choices" & inputDesc$type == "select") {
+                actualSelection <- get(n, envir = moduleEnv())
+                if (inputDesc$multiple) {
+                  args$selected <- intersect(actualSelection, newParams[[n]][[p]])
+                } else {
+                  if (actualSelection %in% newParams[[n]][[p]]) {
+                    args$selected <- actualSelection
+                  }
                 }
               }
+              do.call(updateInputFun, args)
+
+              controls$inputs$params[controls$inputs$name == inputDesc$inputId][[1]][[p]] <-  newParams[[n]][[p]]
             }
-            do.call(updateInputFun, args)
-
-            controls$inputs$params[controls$inputs$name == inputDesc$inputId][[1]][[p]] <-  newParams[[n]][[p]]
           }
-        }
 
-        # Update widgets
-        res <- eval(.expr, envir = moduleEnv())
-        if (is(res, "htmlwidget")) {
-          output[[paste0("output", i)]] <- renderFunction(res)
+          # Update widgets
+          res <- eval(.expr, envir = moduleEnv())
+          if (is(res, "htmlwidget")) {
+            output[[paste0("output", i)]] <- renderFunction(res)
+          }
+
         }
       })
     }
