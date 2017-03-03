@@ -21,11 +21,13 @@ mwServer <- function(.expr, controls, widgets,
       # Initialize the widgets with their first evaluation
       output[[paste0("output", i)]] <- renderFunction(widgets[[i]])
 
+      desc <- subset(controls$inputs, mod %in% c(0, i))
+
       # Set the reactive environment of the modules. envs[[i]] is a reactive
       # value containing the module environment.
       moduleEnv <- reactive({
         input$.update
-        desc <- subset(controls$inputs, mod %in% c(0, i))
+
         for (j in seq_len(nrow(desc))) {
           if (.updateBtn) v <- eval(parse(text = sprintf("isolate(input$%s)", desc$inputId[j])))
           else v <- eval(parse(text = sprintf("input$%s", desc$inputId[j])))
@@ -37,8 +39,23 @@ mwServer <- function(.expr, controls, widgets,
       # Update inputs and widget of the module
       observe({
         print(paste("Updating module", i))
-        res <- eval(.expr, envir = moduleEnv())
 
+        # Show/hide controls
+        displayBool <- eval(.display, envir = moduleEnv())
+        if (length(displayBool) > 0) {
+          for (n in names(displayBool)) {
+            inputDesc <- subset(desc, name == n)
+            if (nrow(inputDesc) == 1) {
+              shiny::updateCheckboxInput(
+                session,
+                inputId = paste0(inputDesc$inputId, "_visible"),
+                value = displayBool[[n]])
+            }
+          }
+        }
+
+        # Update widgets
+        res <- eval(.expr, envir = moduleEnv())
         if (is(res, "htmlwidget")) {
           output[[paste0("output", i)]] <- renderFunction(res)
         }
@@ -108,22 +125,6 @@ mwServer <- function(.expr, controls, widgets,
         )
       }
     })
-  }
-}
-
-getInputEnv <- function(inputValues, session, output, id, env, initial = FALSE) {
-  inputValues$.initial <- initial
-  inputValues$.session <- session
-  inputValues$.output <- output
-  inputValues$.id <- id
-
-  list2env(inputValues, parent = env)
-}
-
-outputWidget <- function(.expr, output, renderFunction, env) {
-  res <- eval(.expr, envir = env)
-  if (is(res, "htmlwidget")) {
-    output[[env$.output]] <- renderFunction(res)
   }
 }
 
