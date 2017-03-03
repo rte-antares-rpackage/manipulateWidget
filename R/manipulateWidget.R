@@ -239,48 +239,20 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   }
 
   # Evaluate a first time .expr to determine the class of the output
-  controls <- comparisonControls(list(...), .compare, .updateInputs, env = .env)
+  controls <- preprocessControls(list(...), .compare, .updateInputs, env = .env)
+
+  initWidgets <- lapply(controls$env$ind, function(e) {
+    eval(.expr, envir = e)
+  })
+
   controlDesc <- getControlDesc(controls[c("common", "ind")])
 
-  initValues <- controlDesc$initValue
-  names(initValues) <- controlDesc$name
 
-  selectInputList <- controlDesc$name[controlDesc$type == "select"]
-
-  # Add a parameter indicating this is the first evaluation of .expr
-  initValues$.initial <- TRUE
-  initValues$.session <- NULL
-  initValues$.output <- "output"
-  initValues$.id <- 1
-
-  initWidget <- eval(.expr, envir = list2env(initValues, parent = .env))
-
-  if (compareMode) {
-    controlDesc2 <- getControlDesc(controls[c("common", "ind2")])
-    initValues2 <- controlDesc2$initValue
-    names(initValues2) <- controlDesc$name
-    initValues2$.initial <- TRUE
-    initValues2$.session <- NULL
-    initValues2$.output <- "output2"
-    initValues2$.id <- 2
-
-    for (v in names(.compare)) {
-      if (!is.null(.compare[[v]])) {
-        initValues[[v]] <- .compare[[v]][[1]]
-        initValues2[[v]] <- .compare[[v]][[2]]
-      }
-    }
-
-    initWidget2 <- eval(.expr, envir = list2env(initValues2, parent = .env))
-  } else {
-    initWidget2 = NULL
-    initValues2 <- NULL
-  }
 
   # Get shiny output and render functions
-  if (is(initWidget, "htmlwidget")) {
-    cl <- class(initWidget)[1]
-    pkg <- attr(initWidget, "package")
+  if (is(initWidgets[[1]], "htmlwidget")) {
+    cl <- class(initWidgets[[1]])[1]
+    pkg <- attr(initWidgets[[1]], "package")
 
     renderFunName <- ls(getNamespace(pkg), pattern = "^render")
     renderFunction <- getFromNamespace(renderFunName, pkg)
@@ -294,7 +266,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   # UI
   ui <- mwUI(
-    ...,
+    controls$controls,
     .controlPos = .controlPos,
     .tabColumns = .tabColumns,
     .updateBtn = .updateBtn,
@@ -302,17 +274,15 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .outputFun = outputFunction,
     .titleBar = !isRuntimeShiny,
     .updateInputs = .updateInputs,
-    .compare = .compare,
     .compareLayout = .compareLayout,
-    .env = .env
+    nmod = controls$nmod
   )
 
-  server <- mwServer(.expr, initWidget, initWidget2,
-                     initValues, initValues2,
+  server <- mwServer(.expr, controls, initWidgets,
                      renderFunction,
-                     controlDesc, .display, .updateInputs,
-                     .compare, .compareLayout,
-                     .updateBtn, .env)
+                     .display, .updateInputs,
+                     .compareLayout,
+                     .updateBtn)
 
   if (interactive()) {
     # We are in an interactive session so we start a shiny gadget

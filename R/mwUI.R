@@ -26,7 +26,7 @@
 #'
 mwUI <- function(.controlList, .controlPos = c("left", "top", "right", "bottom", "tab"),
                  .tabColumns = 2, .updateBtn = FALSE, .main = "",
-                 .outputFun = NULL, .outputId = "output",
+                 .outputFun = NULL, .outputId = "output1",
                  .titleBar = TRUE, .updateInputs = NULL, nmod = 1, .compareLayout = c("v", "h"),
                  .container = miniUI::miniContentPanel,
                  .style = "") {
@@ -48,11 +48,11 @@ mwUI <- function(.controlList, .controlPos = c("left", "top", "right", "bottom",
       .content <- shiny:: fillCol(
         mwUI(.controlList = list(shared = .controlList$ind[[1]]),
              nmod = 1, .outputFun = .outputFun,
-             .outputId = .outputId, .titleBar = FALSE, .container=shiny:: fillRow,
+             .outputId = paste0("output", "1"), .titleBar = FALSE, .container=shiny:: fillRow,
              .style = "margin-left:5px; padding: 0 0 5px 5px;border-left: solid 1px #ddd;"),
         mwUI(.controlList = list(shared = .controlList$ind[[2]]),
              nmod = 1, .outputFun = .outputFun,
-             .outputId = paste0(.outputId, "2"), .titleBar = FALSE,
+             .outputId = paste0("output", "2"), .titleBar = FALSE,
              .container=shiny:: fillRow,
              .style = "margin-left:5px; padding: 5px 0 0 5px;border-left: solid 1px #ddd;")
       )
@@ -60,12 +60,12 @@ mwUI <- function(.controlList, .controlPos = c("left", "top", "right", "bottom",
       .content <- shiny:: fillRow(
         mwUI(.controlList = list(shared = .controlList$ind[[1]]),
              nmod = 1, .outputFun = .outputFun,
-             .outputId = .outputId, .titleBar = FALSE, .controlPos = "top",
+             .outputId = paste0("output", "1"), .titleBar = FALSE, .controlPos = "top",
              .container=shiny:: fillRow,
              .style = "margin-left:5px;padding-left:5px;border-left: solid 1px #ddd;"),
         mwUI(.controlList = list(shared = .controlList$ind[[2]]),
              nmod = 1, .outputFun = .outputFun,
-             .outputId = paste0(.outputId, "2"), .titleBar = FALSE, .controlPos = "top",
+             .outputId = paste0("output", "2"), .titleBar = FALSE, .controlPos = "top",
              .container = shiny:: fillRow, .style = "padding-left:5px;")
       )
     }

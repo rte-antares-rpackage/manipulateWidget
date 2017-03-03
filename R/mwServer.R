@@ -1,110 +1,111 @@
-mwServer <- function(.expr, initWidget, initWidget2 = NULL,
-                     initValues, initValues2 = NULL,
+mwServer <- function(.expr, controls, widgets,
                      renderFunction,
-                     controlDesc, .display, .updateInputs, .compare, .compareLayout,
-                     .updateBtn,
-                     .env) {
+                     .display, .updateInputs, .compareLayout,
+                     .updateBtn) {
 
   function(input, output, session) {
-    compareMode <- !is.null(initWidget2)
-    selectInputList <- controlDesc[controlDesc$type == "select" & controlDesc$multiple, "name"]
-
     # Since the widget has already been created with the initial values, we want
     # to skip the first evaluation of the widget by the server function. This is
     # why we create the following variable.
     firstEval <- TRUE
 
-    if (compareMode) {
-      controlDesc2 <- controlDesc
-      controlDesc2$name <- ifelse(
-        controlDesc2$name %in% names(.compare),
-        paste0(controlDesc2$name, "2"),
-        controlDesc2$name
-      )
-      selectInputList2 <- controlDesc2[controlDesc2$type == "select" & controlDesc2$multiple, "name"]
-      firstEval2 <- TRUE
-    }
-
-    # Initialize the widget with its first evaluation
-    output$output <- renderFunction(initWidget)
-
     # Ensure that initial values of select inputs with multiple = TRUE are in
     # same order than the user asked.
+    selectInputList <- subset(controls$inputs, type == "select" & multiple)$name
     for (v in selectInputList) {
       shiny::updateSelectInput(session, v, selected = initValues[[v]])
     }
 
-    inputList <- reactive({
-      input$.update
+    updateModule <- function(i) {
+      print(i)
+      # Initialize the widgets with their first evaluation
+      output[[paste0("output", i)]] <- renderFunction(widgets[[i]])
 
-      res <- lapply(controlDesc$name, function(s) {
-        if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
-        else eval(parse(text = sprintf("input$%s", s)))
-      })
-      names(res) <- controlDesc$name
-
-      res
-    })
-
-    observe({
-      inputEnv <- getInputEnv(inputList(), session, "output", 1, .env)
-      controlDesc <<- updateInputs(session, input, controlDesc, .display,
-                                   .compare, .updateInputs, inputEnv, suffix = "")
-      if (firstEval) {
-        firstEval <<- FALSE
-      } else {
-        outputWidget(.expr, output, renderFunction, inputEnv)
-      }
-    })
-
-    if (compareMode) {
-      # Initialize the widget with its first evaluation
-      output$output2 <- renderFunction(initWidget2)
-
-      inputList2 <- reactive({
+      # Set the reactive environment of the modules. envs[[i]] is a reactive
+      # value containing the module environment.
+      moduleEnv <- reactive({
         input$.update
-
-        res <- lapply(controlDesc2$name, function(s) {
-          if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
-          else eval(parse(text = sprintf("input$%s", s)))
-        })
-        names(res) <- controlDesc$name
-
-        res
+        desc <- subset(controls$inputs, mod %in% c(0, i))
+        for (j in seq_len(nrow(desc))) {
+          if (.updateBtn) v <- eval(parse(text = sprintf("isolate(input$%s)", desc$inputId[j])))
+          else v <- eval(parse(text = sprintf("input$%s", desc$inputId[j])))
+          assign(desc$name[j], v, envir = desc$env[[j]])
+        }
+        controls$env$ind[[i]]
       })
 
-      # Ensure that initial values of select inputs with multiple = TRUE are in
-      # same order than the user asked.
-      for (v in selectInputList) {
-        inputId <- paste0(v, "2")
-        shiny::updateSelectInput(session, inputId, selected = initValues2[[v]])
-      }
-
+      # Update inputs and widget of the module
       observe({
-        inputEnv <- getInputEnv(inputList2(), session, "output2", 2, .env)
-        controlDesc2 <<- updateInputs(session, input, controlDesc2, .display,
-                                      .compare, .updateInputs, inputEnv, suffix = "2")
-        if (firstEval2) {
-          firstEval2 <<- FALSE
-        } else {
-          outputWidget(.expr, output, renderFunction, inputEnv)
+        print(paste("Updating module", i))
+        res <- eval(.expr, envir = moduleEnv())
+
+        if (is(res, "htmlwidget")) {
+          output[[paste0("output", i)]] <- renderFunction(res)
         }
       })
     }
 
+    for (i in seq_len(controls$nmod)) {
+      updateModule(i)
+    }
+
+    # Update inputs
+
+    # observe({
+    #   inputEnv <- getInputEnv(inputList(), session, "output", 1, .env)
+    #   controlDesc <<- updateInputs(session, input, controlDesc, .display,
+    #                                .compare, .updateInputs, inputEnv, suffix = "")
+    #   if (firstEval) {
+    #     firstEval <<- FALSE
+    #   } else {
+    #     outputWidget(.expr, output, renderFunction, inputEnv)
+    #   }
+    # })
+    #
+    # if (compareMode) {
+    #   # Initialize the widget with its first evaluation
+    #   output$output2 <- renderFunction(initWidget2)
+    #
+    #   inputList2 <- reactive({
+    #     input$.update
+    #
+    #     res <- lapply(controlDesc2$name, function(s) {
+    #       if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
+    #       else eval(parse(text = sprintf("input$%s", s)))
+    #     })
+    #     names(res) <- controlDesc$name
+    #
+    #     res
+    #   })
+    #
+    #   # Ensure that initial values of select inputs with multiple = TRUE are in
+    #   # same order than the user asked.
+    #   for (v in selectInputList) {
+    #     inputId <- paste0(v, "2")
+    #     shiny::updateSelectInput(session, inputId, selected = initValues2[[v]])
+    #   }
+    #
+    #   observe({
+    #     inputEnv <- getInputEnv(inputList2(), session, "output2", 2, .env)
+    #     controlDesc2 <<- updateInputs(session, input, controlDesc2, .display,
+    #                                   .compare, .updateInputs, inputEnv, suffix = "2")
+    #     if (firstEval2) {
+    #       firstEval2 <<- FALSE
+    #     } else {
+    #       outputWidget(.expr, output, renderFunction, inputEnv)
+    #     }
+    #   })
+    # }
+    #
     observeEvent(input$done, {
-      inputEnv <- getInputEnv(inputList(), NULL, output, 1, .env, TRUE)
-
-      if (!compareMode) {
-        shiny::stopApp(eval(.expr, envir = inputEnv))
-      } else {
-        inputEnv2 <- getInputEnv(inputList2(), NULL, output, 2, .env, TRUE)
-
-        shiny::stopApp(combineWidgets(
-          ncol = ifelse(.compareLayout == "v", 1, 2),
-          eval(.expr, envir = inputEnv),
-          eval(.expr, envir = inputEnv2)
-        ))
+      widgets <- lapply(controls$env$ind, function(e) {
+        eval(.expr, envir = e)
+      })
+      if (length(widgets) == 1) shiny::stopApp(widgets[[1]])
+      else {
+        shiny::stopApp(
+          combineWidgets(list=widgets)
+        )
       }
     })
   }

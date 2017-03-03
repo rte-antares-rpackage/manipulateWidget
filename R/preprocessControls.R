@@ -18,7 +18,7 @@
 #'    - multiple: only for select input. Are multiple values allowed?
 #'    - params: parameters for the input
 #'    - inputId: Id of the input in the UI
-#'    - mod: module index. For convenience, shared controls are in the first module.
+#'    - mod: module index. For convenience, shared controls are in module 0
 #'    - env: environment
 #' - env:
 #'    - shared: environment containing the value of shared inputs
@@ -61,6 +61,9 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   for (i in seq_len(nmod)) {
     res$env$ind[[i]] <- new.env(parent = res$env$shared)
     res$env$ind[[i]]$.id <- i
+    res$env$ind[[i]]$.initial <- TRUE
+    res$env$ind[[i]]$.session <- NULL
+    res$env$ind[[i]]$.output <- paste0("output", i)
     res$controls$ind[[i]] <- list()
   }
 
@@ -71,7 +74,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
 
   controlsDesc <- getControlDesc(controls)
   controlsDesc$inputId <- controlsDesc$name
-  controlsDesc$mod <- 1
+  controlsDesc$mod <- 0
 
   controlsDescShared <- subset(controlsDesc, !name %in% names(compare))
   tmp <- list()
@@ -114,6 +117,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   # First check of initial values
   res$inputs$initValue <- getInitValue(res$inputs)
   for (i in seq_len(nrow(res$inputs))) {
+    res$inputs$params[[i]]$value <- res$inputs$initValue[[i]]
     assign(res$inputs$name[i], res$inputs$initValue[[i]], envir = res$inputs$env[[i]])
   }
 
@@ -121,7 +125,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   for (i in seq_len(nmod)) {
     updatedParams <- eval(update, envir = res$env$ind[[i]])
     for (n in names(updatedParams)) {
-      j <- which(res$inputs$name == n & res$inputs$mod == i)
+      j <- which(res$inputs$name == n & res$inputs$mod %in% c(0, i))
       if (length(j) == 1) {
         res$inputs$params[[j]] <- mergeList(res$inputs$params[[j]], updatedParams[[n]])
       }
@@ -131,6 +135,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   # Second check of initial values
   res$inputs$initValue <- getInitValue(res$inputs)
   for (i in seq_len(nrow(res$inputs))) {
+    res$inputs$params[[i]]$value <- res$inputs$initValue[[i]]
     assign(res$inputs$name[i], res$inputs$initValue[[i]], envir = res$inputs$env[[i]])
   }
 
