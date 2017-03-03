@@ -43,31 +43,16 @@ mwUI <- function(.controlList, .controlPos = c("left", "top", "right", "bottom",
       .content <- .outputFun(.outputId, width = "100%", height = "100%")
     }
   } else {
-
+    modules <- lapply(seq_along(.controlList$ind), function(i) {
+      mwUI(.controlList = list(shared = .controlList$ind[[i]]),
+           nmod = 1, .outputFun = .outputFun,
+           .outputId = paste0("output", i), .titleBar = FALSE, .container=shiny:: fillRow,
+           .style = "margin-left:5px; padding: 0 0 5px 5px;border-left: solid 1px #ddd;")
+    })
     if (.compareLayout == "v") {
-      .content <- shiny:: fillCol(
-        mwUI(.controlList = list(shared = .controlList$ind[[1]]),
-             nmod = 1, .outputFun = .outputFun,
-             .outputId = paste0("output", "1"), .titleBar = FALSE, .container=shiny:: fillRow,
-             .style = "margin-left:5px; padding: 0 0 5px 5px;border-left: solid 1px #ddd;"),
-        mwUI(.controlList = list(shared = .controlList$ind[[2]]),
-             nmod = 1, .outputFun = .outputFun,
-             .outputId = paste0("output", "2"), .titleBar = FALSE,
-             .container=shiny:: fillRow,
-             .style = "margin-left:5px; padding: 5px 0 0 5px;border-left: solid 1px #ddd;")
-      )
+      .content <- do.call(shiny:: fillCol, modules)
     } else {
-      .content <- shiny:: fillRow(
-        mwUI(.controlList = list(shared = .controlList$ind[[1]]),
-             nmod = 1, .outputFun = .outputFun,
-             .outputId = paste0("output", "1"), .titleBar = FALSE, .controlPos = "top",
-             .container=shiny:: fillRow,
-             .style = "margin-left:5px;padding-left:5px;border-left: solid 1px #ddd;"),
-        mwUI(.controlList = list(shared = .controlList$ind[[2]]),
-             nmod = 1, .outputFun = .outputFun,
-             .outputId = paste0("output", "2"), .titleBar = FALSE, .controlPos = "top",
-             .container = shiny:: fillRow, .style = "padding-left:5px;")
-      )
+      .content <- do.call(shiny:: fillRow, modules)
     }
   }
 
