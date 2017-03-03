@@ -2,7 +2,7 @@
 #' user in a convenient object.
 #'
 #' @param controls list of controls
-#' @param compare
+#' @param compare list describing how comparison should be done
 #' @param update non evaluated list
 #' @param env environment
 #'
@@ -81,6 +81,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   for (i in seq_len(nrow(controlsDescShared))) {
     assign(controlsDescShared$name[i], controlsDescShared$initValue[[i]],
            envir = res$env$shared)
+
     tmp[[i]] <- res$env$shared
   }
   controlsDescShared$env <- tmp

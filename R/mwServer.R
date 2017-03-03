@@ -1,3 +1,18 @@
+#' Private function that returns a shiny server function to use in manipulateWidget
+#'
+#' @param .expr see manipulateWidget
+#' @param controls Object returned by function preprocessControls
+#' @param widgets A list of the widgets to show, in their initial state
+#' @param renderFunction Function to use to render the widgets
+#' @param .display see manipulateWidget
+#' @param .updateInputs see manipulateWidget
+#' @param .compareLayout see manipulateWidget
+#' @param .updateBtn see manipulateWidget
+#'
+#' @return A server function that can be used in runGadget.
+#'
+#' @noRd
+#'
 mwServer <- function(.expr, controls, widgets,
                      renderFunction,
                      .display, .updateInputs, .compareLayout,
