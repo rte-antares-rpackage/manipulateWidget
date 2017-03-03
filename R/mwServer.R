@@ -55,7 +55,7 @@ mwServer <- function(.expr, controls, widgets,
 
         } else {
 
-          print(paste("Updating module", i))
+          # print(paste("Updating module", i))
           # Update parameters
           newParams <- eval(.updateInputs, envir = moduleEnv())
 
@@ -117,54 +117,6 @@ mwServer <- function(.expr, controls, widgets,
       updateModule(i)
     }
 
-    # Update inputs
-
-    # observe({
-    #   inputEnv <- getInputEnv(inputList(), session, "output", 1, .env)
-    #   controlDesc <<- updateInputs(session, input, controlDesc, .display,
-    #                                .compare, .updateInputs, inputEnv, suffix = "")
-    #   if (firstEval) {
-    #     firstEval <<- FALSE
-    #   } else {
-    #     outputWidget(.expr, output, renderFunction, inputEnv)
-    #   }
-    # })
-    #
-    # if (compareMode) {
-    #   # Initialize the widget with its first evaluation
-    #   output$output2 <- renderFunction(initWidget2)
-    #
-    #   inputList2 <- reactive({
-    #     input$.update
-    #
-    #     res <- lapply(controlDesc2$name, function(s) {
-    #       if (.updateBtn) eval(parse(text = sprintf("isolate(input$%s)", s)))
-    #       else eval(parse(text = sprintf("input$%s", s)))
-    #     })
-    #     names(res) <- controlDesc$name
-    #
-    #     res
-    #   })
-    #
-    #   # Ensure that initial values of select inputs with multiple = TRUE are in
-    #   # same order than the user asked.
-    #   for (v in selectInputList) {
-    #     inputId <- paste0(v, "2")
-    #     shiny::updateSelectInput(session, inputId, selected = initValues2[[v]])
-    #   }
-    #
-    #   observe({
-    #     inputEnv <- getInputEnv(inputList2(), session, "output2", 2, .env)
-    #     controlDesc2 <<- updateInputs(session, input, controlDesc2, .display,
-    #                                   .compare, .updateInputs, inputEnv, suffix = "2")
-    #     if (firstEval2) {
-    #       firstEval2 <<- FALSE
-    #     } else {
-    #       outputWidget(.expr, output, renderFunction, inputEnv)
-    #     }
-    #   })
-    # }
-    #
     observeEvent(input$done, {
       widgets <- lapply(controls$env$ind, function(e) {
         eval(.expr, envir = e)
@@ -177,54 +129,4 @@ mwServer <- function(.expr, controls, widgets,
       }
     })
   }
-}
-
-updateInputs <- function(session, input, controlDesc, .display, .compare, .updateInputs, env, suffix = "") {
-  #Update choices of select inputs if parameter .choices is set
-  newParams <- eval(.updateInputs, envir = env)
-
-  for (n in names(newParams)) {
-    # TODO: in comparison mode, common inputs are updated twice.
-    if (n %in% names(.compare)) inputId <- paste0(n, suffix)
-    else inputId <- n
-    desc <- controlDesc[controlDesc$name == inputId,]
-    updateInputFun <- switch(
-      desc$type,
-      slider = shiny::updateSliderInput,
-      text = shiny::updateTextInput,
-      numeric = shiny::updateNumericInput,
-      password = shiny::updateTextInput,
-      select = shiny::updateSelectizeInput,
-      checkbox = shiny::updateCheckboxInput,
-      radio = shiny::updateRadioButtons,
-      date = shiny::updateDateInput,
-      dateRange = shiny::updateDateRangeInput,
-      checkboxGroup = shiny::updateCheckboxGroupInput
-    )
-
-    for (p in names(newParams[[n]])) {
-      if (identical(newParams[[n]][[p]], desc$params[[1]][[p]])) {
-        next
-      }
-      args <- newParams[[n]][p]
-      args$session <- session
-      args$inputId <- inputId
-
-      # Special case: update value of select input when choices are modified
-      if (p == "choices" & desc$type == "select") {
-        if (desc$multiple) {
-          args$selected <- intersect(env[[n]], newParams[[n]][[p]])
-        } else {
-          if (env[[n]] %in% newParams[[n]][[p]]) {
-            args$selected <- env[[n]]
-          }
-        }
-      }
-      do.call(updateInputFun, args)
-
-      controlDesc$params[controlDesc$name == inputId][[1]][[p]] <-  newParams[[n]][[p]]
-    }
-  }
-
-  return(controlDesc)
 }
