@@ -36,6 +36,13 @@ getControlDesc <- function(controls) {
      groupLevel <<- append(groupLevel, level)
      m <- if (is.null(attr(x, "params")$multiple)) NA else attr(x, "params")$multiple
      multiple <<- append(multiple, m)
+
+     # Label of the control
+     if (is.null(attr(x, "params"))) {
+       attr(x, "params") <- list(label = name)
+     } else if (is.null(attr(x, "params")$label)) {
+       attr(x, "params")$label <- name
+     }
      params <<- append(params, list(attr(x, "params")))
    } else if (length(x) == 0) {
      return()
