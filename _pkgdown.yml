@@ -1,0 +1,49 @@
+templates:
+  params:
+    bootswatch: flatly
+
+authors:
+  RTE:
+    href: http://www.rte-france.com
+    html: <img src='http://www.rte-france.com/sites/all/themes/rte/images/logo.png' height='24'/>
+
+reference:
+- title: ManipulateGadget
+  desc: >
+    Main description and help content of this package.
+    What is a manipultateWidget and how to create it ?
+  contents:
+  - manipulateWidget-package
+  - manipulateWidget
+
+- title: combining widget
+  desc: >
+    These function are the one for combining widget alltogether
+  contents:
+  - combineWidgets-shiny
+  - combineWidgets
+
+- title: Add interactive component a manipulateGagdet
+  desc: >
+    These fonction are the way to add interactive content to
+    complement your initial htmlwidget
+  contents:
+  - starts_with("mw")
+
+navbar:
+  title: ~
+  type: default
+  left:
+  - text: Home
+    href: index.html
+  - text: Reference
+    href: reference/index.html
+  - text: Getting Started
+    href: articles/manipulateWidgets.html
+  - text: News
+    menu:
+      - text: "Change Log"
+        href: news/index.html
+  right:
+    - icon: fa-github
+      href: https://github.com/rte-antares-rpackage/manipulateWidget
