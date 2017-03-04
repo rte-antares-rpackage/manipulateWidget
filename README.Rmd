@@ -1,6 +1,7 @@
 ---
 title: "Add more interactivity to interactive charts"
 output: github_document
+always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
