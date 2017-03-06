@@ -216,7 +216,7 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #' @family controls
 mwSelect <- function(choices = value, value = NULL, label = NULL, ..., multiple = FALSE) {
   mwControlFactory(
-    "select", shiny::selectizeInput,
+    "select", shiny::selectInput,
     list(choices = choices, value = value, label = label, ..., multiple = multiple),
     valueVar = "selected"
   )
