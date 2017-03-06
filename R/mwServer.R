@@ -21,9 +21,13 @@ mwServer <- function(.expr, controls, widgets,
   function(input, output, session) {
     # Ensure that initial values of select inputs with multiple = TRUE are in
     # same order than the user asked.
-    selectInputList <- subset(controls$inputs, type == "select" & multiple)$name
-    for (v in selectInputList) {
-      shiny::updateSelectInput(session, v, selected = initValues[[v]])
+    selectInputList <- subset(controls$inputs, type == "select" & multiple)
+    for (i in seq_len(nrow(selectInputList))) {
+      shiny::updateSelectInput(
+        session,
+        selectInputList$name[i],
+        selected = selectInputList$initValues[[i]]
+      )
     }
 
     updateModule <- function(i) {
