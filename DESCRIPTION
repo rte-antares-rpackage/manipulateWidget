@@ -29,7 +29,8 @@ Suggests:
     leaflet,
     plotly,
     xts,
-    rmarkdown
+    rmarkdown,
+    testthat
 LazyData: TRUE
 RoxygenNote: 6.0.0
 VignetteBuilder: knitr
