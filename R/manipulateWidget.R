@@ -298,10 +298,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.
-    if (length(initWidgets) == 1) {
-      return(initWidgets[[1]])
-    } else {
-      return(combineWidgets(list = initWidgets))
-    }
+    mwReturn(initWidgets)
   }
 }

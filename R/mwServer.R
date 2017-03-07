@@ -136,18 +136,6 @@ mwServer <- function(.expr, controls, widgets,
       updateModule(i)
     }
 
-    observeEvent(input$done, {
-      widgets <- lapply(controls$env$ind, function(e) {
-        assign(".initial", TRUE, envir = e)
-        assign(".session", session, envir = e)
-        eval(.expr, envir = e)
-      })
-      if (length(widgets) == 1) shiny::stopApp(widgets[[1]])
-      else {
-        shiny::stopApp(
-          combineWidgets(list=widgets)
-        )
-      }
-    })
+    observeEvent(input$done, onDone(.expr, controls))
   }
 }
