@@ -82,3 +82,5 @@
 #' @importFrom utils getFromNamespace
 #' @importFrom stats runif
 NULL
+#
+globalVariables(c("mod", "multiple", "name", "type"))
