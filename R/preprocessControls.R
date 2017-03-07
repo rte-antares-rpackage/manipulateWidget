@@ -115,29 +115,36 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
 
   # Correct initial values #####################################################
 
-  # First check of initial values
-  res$inputs$initValue <- getInitValue(res$inputs)
-  for (i in seq_len(nrow(res$inputs))) {
-    res$inputs$params[[i]]$value <- res$inputs$initValue[[i]]
-    assign(res$inputs$name[i], res$inputs$initValue[[i]], envir = res$inputs$env[[i]])
-  }
+  oldValue <- list()
+  k <- 0
 
-  # Process the update parameter
-  for (i in seq_len(nmod)) {
-    updatedParams <- eval(update, envir = res$env$ind[[i]])
-    for (n in names(updatedParams)) {
-      j <- which(res$inputs$name == n & res$inputs$mod %in% c(0, i))
-      if (length(j) == 1) {
-        res$inputs$params[[j]] <- mergeList(res$inputs$params[[j]], updatedParams[[n]])
+  # Updating input parameters may have an incidence on input value and reversely.
+  # We update values and parameters in a loop until values are stable.
+  # If after 10 loops values are still changing, we give up!
+  while(TRUE) {
+    if (k == 10) stop("Cannot set initial values. Is there a circular dependency in the '.updateInputs' parameter ?")
+
+    # Correct initial values
+    res$inputs$initValue <- getInitValue(res$inputs)
+    if (identical(oldValue, res$inputs$initValue)) break
+    for (i in seq_len(nrow(res$inputs))) {
+      res$inputs$params[[i]]$value <- res$inputs$initValue[[i]]
+      assign(res$inputs$name[i], res$inputs$initValue[[i]], envir = res$inputs$env[[i]])
+    }
+
+    # Process the update parameter
+    for (i in seq_len(nmod)) {
+      updatedParams <- eval(update, envir = res$env$ind[[i]])
+      for (n in names(updatedParams)) {
+        j <- which(res$inputs$name == n & res$inputs$mod %in% c(0, i))
+        if (length(j) == 1) {
+          res$inputs$params[[j]] <- mergeList(res$inputs$params[[j]], updatedParams[[n]])
+        }
       }
     }
-  }
 
-  # Second check of initial values
-  res$inputs$initValue <- getInitValue(res$inputs)
-  for (i in seq_len(nrow(res$inputs))) {
-    res$inputs$params[[i]]$value <- res$inputs$initValue[[i]]
-    assign(res$inputs$name[i], res$inputs$initValue[[i]], envir = res$inputs$env[[i]])
+    oldValue <- res$inputs$initValue
+    k <- k + 1
   }
 
   # List of controls for UI ####################################################
