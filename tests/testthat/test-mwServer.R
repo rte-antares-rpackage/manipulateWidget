@@ -19,14 +19,14 @@ describe("showHideControls", {
       },
       {
         it ("Initial visibility", {
-          showHideControls(display, controls$inputs, NULL, controls$env$ind[[1]])
+          showHideControls(display, controls$desc, NULL, controls$env$ind[[1]])
           expect_true(visible$x1_visible)
           expect_false(visible$x2_visible)
         })
 
         it ("visibility after input update", {
           assign("x2", 2, envir = controls$env$ind[[1]])
-          showHideControls(display, controls$inputs, NULL, controls$env$ind[[1]])
+          showHideControls(display, controls$desc, NULL, controls$env$ind[[1]])
           expect_false(visible$x1_visible)
           expect_false(visible$x2_visible)
         })
@@ -40,7 +40,7 @@ describe("showHideControls", {
 describe("updateControls", {
   controlsSpec <- list(x1 = mwNumeric(0), x2 = mwSelect(1:3))
   controls <- preprocessControls(controlsSpec, env = parent.frame())
-  desc <- controls$inputs
+  desc <- controls$desc
   env <- controls$env$ind[[1]]
 
   with_mock(

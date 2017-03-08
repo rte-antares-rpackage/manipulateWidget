@@ -9,7 +9,7 @@ describe("preprocessControls", {
   )
 
   controlsPrepro <- preprocessControls(controls, env = parent.frame())
-  desc <- controlsPrepro$inputs
+  desc <- controlsPrepro$desc
 
   describe("Controls description", {
 
@@ -77,7 +77,7 @@ describe("preprocessControls", {
     x3Values <- as.list(sample(4:6, 3, replace = TRUE))
     compare <- list(.n = 3, x2 = NULL, x3 = x3Values)
     controlsPrepro <- preprocessControls(controls, compare, env = parent.frame())
-    desc <- controlsPrepro$inputs
+    desc <- controlsPrepro$desc
     envs <- controlsPrepro$env
     ctrlList <- controlsPrepro$controls
 
@@ -109,7 +109,7 @@ describe("preprocessControls", {
   describe("Update inputs", {
     update <- expression(list(x2 = list(choices = 4:6), x3 = list(choices = x2 * 1:3)))
     controlsPrepro <- preprocessControls(controls, update = update, env = parent.frame())
-    desc <- controlsPrepro$inputs
+    desc <- controlsPrepro$desc
     envs <- controlsPrepro$env
     ctrlList <- controlsPrepro$controls
 
@@ -128,7 +128,7 @@ describe("preprocessControls", {
       update <- expression(list(x3 = list(choices = x2 * 1:3)))
       compare <- list(x2 = list(1, 2, 3), x3 = NULL, .n = 3)
       controlsPrepro <- preprocessControls(controls, compare, update, env = parent.frame())
-      desc <- controlsPrepro$inputs
+      desc <- controlsPrepro$desc
       envs <- controlsPrepro$env
       ctrlList <- controlsPrepro$controls
 

@@ -1,7 +1,7 @@
 #' Dynamically show/hide controls in the UI
 #'
 #' @param .display expression that evaluates to a named list of boolean
-#' @param desc subset of controls$inputs containing only shared inputs and inputs
+#' @param desc subset of controls$desc containing only shared inputs and inputs
 #'   for the current module
 #' @param session shiny session
 #' @param env module environment

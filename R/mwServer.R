@@ -21,7 +21,7 @@ mwServer <- function(.expr, controls, widgets,
   function(input, output, session) {
     # Ensure that initial values of select inputs with multiple = TRUE are in
     # same order than the user asked.
-    selectInputList <- subset(controls$inputs, type == "select" & multiple)
+    selectInputList <- subset(controls$desc, type == "select" & multiple)
     for (i in seq_len(nrow(selectInputList))) {
       shiny::updateSelectInput(
         session,
@@ -34,7 +34,7 @@ mwServer <- function(.expr, controls, widgets,
       # Initialize the widgets with their first evaluation
       output[[paste0("output", i)]] <- renderFunction(widgets[[i]])
 
-      desc <- subset(controls$inputs, mod %in% c(0, i))
+      desc <- subset(controls$desc, mod %in% c(0, i))
 
       # Set the reactive environment of the modules. envs[[i]] is a reactive
       # value containing the module environment.

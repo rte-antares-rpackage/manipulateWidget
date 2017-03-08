@@ -9,7 +9,7 @@
 #' @return
 #' An object with the following structure:
 #' -nmod: number of modules (1 for no comparison, 2 for a single comparison, etc.)
-#' - inputs: A data.frame containing a description of all inputs that will be
+#' - desc: A data.frame containing a description of all inputs that will be
 #'    created in the UI. It contains the following columns:
 #'    - name: parameter name
 #'    - initValue: initial value of the parameter
@@ -111,7 +111,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
     controlsDescInd <- do.call(rbind, controlsDescInd)
   }
 
-  res$inputs <- rbind(controlsDescShared, controlsDescInd)
+  res$desc <- rbind(controlsDescShared, controlsDescInd)
 
   # Correct initial values #####################################################
 
@@ -125,37 +125,37 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
     if (k == 10) stop("Cannot set initial values. Is there a circular dependency in the '.updateInputs' parameter ?")
 
     # Correct initial values
-    res$inputs$initValue <- getInitValue(res$inputs)
-    if (identical(oldValue, res$inputs$initValue)) break
-    for (i in seq_len(nrow(res$inputs))) {
-      res$inputs$params[[i]]$value <- res$inputs$initValue[[i]]
-      assign(res$inputs$name[i], res$inputs$initValue[[i]], envir = res$inputs$env[[i]])
+    res$desc$initValue <- getInitValue(res$desc)
+    if (identical(oldValue, res$desc$initValue)) break
+    for (i in seq_len(nrow(res$desc))) {
+      res$desc$params[[i]]$value <- res$desc$initValue[[i]]
+      assign(res$desc$name[i], res$desc$initValue[[i]], envir = res$desc$env[[i]])
     }
 
     # Process the update parameter
     for (i in seq_len(nmod)) {
       updatedParams <- eval(update, envir = res$env$ind[[i]])
       for (n in names(updatedParams)) {
-        j <- which(res$inputs$name == n & res$inputs$mod %in% c(0, i))
+        j <- which(res$desc$name == n & res$desc$mod %in% c(0, i))
         if (length(j) == 1) {
-          res$inputs$params[[j]] <- mergeList(res$inputs$params[[j]], updatedParams[[n]])
+          res$desc$params[[j]] <- mergeList(res$desc$params[[j]], updatedParams[[n]])
         }
       }
     }
 
-    oldValue <- res$inputs$initValue
+    oldValue <- res$desc$initValue
     k <- k + 1
   }
 
   # List of controls for UI ####################################################
 
   res$controls$shared <- filterControls(controls, names(compare), drop = TRUE)
-  res$controls$shared <- setValueAndParams(res$controls$shared, res$inputs)
+  res$controls$shared <- setValueAndParams(res$controls$shared, res$desc)
 
   for (i in seq_len(nmod)) {
     res$controls$ind[[i]] <- filterControls(controls, names(compare))
     res$controls$ind[[i]] <- addSuffixToControls(res$controls$ind[[i]], i)
-    res$controls$ind[[i]] <- setValueAndParams(res$controls$ind[[i]], res$inputs)
+    res$controls$ind[[i]] <- setValueAndParams(res$controls$ind[[i]], res$desc)
   }
 
   res
