@@ -34,19 +34,7 @@ updateControls <- function(.updateInputs, desc, session, env) {
 
   for (n in names(newParams)) {
     inputDesc <- subset(desc, name == n)
-    updateInputFun <- switch(
-      inputDesc$type,
-      slider = shiny::updateSliderInput,
-      text = shiny::updateTextInput,
-      numeric = shiny::updateNumericInput,
-      password = shiny::updateTextInput,
-      select = shiny::updateSelectInput,
-      checkbox = shiny::updateCheckboxInput,
-      radio = shiny::updateRadioButtons,
-      date = shiny::updateDateInput,
-      dateRange = shiny::updateDateRangeInput,
-      checkboxGroup = shiny::updateCheckboxGroupInput
-    )
+    updateInputFun <- getUpdateInputFun(inputDesc$type)
 
     # For each parameter, check if its value has changed in order to avoid
     # useless updates of inputs that can be annoying for users. If it has
@@ -77,6 +65,24 @@ updateControls <- function(.updateInputs, desc, session, env) {
   }
 
   desc
+}
+
+#' Private function that returns the function to use to update some type of inputs
+#' @noRd
+getUpdateInputFun <- function(type) {
+  switch(
+    type,
+    slider = shiny::updateSliderInput,
+    text = shiny::updateTextInput,
+    numeric = shiny::updateNumericInput,
+    password = shiny::updateTextInput,
+    select = shiny::updateSelectInput,
+    checkbox = shiny::updateCheckboxInput,
+    radio = shiny::updateRadioButtons,
+    date = shiny::updateDateInput,
+    dateRange = shiny::updateDateRangeInput,
+    checkboxGroup = shiny::updateCheckboxGroupInput
+  )
 }
 
 #' Function called when user clicks on the "Done" button. It stops the shiny

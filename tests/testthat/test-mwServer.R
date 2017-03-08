@@ -10,7 +10,6 @@ describe("showHideControls", {
   visible <- list(x1_visible = TRUE, x2_visible = TRUE)
   display <- expression(list(x1 = x2 == 1, x2 = FALSE))
   controls <- preprocessControls(controlsSpec, env = parent.frame())
-  controlsCompare <- preprocessControls(controlsSpec, compare, env = parent.frame())
 
   it("changes visibility of inputs", {
 
@@ -34,6 +33,33 @@ describe("showHideControls", {
       }
     )
   })
+})
+
+# updateControls ###############################################################
+
+describe("updateControls", {
+  controlsSpec <- list(x1 = mwNumeric(0), x2 = mwSelect(1:3))
+  controls <- preprocessControls(controlsSpec, env = parent.frame())
+  desc <- controls$inputs
+  env <- controls$env$ind[[1]]
+
+  with_mock(
+    getUpdateInputFun = function(type) {
+      function(...) print(paste("update", type))
+    },
+    {
+      update <- expression(list(x1 = list(min = x2)))
+      it ("updates control parameters", {
+        expect_output(desc <<- updateControls(update, desc, NULL, env),
+                      "update numeric")
+        expect_equal(desc$params[[1]]$min, 1)
+      })
+      it ("does nothing if parameters are not modified", {
+        expect_silent(desc <<- updateControls(update, desc, NULL, env))
+        expect_equal(desc$params[[1]]$min, 1)
+      })
+    }
+  )
 })
 
 # onDone #######################################################################
