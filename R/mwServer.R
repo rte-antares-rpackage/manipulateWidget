@@ -51,83 +51,19 @@ mwServer <- function(.expr, controls, widgets,
 
       # Update inputs and widget of the module
       observe({
-        # Show/hide controls
-        displayBool <- eval(.display, envir = moduleEnv())
-        if (length(displayBool) > 0) {
-          for (n in names(displayBool)) {
-            inputDesc <- subset(desc, name == n)
-            if (nrow(inputDesc) == 1) {
-              shiny::updateCheckboxInput(
-                session,
-                inputId = paste0(inputDesc$inputId, "_visible"),
-                value = displayBool[[n]])
-            }
-          }
-        }
+        showHideControls(.display, desc, session, moduleEnv())
 
         # Skip first evaluation, since widgets have already been rendered with
         # initial parameters
         if (get(".initial", envir = moduleEnv())) {
-
           assign(".initial", FALSE, envir = moduleEnv())
           assign(".session", session, envir = moduleEnv())
-
         } else {
-
-          # print(paste("Updating module", i))
-          # Update parameters
-          newParams <- eval(.updateInputs, envir = moduleEnv())
-
-          for (n in names(newParams)) {
-            inputDesc <- subset(desc, name == n)
-            updateInputFun <- switch(
-              inputDesc$type,
-              slider = shiny::updateSliderInput,
-              text = shiny::updateTextInput,
-              numeric = shiny::updateNumericInput,
-              password = shiny::updateTextInput,
-              select = shiny::updateSelectizeInput,
-              checkbox = shiny::updateCheckboxInput,
-              radio = shiny::updateRadioButtons,
-              date = shiny::updateDateInput,
-              dateRange = shiny::updateDateRangeInput,
-              checkboxGroup = shiny::updateCheckboxGroupInput
-            )
-
-            # For each parameter, check if its value has changed in order to avoid
-            # useless updates of inputs that can be annoying for users. If it has
-            # changed, update the corresponding parameter.
-            for (p in names(newParams[[n]])) {
-              if (identical(newParams[[n]][[p]], desc$params[[1]][[p]])) {
-                next
-              }
-              args <- newParams[[n]][p]
-              args$session <- session
-              args$inputId <- inputDesc$inputId
-
-              # Special case: update value of select input when choices are modified
-              if (p == "choices" & inputDesc$type == "select") {
-                actualSelection <- get(n, envir = moduleEnv())
-                if (inputDesc$multiple) {
-                  args$selected <- intersect(actualSelection, newParams[[n]][[p]])
-                } else {
-                  if (actualSelection %in% newParams[[n]][[p]]) {
-                    args$selected <- actualSelection
-                  }
-                }
-              }
-              do.call(updateInputFun, args)
-
-              controls$inputs$params[controls$inputs$name == inputDesc$inputId][[1]][[p]] <-  newParams[[n]][[p]]
-            }
-          }
-
-          # Update widgets
+          desc <<- updateControls(.updateInputs, desc, session, moduleEnv())
           res <- eval(.expr, envir = moduleEnv())
           if (is(res, "htmlwidget")) {
             output[[paste0("output", i)]] <- renderFunction(res)
           }
-
         }
       })
     }
