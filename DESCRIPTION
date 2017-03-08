@@ -5,7 +5,7 @@ Version: 0.5.1
 Date: 2017-01-23
 Authors@R: c(
     person("Francois", "Guillem", email = "francois.guillem@rte-france.com", role = c("aut", "cre")),
-    person("RTE", role = "cph"),
+    person("RTE", role = c("cph", "fnd")),
     person("JJ", "Allaire", role = "ctb")
     )
 Description: Like package 'manipulate' does for static graphics, this package
