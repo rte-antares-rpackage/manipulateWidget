@@ -1,6 +1,21 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
-# Private function used to create input generator functions.
+#' Private function used to create input generator functions.
+#' @param type character string indicating the type of input
+#' @param inputFunction input generator function
+#' @param params A named list containing at least elements "value" and "label".
+#'   Other elements need to be expressions that give the value of a given
+#'   parameter. Use prepareParams() to construct this argument.
+#' @param valueVar name of the parameter containing the value in inputFunction.
+#'   only useful if this parameter is not named "value"
+#' @param .display expression that evaluates to TRUE or FALSE
+#'
+#' @return a function (params) -> html. The function has some attributes:
+#' - params:   parameters entered by the user
+#' - valueVar: names of arguments containing value of the input
+#' - type:     character string containing the input type
+#' - display:  expression that evaluates to TRUE or FALSE
+#' @noRd
 mwControlFactory <- function(type, inputFunction, params, valueVar = NULL, .display = NULL) {
 
   res <- function(params) {
@@ -10,15 +25,25 @@ mwControlFactory <- function(type, inputFunction, params, valueVar = NULL, .disp
         for (i in 1:length(valueVar)) params[[valueVar[i]]] <- params$value[[i]]
       }
       params$value <- NULL
+    } else {
+      valueVar <- "value"
     }
     if (is.null(params$label)) params$label <- params$inputId
     do.call(inputFunction, params)
   }
 
   attr(res, "params") <- params
+  attr(res, "valueVar") <- valueVar
   attr(res, "type") <- type
   attr(res, "display") <- lazyeval::expr_find(.display)
   res
+}
+
+prepareParams <- function(value, label, ...) {
+  params <- lapply(lazy_dots(..., .follow_symbols = TRUE), function(x) x$expr)
+  params$value <- value
+  params$label <- label
+  params
 }
 
 #' Add a Slider to a manipulateWidget gadget
@@ -70,7 +95,7 @@ mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "slider",
     function(...) {tags$div(style = "padding:0 5px;", shiny::sliderInput(...))},
-    list(min = min, max = max, value = value, label = label, ...),
+    prepareParams(min = min, max = max, value = value, label = label, ...),
     .display = .display
   )
 }
@@ -102,7 +127,7 @@ mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
 mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "text", shiny::textInput,
-    list(value = value, label = label, ...),
+    prepareParams(value = value, label = label, ...),
     .display = .display
   )
 }
@@ -135,7 +160,7 @@ mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
 mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "numeric", shiny::numericInput,
-    list(value = value, label = label, ...),
+    prepareParams(value = value, label = label, ...),
     .display = .display
   )
 }
@@ -172,7 +197,7 @@ mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
 mwPassword <- function(value = "", label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "password", shiny::passwordInput,
-    list(value = value, label = label, ...),
+    prepareParams(value = value, label = label, ...),
     .display = .display
   )
 }
@@ -226,7 +251,7 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
                      multiple = FALSE, .display = TRUE) {
   mwControlFactory(
     "select", shiny::selectInput,
-    list(choices = choices, value = value, label = label, ..., multiple = multiple),
+    prepareParams(choices = choices, value = value, label = label, ..., multiple = multiple),
     valueVar = "selected",
     .display = .display
   )
@@ -261,7 +286,7 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
 mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "checkbox", shiny::checkboxInput,
-    list(value = value, label = label, ...),
+    prepareParams(value = value, label = label, ...),
     .display = .display
   )
 }
@@ -298,7 +323,7 @@ mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
 mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "radio", shiny::radioButtons,
-    list(choices = choices, value = value, label = label, ...),
+    prepareParams(choices = choices, value = value, label = label, ...),
     valueVar = "selected",
     .display = .display
   )
@@ -331,7 +356,7 @@ mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
 mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "date", shiny::dateInput,
-    list(value = value, label = label, ...),
+    prepareParams(value = value, label = label, ...),
     .display = .display
   )
 }
@@ -365,7 +390,7 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
                         .display = TRUE) {
   mwControlFactory(
     "dateRange", shiny::dateRangeInput,
-    list(value = value, label = label, ...),
+    prepareParams(value = value, label = label, ...),
     valueVar = c("start", "end"),
     .display = .display
   )
@@ -404,7 +429,7 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "checkboxGroup", shiny::checkboxGroupInput,
-    list(choices = choices, value = value, label = label, ...),
+    prepareParams(choices = choices, value = value, label = label, ...),
     valueVar = "selected",
     .display = .display
   )

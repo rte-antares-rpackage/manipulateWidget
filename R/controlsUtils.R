@@ -34,7 +34,7 @@ getControlDesc <- function(controls) {
      initValues <<- append(initValues, value)
      types <<- append(types, attr(x, "type"))
      groupLevel <<- append(groupLevel, level)
-     m <- if (is.null(attr(x, "params")$multiple)) NA else attr(x, "params")$multiple
+     m <- if (is.null(attr(x, "params")$multiple)) NA else eval(attr(x, "params")$multiple)
      multiple <<- append(multiple, m)
 
      # Label of the control

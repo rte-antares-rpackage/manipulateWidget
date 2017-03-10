@@ -31,7 +31,7 @@
 preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   # Initialize object returned by the function
   res <- list(
-    inputs = data.frame(),
+    desc = data.frame(),
     env = list(
       shared = new.env(parent = env),
       ind = list()
@@ -161,13 +161,19 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   res
 }
 
+evalParams <- function(params, env) {
+  lapply(params, function(x) {
+    tryCatch(eval(x, envir = env), silent = TRUE, error = function(e) {NULL})
+  })
+}
+
 getInitValue <- function(desc) {
   type <- desc$type
   value <- desc$initValue
   params <- desc$params
   lapply(seq_along(type), function(i) {
     v <- value[[i]]
-    p <- params[[i]]
+    p <- evalParams(params[[i]], desc$env[[i]])
 
     if (type[i] == "slider") {
       v[v < p$min] <- p$min
@@ -223,7 +229,6 @@ getInitValue <- function(desc) {
 setValueAndParams <- function(controls, desc) {
   name <- desc$inputId
   initValue <- desc$initValue
-  params <- desc$params
 
   setValueAndParamsIter <- function(x) {
     for (n in names(x)) {
@@ -231,7 +236,6 @@ setValueAndParams <- function(controls, desc) {
         x[[n]] <- setValueAndParamsIter(x[[n]])
       } else {
         i <- which(name == n)
-        attr(x[[n]], "params") <- params[[i]]
         attr(x[[n]], "params")$value <- initValue[[i]]
       }
     }
