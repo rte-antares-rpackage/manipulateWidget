@@ -25,6 +25,7 @@ getControlDesc <- function(controls) {
  groupLevel <- c()
  multiple <- c()
  params <- list()
+ display <- list()
 
  getControlDescRecursive <- function(x, name = "", level = 0) {
    if (is.function(x)) {
@@ -43,9 +44,16 @@ getControlDesc <- function(controls) {
        attr(x, "params")$label <- name
      }
      params <<- append(params, list(attr(x, "params")))
+     display <<- append(display, list(attr(x, "display")))
    } else if (length(x) == 0) {
      return()
    } else {
+     if (".display" %in% names(x)) {
+       display <<- append(display, list(x$.display))
+       x$.display <- NULL
+     } else {
+       display <<- append(display, list(NULL))
+     }
      inputNames <<- append(inputNames, name)
      initValues <<- append(initValues, list(NULL))
      types <<- append(types, "group")
@@ -64,6 +72,7 @@ getControlDesc <- function(controls) {
    level = groupLevel,
    multiple = multiple,
    params = I(params),
+   display = I(display),
    stringsAsFactors = FALSE
  )
 

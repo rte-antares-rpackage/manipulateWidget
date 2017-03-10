@@ -1,7 +1,7 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 # Private function used to create input generator functions.
-mwControlFactory <- function(type, inputFunction, params, valueVar = NULL) {
+mwControlFactory <- function(type, inputFunction, params, valueVar = NULL, .display = NULL) {
 
   res <- function(params) {
     if (!is.null(valueVar)) {
@@ -17,6 +17,7 @@ mwControlFactory <- function(type, inputFunction, params, valueVar = NULL) {
 
   attr(res, "params") <- params
   attr(res, "type") <- type
+  attr(res, "display") <- lazyeval::expr_find(.display)
   res
 }
 
@@ -35,6 +36,9 @@ mwControlFactory <- function(type, inputFunction, params, valueVar = NULL) {
 #'   variable is used.
 #' @param ...
 #'   Other arguments passed to function\code{\link[shiny]{sliderInput}}
+#' @param .display expression that evaluates to TRUE or FALSE, indicating when
+#'   the input control should be shown/hidden.
+#' @inheritParams mwSlider
 #'
 #' @return
 #'   A function that will generate the input control.
@@ -62,11 +66,12 @@ mwControlFactory <- function(type, inputFunction, params, valueVar = NULL) {
 #'
 #' @export
 #' @family controls
-mwSlider <- function(min, max, value, label = NULL, ...) {
+mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "slider",
     function(...) {tags$div(style = "padding:0 5px;", shiny::sliderInput(...))},
-    list(min = min, max = max, value = value, label = label, ...)
+    list(min = min, max = max, value = value, label = label, ...),
+    .display = .display
   )
 }
 
@@ -94,10 +99,11 @@ mwSlider <- function(min, max, value, label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwText <- function(value = "", label = NULL, ...) {
+mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "text", shiny::textInput,
-    list(value = value, label = label, ...)
+    list(value = value, label = label, ...),
+    .display = .display
   )
 }
 
@@ -126,10 +132,11 @@ mwText <- function(value = "", label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwNumeric <- function(value, label = NULL, ...) {
+mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "numeric", shiny::numericInput,
-    list(value = value, label = label, ...)
+    list(value = value, label = label, ...),
+    .display = .display
   )
 }
 
@@ -162,10 +169,11 @@ mwNumeric <- function(value, label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwPassword <- function(value = "", label = NULL, ...) {
+mwPassword <- function(value = "", label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "password", shiny::passwordInput,
-    list(value = value, label = label, ...)
+    list(value = value, label = label, ...),
+    .display = .display
   )
 }
 
@@ -214,11 +222,13 @@ mwPassword <- function(value = "", label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwSelect <- function(choices = value, value = NULL, label = NULL, ..., multiple = FALSE) {
+mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
+                     multiple = FALSE, .display = TRUE) {
   mwControlFactory(
     "select", shiny::selectInput,
     list(choices = choices, value = value, label = label, ..., multiple = multiple),
-    valueVar = "selected"
+    valueVar = "selected",
+    .display = .display
   )
 }
 
@@ -248,10 +258,11 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ..., multiple 
 #'
 #' @export
 #' @family controls
-mwCheckbox <- function(value = FALSE, label = NULL, ...) {
+mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "checkbox", shiny::checkboxInput,
-    list(value = value, label = label, ...)
+    list(value = value, label = label, ...),
+    .display = .display
   )
 }
 
@@ -284,11 +295,12 @@ mwCheckbox <- function(value = FALSE, label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwRadio <- function(choices, value = NULL, label = NULL, ...) {
+mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "radio", shiny::radioButtons,
     list(choices = choices, value = value, label = label, ...),
-    valueVar = "selected"
+    valueVar = "selected",
+    .display = .display
   )
 }
 
@@ -316,10 +328,11 @@ mwRadio <- function(choices, value = NULL, label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwDate <- function(value = NULL, label = NULL, ...) {
+mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "date", shiny::dateInput,
-    list(value = value, label = label, ...)
+    list(value = value, label = label, ...),
+    .display = .display
   )
 }
 
@@ -348,11 +361,13 @@ mwDate <- function(value = NULL, label = NULL, ...) {
 #'
 #' @export
 #' @family controls
-mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...) {
+mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...,
+                        .display = TRUE) {
   mwControlFactory(
     "dateRange", shiny::dateRangeInput,
     list(value = value, label = label, ...),
-    valueVar = c("start", "end")
+    valueVar = c("start", "end"),
+    .display = .display
   )
 }
 
@@ -386,11 +401,12 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 #'
 #' @export
 #' @family controls
-mwCheckboxGroup <- function(choices, value = c(), label = NULL, ...) {
+mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = TRUE) {
   mwControlFactory(
     "checkboxGroup", shiny::checkboxGroupInput,
     list(choices = choices, value = value, label = label, ...),
-    valueVar = "selected"
+    valueVar = "selected",
+    .display = .display
   )
 }
 

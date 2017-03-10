@@ -19,6 +19,7 @@ Imports:
     shiny,
     miniUI,
     htmlwidgets,
+    lazyeval,
     knitr,
     methods,
     tools,

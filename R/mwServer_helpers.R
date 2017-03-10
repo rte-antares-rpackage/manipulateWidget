@@ -7,17 +7,15 @@
 #' @param env module environment
 #'
 #' @noRd
-showHideControls <- function(.display, desc, session, env) {
-  displayBool <- eval(.display, envir = env)
-  if (length(displayBool) > 0) {
-    for (n in names(displayBool)) {
-      inputDesc <- subset(desc, name == n)
-      if (nrow(inputDesc) == 1) {
-        shiny::updateCheckboxInput(
-          session,
-          inputId = paste0(inputDesc$inputId, "_visible"),
-          value = displayBool[[n]])
-      }
+showHideControls <- function(desc, session, env) {
+  displayBool <- lapply(desc$display, eval, envir = env)
+  for (i in seq_along(displayBool)) {
+    if (is.logical(displayBool[[i]])) {
+      shiny::updateCheckboxInput(
+        session,
+        inputId = paste0(desc$inputId[i], "_visible"),
+        value = displayBool[[i]]
+      )
     }
   }
 }

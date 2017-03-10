@@ -4,7 +4,7 @@
 \alias{mwRadio}
 \title{Add radio buttons to a manipulateWidget gadget}
 \usage{
-mwRadio(choices, value = NULL, label = NULL, ...)
+mwRadio(choices, value = NULL, label = NULL, ..., .display = TRUE)
 }
 \arguments{
 \item{choices}{Vector or list of choices. If it is named, then the names rather than the
@@ -16,6 +16,9 @@ values are displayed to the user.}
 variable is used.}
 
 \item{...}{Other arguments passed to function\code{\link[shiny]{radioButtons}}}
+
+\item{.display}{expression that evaluates to TRUE or FALSE, indicating when
+the input control should be shown/hidden.}
 }
 \value{
 A function that will generate the input control.

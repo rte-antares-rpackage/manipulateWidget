@@ -8,7 +8,8 @@ compare <- list(x2 = list(1, 2, 3), .n = 3)
 
 describe("showHideControls", {
   visible <- list(x1_visible = TRUE, x2_visible = TRUE)
-  display <- expression(list(x1 = x2 == 1, x2 = FALSE))
+  controlsSpec <- list(x1 = mwText("value1", .display = x2 == 1),
+                       x2 = mwSelect(1:3, .display = FALSE))
   controls <- preprocessControls(controlsSpec, env = parent.frame())
 
   it("changes visibility of inputs", {
@@ -19,14 +20,14 @@ describe("showHideControls", {
       },
       {
         it ("Initial visibility", {
-          showHideControls(display, controls$desc, NULL, controls$env$ind[[1]])
+          showHideControls(controls$desc, NULL, controls$env$ind[[1]])
           expect_true(visible$x1_visible)
           expect_false(visible$x2_visible)
         })
 
         it ("visibility after input update", {
           assign("x2", 2, envir = controls$env$ind[[1]])
-          showHideControls(display, controls$desc, NULL, controls$env$ind[[1]])
+          showHideControls(controls$desc, NULL, controls$env$ind[[1]])
           expect_false(visible$x1_visible)
           expect_false(visible$x2_visible)
         })
@@ -44,7 +45,7 @@ describe("updateControls", {
   env <- controls$env$ind[[1]]
 
   with_mock(
-    getUpdateInputFun = function(type) {
+    `manipulateWidget:::getUpdateInputFun` = function(type) {
       function(...) print(paste("update", type))
     },
     {

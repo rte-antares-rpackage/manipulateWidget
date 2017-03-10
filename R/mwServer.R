@@ -15,7 +15,7 @@
 #'
 mwServer <- function(.expr, controls, widgets,
                      renderFunction,
-                     .display, .updateInputs, .compareLayout,
+                     .updateInputs, .compareLayout,
                      .updateBtn) {
 
   function(input, output, session) {
@@ -51,7 +51,7 @@ mwServer <- function(.expr, controls, widgets,
 
       # Update inputs and widget of the module
       observe({
-        showHideControls(.display, desc, session, moduleEnv())
+        showHideControls(desc, session, moduleEnv())
 
         # Skip first evaluation, since widgets have already been rendered with
         # initial parameters

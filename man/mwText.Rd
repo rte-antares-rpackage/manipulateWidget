@@ -4,7 +4,7 @@
 \alias{mwText}
 \title{Add a text input to a manipulateWidget gadget}
 \usage{
-mwText(value = "", label = NULL, ...)
+mwText(value = "", label = NULL, ..., .display = TRUE)
 }
 \arguments{
 \item{value}{Initial value of the text input.}
@@ -13,6 +13,9 @@ mwText(value = "", label = NULL, ...)
 variable is used.}
 
 \item{...}{Other arguments passed to function\code{\link[shiny]{textInput}}}
+
+\item{.display}{expression that evaluates to TRUE or FALSE, indicating when
+the input control should be shown/hidden.}
 }
 \value{
 A function that will generate the input control.

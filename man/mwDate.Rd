@@ -4,7 +4,7 @@
 \alias{mwDate}
 \title{Add a date picker to a manipulateWidget gadget}
 \usage{
-mwDate(value = NULL, label = NULL, ...)
+mwDate(value = NULL, label = NULL, ..., .display = TRUE)
 }
 \arguments{
 \item{value}{Default value of the input.}
@@ -13,6 +13,9 @@ mwDate(value = NULL, label = NULL, ...)
 variable is used.}
 
 \item{...}{Other arguments passed to function\code{\link[shiny]{dateInput}}}
+
+\item{.display}{expression that evaluates to TRUE or FALSE, indicating when
+the input control should be shown/hidden.}
 }
 \value{
 A function that will generate the input control.

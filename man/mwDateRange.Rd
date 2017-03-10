@@ -4,7 +4,8 @@
 \alias{mwDateRange}
 \title{Add a date range picker to a manipulateWidget gadget}
 \usage{
-mwDateRange(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...)
+mwDateRange(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...,
+  .display = TRUE)
 }
 \arguments{
 \item{value}{Vector containing two dates (either Date objects pr a string in yyy-mm-dd
@@ -14,6 +15,9 @@ format) representing the initial date range selected.}
 variable is used.}
 
 \item{...}{Other arguments passed to function\code{\link[shiny]{dateRangeInput}}}
+
+\item{.display}{expression that evaluates to TRUE or FALSE, indicating when
+the input control should be shown/hidden.}
 }
 \value{
 A function that will generate the input control.

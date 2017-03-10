@@ -35,13 +35,7 @@
 #' @param .viewer Controls where the gadget should be displayed. \code{"pane"}
 #'   corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 #'   \code{"browser"} to an external web browser.
-#' @param .display A named list of conditions that evaluate to TRUE OR FALSE
-#'   indicating when inputs should be displayed. These conditions are
-#'   reevaluated each time a control it modified. By default, each control is
-#'   displayed, but if the name of a control appears in this list, then the
-#'   associated condition is evaluated. If the result is TRUE then the control
-#'   is visible, else it is hidden.
-#' @param .updateInputs This parameter is similar to `.display` and can be used
+#' @param .updateInputs This parameter can be used
 #'  to dynamically update input controls. It must be a named list where names
 #'  correspond to names of input controls and values are named lists of
 #'  expressions where names correspond to arguments of the input generator
@@ -166,8 +160,7 @@
 #'   manipulateWidget(
 #'     myPlot(type, lwd),
 #'     type = mwSelect(c("points", "lines"), "points"),
-#'     lwd = mwSlider(1, 10, 1),
-#'     .display = list(lwd = type == "lines")
+#'     lwd = mwSlider(1, 10, 1, .display = type == "lines")
 #'   )
 #'
 #' }
@@ -209,7 +202,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .controlPos = c("left", "top", "right", "bottom", "tab"),
                              .tabColumns = 2,
                              .viewer = c("pane", "window", "browser"),
-                             .display = NULL,
                              .updateInputs = NULL,
                              .compare = NULL,
                              .compareLayout = c("v", "h")) {
@@ -218,7 +210,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
 
   .expr <- substitute(.expr)
-  .display <- substitute(.display)
   .updateInputs <- substitute(.updateInputs)
   .viewer <- match.arg(.viewer)
   .controlPos <- match.arg(.controlPos)
@@ -280,7 +271,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
 
   server <- mwServer(.expr, controls, initWidgets,
                      renderFunction,
-                     .display, .updateInputs,
+                     .updateInputs,
                      .compareLayout,
                      .updateBtn)
 

@@ -6,8 +6,8 @@
 \usage{
 manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
-  .viewer = c("pane", "window", "browser"), .display = NULL,
-  .updateInputs = NULL, .compare = NULL, .compareLayout = c("v", "h"))
+  .viewer = c("pane", "window", "browser"), .updateInputs = NULL,
+  .compare = NULL, .compareLayout = c("v", "h"))
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -40,14 +40,7 @@ should be used ? This parameter is used only if \code{controlPos = "tab"}}
 corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 \code{"browser"} to an external web browser.}
 
-\item{.display}{A named list of conditions that evaluate to TRUE OR FALSE
-indicating when inputs should be displayed. These conditions are
-reevaluated each time a control it modified. By default, each control is
-displayed, but if the name of a control appears in this list, then the
-associated condition is evaluated. If the result is TRUE then the control
-is visible, else it is hidden.}
-
-\item{.updateInputs}{This parameter is similar to `.display` and can be used
+\item{.updateInputs}{This parameter can be used
 to dynamically update input controls. It must be a named list where names
 correspond to names of input controls and values are named lists of
 expressions where names correspond to arguments of the input generator
@@ -186,8 +179,7 @@ if (require("plotly")) {
   manipulateWidget(
     myPlot(type, lwd),
     type = mwSelect(c("points", "lines"), "points"),
-    lwd = mwSlider(1, 10, 1),
-    .display = list(lwd = type == "lines")
+    lwd = mwSlider(1, 10, 1, .display = type == "lines")
   )
 
 }

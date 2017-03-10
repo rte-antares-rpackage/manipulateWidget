@@ -4,7 +4,7 @@
 \alias{mwCheckbox}
 \title{Add a checkbox to a manipulateWidget gadget}
 \usage{
-mwCheckbox(value = FALSE, label = NULL, ...)
+mwCheckbox(value = FALSE, label = NULL, ..., .display = TRUE)
 }
 \arguments{
 \item{value}{Initial value of the input.}
@@ -13,6 +13,9 @@ mwCheckbox(value = FALSE, label = NULL, ...)
 variable is used.}
 
 \item{...}{Other arguments passed to function\code{\link[shiny]{checkboxInput}}}
+
+\item{.display}{expression that evaluates to TRUE or FALSE, indicating when
+the input control should be shown/hidden.}
 }
 \value{
 A function that will generate the input control.
