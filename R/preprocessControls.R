@@ -44,6 +44,8 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
 
   res$env$shared$.initial <- TRUE
   res$env$shared$.session <- NULL
+  res$env$shared$.id <- 1
+  res$env$shared$.output <- "output1"
 
   # Number of modules to create
   nmod <- 1

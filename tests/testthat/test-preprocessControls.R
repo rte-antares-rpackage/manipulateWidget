@@ -160,4 +160,19 @@ describe("preprocessControls", {
     })
   })
 
+  describe("special variables", {
+
+    it("can access .id variable", {
+      controls <- list(x = mwNumeric(0, min = .id))
+      controlsPrepro <- preprocessControls(controls, env = parent.frame())
+      expect_equal(controlsPrepro$desc$currentParams[[1]]$min, 1)
+      expect_equal(controlsPrepro$desc$initValue[[1]], 1)
+
+      controlsPrepro <- preprocessControls(controls, compare = list(x = NULL), env = parent.frame())
+      expect_equal(controlsPrepro$desc$currentParams[[1]]$min, 1)
+      expect_equal(controlsPrepro$desc$currentParams[[2]]$min, 2)
+      expect_equal(controlsPrepro$desc$initValue[[1]], 1)
+      expect_equal(controlsPrepro$desc$initValue[[2]], 2)
+    })
+  })
 })
