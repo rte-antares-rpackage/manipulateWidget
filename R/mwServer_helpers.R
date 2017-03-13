@@ -29,41 +29,38 @@ showHideControls <- function(desc, session, env) {
 #' @noRd
 updateControls <- function(desc, session, env) {
 
-  newParams <- list()
   for (i in seq_len(nrow(desc))) {
-    newParams[[i]] <- evalParams(desc$params[[i]], env)
-  }
-  names(newParams) <- desc$name
+    newParams <- evalParams(desc$params[[i]], env)
 
-  for (n in names(newParams)) {
-    inputDesc <- subset(desc, name == n)
-    updateInputFun <- getUpdateInputFun(inputDesc$type)
+    args <- list(session = session, inputId = desc$inputId[i])
+    updateRequired <- FALSE
 
-    # For each parameter, check if its value has changed in order to avoid
-    # useless updates of inputs that can be annoying for users. If it has
-    # changed, update the corresponding parameter.
-    for (p in names(newParams[[n]])) {
-      if (identical(newParams[[n]][[p]], inputDesc$currentParams[[1]][[p]])) {
+    for (p in setdiff(names(newParams), c("value", "label"))) {
+      if (identical(newParams[[p]], desc$currentParams[[i]][[p]])) {
         next
       }
-      args <- newParams[[n]][p]
-      args$session <- session
-      args$inputId <- inputDesc$inputId
+
+      updateRequired <- TRUE
+      args[[p]] <- newParams[[p]]
 
       # Special case: update value of select input when choices are modified
-      if (p == "choices" & inputDesc$type == "select") {
-        actualSelection <- get(n, envir = env)
-        if (inputDesc$multiple) {
-          args$selected <- intersect(actualSelection, newParams[[n]][[p]])
+      if (p == "choices" & desc$type[i] == "select") {
+        actualSelection <- get(desc$name[i], envir = env)
+        if (desc$multiple[[i]]) {
+          args$selected <- intersect(actualSelection, newParams[[p]])
         } else {
-          if (actualSelection %in% newParams[[n]][[p]]) {
+          if (actualSelection %in% newParams[[p]]) {
             args$selected <- actualSelection
           }
         }
       }
-      do.call(updateInputFun, args)
 
-      desc$currentParams[desc$name == inputDesc$name][[1]][[p]] <-  newParams[[n]][[p]]
+      desc$currentParams[[i]][[p]] <-  newParams[[p]]
+    }
+
+    if (updateRequired) {
+      updateInputFun <- getUpdateInputFun(desc$type[i])
+      do.call(updateInputFun, args)
     }
   }
 

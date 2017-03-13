@@ -137,11 +137,9 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   }
 
   # Store the current value of input parameters
-  currentParams <- list()
-  for (i in seq_len(nrow(res$desc))) {
-    currentParams[[i]] <- evalParams(res$desc$params[[i]], res$desc$env[[i]])
-  }
-  res$desc$currentParams <- currentParams
+  res$desc$currentParams <- lapply(seq_len(nrow(res$desc)), function(i) {
+    evalParams(res$desc$params[[i]], res$desc$env[[i]])
+  })
 
   # List of controls for UI ####################################################
 
