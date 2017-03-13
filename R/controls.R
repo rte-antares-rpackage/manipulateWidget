@@ -40,7 +40,7 @@ mwControlFactory <- function(type, inputFunction, params, valueVar = NULL, .disp
 }
 
 prepareParams <- function(value, label, ...) {
-  params <- lapply(lazy_dots(..., .follow_symbols = TRUE), function(x) x$expr)
+  params <- lapply(lazyeval::lazy_dots(..., .follow_symbols = TRUE), function(x) x$expr)
   params$value <- value
   params$label <- label
   params

@@ -39,7 +39,7 @@ describe("showHideControls", {
 # updateControls ###############################################################
 
 describe("updateControls", {
-  controlsSpec <- list(x1 = mwNumeric(0), x2 = mwSelect(1:3))
+  controlsSpec <- list(x1 = mwNumeric(0, min = x2), x2 = mwSelect(0:3))
   controls <- preprocessControls(controlsSpec, env = parent.frame())
   desc <- controls$desc
   env <- controls$env$ind[[1]]
@@ -49,15 +49,15 @@ describe("updateControls", {
       function(...) print(paste("update", type))
     },
     {
-      update <- expression(list(x1 = list(min = x2)))
       it ("updates control parameters", {
-        expect_output(desc <<- updateControls(update, desc, NULL, env),
+        assign("x2", 1L, envir = env)
+        expect_output(desc <<- updateControls(desc, NULL, env),
                       "update numeric")
-        expect_equal(desc$params[[1]]$min, 1)
+        expect_equal(desc$currentParams[[1]]$min, 1)
       })
       it ("does nothing if parameters are not modified", {
-        expect_silent(desc <<- updateControls(update, desc, NULL, env))
-        expect_equal(desc$params[[1]]$min, 1)
+        expect_silent(desc <<- updateControls(desc, NULL, env))
+        expect_equal(desc$currentParams[[1]]$min, 1)
       })
     }
   )

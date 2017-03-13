@@ -132,20 +132,16 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
       assign(res$desc$name[i], res$desc$initValue[[i]], envir = res$desc$env[[i]])
     }
 
-    # Process the update parameter
-    for (i in seq_len(nmod)) {
-      updatedParams <- eval(update, envir = res$env$ind[[i]])
-      for (n in names(updatedParams)) {
-        j <- which(res$desc$name == n & res$desc$mod %in% c(0, i))
-        if (length(j) == 1) {
-          res$desc$params[[j]] <- mergeList(res$desc$params[[j]], updatedParams[[n]])
-        }
-      }
-    }
-
     oldValue <- res$desc$initValue
     k <- k + 1
   }
+
+  # Store the current value of input parameters
+  currentParams <- list()
+  for (i in seq_len(nrow(res$desc))) {
+    currentParams[[i]] <- evalParams(res$desc$params[[i]], res$desc$env[[i]])
+  }
+  res$desc$currentParams <- currentParams
 
   # List of controls for UI ####################################################
 
@@ -229,6 +225,7 @@ getInitValue <- function(desc) {
 setValueAndParams <- function(controls, desc) {
   name <- desc$inputId
   initValue <- desc$initValue
+  params <- desc$currentParams
 
   setValueAndParamsIter <- function(x) {
     for (n in names(x)) {
@@ -236,6 +233,7 @@ setValueAndParams <- function(controls, desc) {
         x[[n]] <- setValueAndParamsIter(x[[n]])
       } else {
         i <- which(name == n)
+        attr(x[[n]], "params") <- params[[i]]
         attr(x[[n]], "params")$value <- initValue[[i]]
       }
     }

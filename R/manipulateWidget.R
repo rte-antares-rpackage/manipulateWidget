@@ -35,11 +35,6 @@
 #' @param .viewer Controls where the gadget should be displayed. \code{"pane"}
 #'   corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 #'   \code{"browser"} to an external web browser.
-#' @param .updateInputs This parameter can be used
-#'  to dynamically update input controls. It must be a named list where names
-#'  correspond to names of input controls and values are named lists of
-#'  expressions where names correspond to arguments of the input generator
-#'  function.
 #' @param .compare Sometimes one wants to compare the same chart but with two
 #'   different sets of parameters. This is the purpose of this argument. It must
 #'   be a named list whose names are the names of the inputs that should vary
@@ -202,7 +197,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .controlPos = c("left", "top", "right", "bottom", "tab"),
                              .tabColumns = 2,
                              .viewer = c("pane", "window", "browser"),
-                             .updateInputs = NULL,
                              .compare = NULL,
                              .compareLayout = c("v", "h")) {
 
@@ -264,14 +258,12 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     .main = .main,
     .outputFun = outputFunction,
     .titleBar = !isRuntimeShiny,
-    .updateInputs = .updateInputs,
     .compareLayout = .compareLayout,
     nmod = controls$nmod
   )
 
   server <- mwServer(.expr, controls, initWidgets,
                      renderFunction,
-                     .updateInputs,
                      .compareLayout,
                      .updateBtn)
 

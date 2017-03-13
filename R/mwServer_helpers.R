@@ -27,8 +27,13 @@ showHideControls <- function(desc, session, env) {
 #'
 #' @return data.frame 'desc' with updated column params
 #' @noRd
-updateControls <- function(.updateInputs, desc, session, env) {
-  newParams <- eval(.updateInputs, envir = env)
+updateControls <- function(desc, session, env) {
+
+  newParams <- list()
+  for (i in seq_len(nrow(desc))) {
+    newParams[[i]] <- evalParams(desc$params[[i]], env)
+  }
+  names(newParams) <- desc$name
 
   for (n in names(newParams)) {
     inputDesc <- subset(desc, name == n)
@@ -38,7 +43,7 @@ updateControls <- function(.updateInputs, desc, session, env) {
     # useless updates of inputs that can be annoying for users. If it has
     # changed, update the corresponding parameter.
     for (p in names(newParams[[n]])) {
-      if (identical(newParams[[n]][[p]], desc$params[[1]][[p]])) {
+      if (identical(newParams[[n]][[p]], inputDesc$currentParams[[1]][[p]])) {
         next
       }
       args <- newParams[[n]][p]
@@ -58,7 +63,7 @@ updateControls <- function(.updateInputs, desc, session, env) {
       }
       do.call(updateInputFun, args)
 
-      desc$params[desc$inputId == inputDesc$inputId][[1]][[p]] <-  newParams[[n]][[p]]
+      desc$currentParams[desc$name == inputDesc$name][[1]][[p]] <-  newParams[[n]][[p]]
     }
   }
 

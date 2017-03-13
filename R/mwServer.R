@@ -5,7 +5,6 @@
 #' @param widgets A list of the widgets to show, in their initial state
 #' @param renderFunction Function to use to render the widgets
 #' @param .display see manipulateWidget
-#' @param .updateInputs see manipulateWidget
 #' @param .compareLayout see manipulateWidget
 #' @param .updateBtn see manipulateWidget
 #'
@@ -15,7 +14,7 @@
 #'
 mwServer <- function(.expr, controls, widgets,
                      renderFunction,
-                     .updateInputs, .compareLayout,
+                     .compareLayout,
                      .updateBtn) {
 
   function(input, output, session) {
@@ -59,7 +58,7 @@ mwServer <- function(.expr, controls, widgets,
           assign(".initial", FALSE, envir = moduleEnv())
           assign(".session", session, envir = moduleEnv())
         } else {
-          desc <<- updateControls(.updateInputs, desc, session, moduleEnv())
+          desc <<- updateControls(desc, session, moduleEnv())
           res <- eval(.expr, envir = moduleEnv())
           if (is(res, "htmlwidget")) {
             output[[paste0("output", i)]] <- renderFunction(res)

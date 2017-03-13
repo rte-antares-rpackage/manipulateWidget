@@ -107,15 +107,20 @@ describe("preprocessControls", {
   })
 
   describe("Update inputs", {
-    update <- expression(list(x2 = list(choices = 4:6), x3 = list(choices = x2 * 1:3)))
-    controlsPrepro <- preprocessControls(controls, update = update, env = parent.frame())
+    controls <- list(
+      x1 = mwText(value = "value1", label = "label1"),
+      x2 = mwSelect(choices = 4:6, value = 2, label = "label2"),
+      x3 = mwSelect(x2 * 1:3, 1, multiple = TRUE, label = "label3")
+    )
+
+    controlsPrepro <- preprocessControls(controls, env = parent.frame())
     desc <- controlsPrepro$desc
     envs <- controlsPrepro$env
     ctrlList <- controlsPrepro$controls
 
     it ("updates params in description and control list", {
-      expect_equal(desc$params[[2]]$choices, c(4:6))
-      expect_equal(desc$params[[3]]$choices, c(4, 8, 12))
+      expect_equal(desc$currentParams[[2]]$choices, c(4:6))
+      expect_equal(desc$currentParams[[3]]$choices, c(4, 8, 12))
       expect_equal(attr(ctrlList$shared$x2, "params")$choices, c(4:6))
       expect_equal(attr(ctrlList$shared$x3, "params")$choices, c(4, 8, 12))
     })
@@ -125,7 +130,11 @@ describe("preprocessControls", {
     })
 
     it ("updates inputs of each module", {
-      update <- expression(list(x3 = list(choices = x2 * 1:3)))
+      controls <- list(
+        x1 = mwText(value = "value1", label = "label1"),
+        x2 = mwSelect(choices = 1:3, label = "label2"),
+        x3 = mwSelect(x2 * 1:3, 1, multiple = TRUE, label = "label3")
+      )
       compare <- list(x2 = list(1, 2, 3), x3 = NULL, .n = 3)
       controlsPrepro <- preprocessControls(controls, compare, update, env = parent.frame())
       desc <- controlsPrepro$desc
@@ -133,8 +142,8 @@ describe("preprocessControls", {
       ctrlList <- controlsPrepro$controls
 
       for (i in 1:3) {
-        expect_equal(desc$params[[2 + (i-1) * 2]]$choices, c(1:3))
-        expect_equal(desc$params[[3 + (i-1) * 2]]$choices, 1:3 * compare$x2[[i]])
+        expect_equal(desc$currentParams[[2 + (i-1) * 2]]$choices, c(1:3))
+        expect_equal(desc$currentParams[[3 + (i-1) * 2]]$choices, 1:3 * compare$x2[[i]])
         expect_equal(attr(ctrlList$ind[[i]]$x2, "params")$choices, c(1:3))
         expect_equal(attr(ctrlList$ind[[i]]$x3, "params")$choices, 1:3 * compare$x2[[i]])
       }
