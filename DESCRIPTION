@@ -28,7 +28,8 @@ Suggests:
     leaflet,
     plotly,
     xts,
-    rmarkdown
+    rmarkdown,
+    covr
 License: GPL (>= 2) | file LICENSE
 LazyData: TRUE
 RoxygenNote: 5.0.1
