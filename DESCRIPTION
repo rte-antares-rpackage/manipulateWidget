@@ -33,6 +33,6 @@ Suggests:
     testthat,
     covr
 LazyData: TRUE
-RoxygenNote: 6.0.0
+RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Encoding: UTF-8

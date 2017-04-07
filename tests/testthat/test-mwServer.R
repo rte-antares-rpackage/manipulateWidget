@@ -44,7 +44,7 @@ describe("updateControls", {
   env <- controls$env$ind[[1]]
 
   with_mock(
-    getUpdateInputFun = function(type) {
+    `manipulateWidget:::getUpdateInputFun` = function(type) {
       function(...) print(paste("update", type))
     },
     {
