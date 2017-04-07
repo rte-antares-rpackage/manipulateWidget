@@ -4,3 +4,6 @@ README.rmd
 README.md
 img
 README_files
+^appveyor\.yml$
+^\.travis\.yml$
+^codecov\.yml$

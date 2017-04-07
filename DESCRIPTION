@@ -30,7 +30,8 @@ Suggests:
     plotly,
     xts,
     rmarkdown,
-    testthat
+    testthat,
+    covr
 LazyData: TRUE
 RoxygenNote: 6.0.0
 VignetteBuilder: knitr
