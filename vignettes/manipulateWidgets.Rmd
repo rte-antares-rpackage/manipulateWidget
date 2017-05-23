@@ -139,8 +139,7 @@ myPlot <- function(type, lwd) {
 manipulateWidget(
   myPlot(type, lwd),
   type = mwSelect(c("points", "lines"), "points"),
-  lwd = mwSlider(1, 10, 1),
-  .display = list(lwd = type == "lines")
+  lwd = mwSlider(1, 10, 1, .display = type == "lines")
 )
 ```
 
@@ -190,31 +189,33 @@ manipulateWidget(
 
 The "normal" use of `manipulateWidget` is to provide an expression that always return an `htmlwidget`. In such case, every time the user changes the value of an input, the current widget is destroyed and a new one is created and rendered. This behavior is not optimal and sometimes it can be painful for the user: consider for instance an interactive map. Each time user changes an input, the map is destroyed and created again, then zoom and location on the map are lost every time.
 
-Some packages provide functions to update a widget that has already been rendered. This is the case for instance for package `leaflet` with the function `leafletProxy`. To use such functions, `manipulateWidget` evaluates the parameter `.expr` with two extra variables:
+Some packages provide functions to update a widget that has already been rendered. This is the case for instance for package `leaflet` with the function `leafletProxy`. To use such functions, `manipulateWidget` evaluates the parameter `.expr` with extra variables:
 
 * `.initial`: `TRUE` if the expression is evaluated for the first time and then the widget has not been rendered yet, `FALSE` if the widget has already been rendered.
 
 * `.session`: A shiny session object.
 
-Moreover the ID of the rendered widget is always "output". Then it is quite easy to write an expression that initializes a widget when it is evaluated the first time and then that updates this widget. Here is an example using package `leaflet`.
+* `.outputId`: ID of the element containing the widget.
+
+It is quite easy to write an expression that initializes a widget when it is evaluated the first time and then updates this widget. Here is an example using package `leaflet`.
 
 ```{r eval=FALSE}
 lon <- rnorm(10, sd = 20)
 lat <- rnorm(10, sd = 20)
 
-myMapFun <- function(radius, color, initial, session) {
+myMapFun <- function(radius, color, initial, session, outputId) {
   if (initial) {
     # Widget has not been rendered
     map <- leaflet() %>% addTiles()
   } else {
     # widget has already been rendered
-    map <- leafletProxy("output", session) %>% clearMarkers()
+    map <- leafletProxy(outputId, session) %>% clearMarkers()
   }
 
   map %>% addCircleMarkers(lon, lat, radius = radius, color = color)
 }
 
-manipulateWidget(myMapFun(radius, color, .initial, .session),
+manipulateWidget(myMapFun(radius, color, .initial, .session, .output),
                  radius = mwSlider(5, 30, 10),
                  color = mwSelect(c("red", "blue", "green")))
 

@@ -176,9 +176,9 @@
 #'
 #' # Advanced Usage
 #' #
-#' # .expr is evaluated with two extra variables .initial and .session that can
-#' # be used to update an already rendered widget instead of replacing it each
-#' # time an input value is modified.
+#' # .expr is evaluated with extra variables .initial, .outputId and .session
+#' # that can be used to update an already rendered widget instead of replacing
+#' # it each time an input value is modified.
 #' #
 #' # Here we generate a UI that permits to change color and size of arbitrary
 #' # points on a map generated with leaflet.
