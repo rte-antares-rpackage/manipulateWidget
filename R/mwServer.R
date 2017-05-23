@@ -16,7 +16,7 @@
 mwServer <- function(.expr, controls, widgets,
                      renderFunction,
                      .display, .updateInputs, .compareLayout,
-                     .updateBtn) {
+                     .updateBtn, .return) {
 
   function(input, output, session) {
     # Ensure that initial values of select inputs with multiple = TRUE are in
@@ -72,6 +72,6 @@ mwServer <- function(.expr, controls, widgets,
       updateModule(i)
     }
 
-    observeEvent(input$done, onDone(.expr, controls))
+    observeEvent(input$done, onDone(.expr, controls, .return))
   }
 }

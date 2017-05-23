@@ -57,7 +57,12 @@
 #'   charts.
 #' @param .compareLayout Used only when \code{.compare} is set. Possible values
 #'   are "v" for vertical layout (one chart above the other) and "h" for
-#'   horizontal layout (one chart on the right of the other)
+#'   horizontal layout (one chart on the right of the other).
+#' @param .return A function that can be used to modify the output of
+#'   \code{manipulateWidget}. It must take two parameters: the first one is the
+#'   final widget, the second one is a list of environments containing the input
+#'   values of each individual widget. The length of this list is one if .compare
+#'   is null, two or more if it has been defined.
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the controls.
@@ -95,6 +100,15 @@
 #'
 #' You can take a look at the last example to see how to use these two
 #' variables to update a leaflet widget.
+#'
+#' @section Modify the returned widget:
+#'   In some specific situations, a developer may want to use
+#'   \code{manipulateWidget} in a function that waits the user to click on the
+#'   "Done" button and modifies the widget returned by \code{manipulateWidget}.
+#'   In such situation, parameter \code{.return} should be used so that
+#'   \code{manipulateWidget} is the last function called. Indeed, if other code
+#'   is present after, the custom function will act very weird in a Rmarkdown
+#'   document with "runtime: shiny".
 #'
 #' @examples
 #' if (require(dygraphs)) {
@@ -212,7 +226,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .display = NULL,
                              .updateInputs = NULL,
                              .compare = NULL,
-                             .compareLayout = c("v", "h")) {
+                             .compareLayout = c("v", "h"),
+                             .return = function(widget, envs) {widget}) {
 
   # check if we are in runtime shiny
   isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
@@ -282,7 +297,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                      renderFunction,
                      .display, .updateInputs,
                      .compareLayout,
-                     .updateBtn)
+                     .updateBtn,
+                     .return)
 
   if (interactive()) {
     # We are in an interactive session so we start a shiny gadget
@@ -298,6 +314,6 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.
-    mwReturn(initWidgets)
+    mwReturn(initWidgets, .return, controls$env$ind)
   }
 }

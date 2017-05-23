@@ -93,14 +93,14 @@ getUpdateInputFun <- function(type) {
 #'
 #' @return a htmlwidget
 #' @noRd
-onDone <- function(.expr, controls) {
+onDone <- function(.expr, controls, .return = function(w, e) {w}) {
   widgets <- lapply(controls$env$ind, function(e) {
     assign(".initial", TRUE, envir = e)
     assign(".session", NULL, envir = e)
     eval(.expr, envir = e)
   })
 
-  shiny::stopApp(mwReturn(widgets))
+  shiny::stopApp(mwReturn(widgets, .return, controls$env$ind))
 }
 
 #' Function that takes a list of widgets and returns the first one if there is
@@ -110,10 +110,11 @@ onDone <- function(.expr, controls) {
 #'
 #' @return a htmlwidget
 #' @noRd
-mwReturn <- function(widgets) {
+mwReturn <- function(widgets, .return, envs) {
   if (length(widgets) == 1) {
-    return(widgets[[1]])
+    finalWidget <- widgets[[1]]
   } else {
-    return(combineWidgets(list = widgets))
+    finalWidget <- combineWidgets(list = widgets)
   }
+  .return(finalWidget, envs)
 }
