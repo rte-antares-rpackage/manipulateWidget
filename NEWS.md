@@ -1,6 +1,22 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
-# ManipulateWidget 0.5.1 (2017-01-23)
+# manipulateWidget 0.6.0 (2017-05-24)
+
+## Breaking changes
+* `manipulateWidget()` now has a simpler API to show, hide and update inputs dynamically. Parameters `.display` and `.updateInputs` have been removed.
+* Functions `mwUI()` and `mwControlsUI()` have been removed.
+
+## New Features
+* `manipulateWidget()` gains a new parameter `.return` to modify the object returned by the function.
+* `manipulateWidget()` has two new arguments `.width` and `.height` to control size of the UI in Rmarkdown documents with option `runtime: shiny`
+* New function `mwGroup` can be used to create groups of input.
+
+
+## Bug fixes
+* Select inputs have had a buggy behavior in some settings.
+* Labels of inputs were incorrect in comparison mode.
+
+# manipulateWidget 0.5.1 (2017-01-23)
 
 ## New Features
 
