@@ -122,7 +122,7 @@ manipulateWidget(
 
 ### Conditional inputs
 
-Sometimes some inputs are relevant only if other inputs have some value. `manipulateWidget`provides a way to show/hide inputs conditionally to the value of the other inputs thanks to parameter `.display`. This parameter expects a named list of expressions. The names are the ones of the inputs to show/hide and the expressions can include any input and have to evaluate to `TRUE/FALSE`. Here is a toy example, using package `plot_ly`. User can choose points or lines to represent some data. If he chooses lines, then an input appears to let him choose the width of the lines.
+Sometimes some inputs are relevant only if other inputs have some value. `manipulateWidget`provides a way to show/hide inputs conditionally to the value of the other inputs thanks to parameter `.display` of the input generator functions. This parameter needs to be an expression that evaluates to `TRUE` or `FALSE`. Here is a toy example, using package `plot_ly`. User can choose points or lines to represent some data. If he chooses lines, then an input appears to let him choose the width of the lines.
 
 ```{r eval=FALSE}
 mydata <- data.frame(x = 1:100, y = rnorm(100))
@@ -148,11 +148,9 @@ manipulateWidget(
 
 ### Updating an input control
 
-`manipulateWidget` provides a mecanism to dynamically update inputs through the parameter `.updateInputs`. For instance, one can update the choices of an input control conditionally to the value of other inputs.
+`manipulateWidget` provides a simple mecanism to dynamically update inputs. Indeed, all input generator functions (`mwSlider()`, `mwSelect()`, etc.) accept as parameters expressions that depend on the value of the other inputs. Thanks to this mechanism, you can dynamically modify an input based on the value. For instance, one can change the available choices of a select input based on the value of another input.  
 
-This mechanism is similar to the used for conditionally displaying inputs: `.updateInputs` expects a named list where names are the names of the inputs to update. Values are themselves named list where names are arguments of the input generator function and values are expressions that give the new values of the arguments.
-
-Here is an example that uses plotly to represent with a barchart a car from the `mtcars` dataset. User chooses the number of cylinders and then a car among the ones with this number of cylinders
+Here is an example that uses package `plotly` to represent with a barchart a car from the `mtcars` dataset. User chooses the number of cylinders and then a car among the ones with this number of cylinders.
 
 ```{r dynamic_input, eval=FALSE}
 colMax <- apply(mtcars, 2, max)
@@ -175,10 +173,7 @@ str(carChoices)
 manipulateWidget(
   plotCar(car),
   cylinders = mwSelect(c("4", "6", "8")),
-  car = mwSelect(),
-  .updateInputs = list(
-    car = list(choices = carChoices[[cylinders]])
-  )
+  car = mwSelect(choices = carChoices[[cylinders]])
 )
 ```
 
