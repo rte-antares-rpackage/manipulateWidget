@@ -8,7 +8,7 @@ manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
   .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
   .viewer = c("pane", "window", "browser"), .compare = NULL,
   .compareLayout = c("v", "h"), .return = function(widget, envs) {    
-  widget })
+  widget }, .width = NULL, .height = NULL)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -60,6 +60,12 @@ horizontal layout (one chart on the right of the other).}
 final widget, the second one is a list of environments containing the input
 values of each individual widget. The length of this list is one if .compare
 is null, two or more if it has been defined.}
+
+\item{.width}{Width of the UI. Used only on Rmarkdown documents with option
+\code{runtime: shiny}.}
+
+\item{.height}{Height of the UI. Used only on Rmarkdown documents with option
+\code{runtime: shiny}.}
 }
 \value{
 The result of the expression evaluated with the last values of the controls.

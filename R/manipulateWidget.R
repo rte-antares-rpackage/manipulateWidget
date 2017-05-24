@@ -52,6 +52,10 @@
 #'   final widget, the second one is a list of environments containing the input
 #'   values of each individual widget. The length of this list is one if .compare
 #'   is null, two or more if it has been defined.
+#' @param .width Width of the UI. Used only on Rmarkdown documents with option
+#'   \code{runtime: shiny}.
+#' @param .height Height of the UI. Used only on Rmarkdown documents with option
+#'   \code{runtime: shiny}.
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the controls.
@@ -213,7 +217,8 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareLayout = c("v", "h"),
-                             .return = function(widget, envs) {widget}) {
+                             .return = function(widget, envs) {widget},
+                             .width = NULL, .height = NULL) {
 
   # check if we are in runtime shiny
   isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
@@ -293,7 +298,7 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
     shiny::runGadget(ui, server, viewer = .viewer)
   } else if (isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
-    shiny::shinyApp(ui = ui, server = server)
+    shiny::shinyApp(ui = ui, server = server, options = list(width = .width, height = .height))
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.

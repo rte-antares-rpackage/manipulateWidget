@@ -4,6 +4,7 @@ output: html_document
 runtime: shiny
 ---
 
+Hodor. Hodor hodor... Hodor hodor hodor hodor. Hodor, hodor. Hodor. Hodor, hodor, hodor. Hodor hodor?! Hodor, hodor. Hodor. Hodor, hodor - hodor hodor! Hodor, hodor, hodor. Hodor hodor hodor. Hodor. Hodor hodor - hodor... Hodor hodor hodor hodor; hodor hodor? Hodor. Hodor HODOR hodor, hodor hodor... Hodor hodor hodor; hodor hodor?! Hodor hodor - hodor hodor; hodor hodor; hodor hodor? Hodor hodor - hodor hodor... Hodor hodor hodor hodor. Hodor. Hodor hodor HODOR! Hodor HODOR hodor, hodor hodor - hodor hodor! Hodor hodor HODOR! Hodor hodor, hodor. Hodor hodor; hodor hodor; hodor hodor - hodor, hodor, hodor hodor. 
 
 ```{r, echo = FALSE, message = FALSE}
 library(plotly)
@@ -22,7 +23,7 @@ myPlot <- function(type, lwd) {
 manipulateWidget(
   myPlot(type, lwd),
   type = mwSelect(c("points", "lines"), "points"),
-  lwd = mwSlider(1, 10, 1),
-  .display = list(lwd = type == "lines")
+  lwd = mwSlider(1, 10, 1, .display = type == "lines"),
+  .height = 600
 )
 ```
