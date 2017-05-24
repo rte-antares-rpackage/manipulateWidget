@@ -53,11 +53,11 @@ describe("updateControls", {
         assign("x2", 1L, envir = env)
         expect_output(desc <<- updateControls(desc, NULL, env),
                       "update numeric")
-        expect_equal(desc$currentParams[[1]]$min, 1)
+        expect_equal(desc$currentParams[[2]]$min, 1)
       })
       it ("does nothing if parameters are not modified", {
         expect_silent(desc <<- updateControls(desc, NULL, env))
-        expect_equal(desc$currentParams[[1]]$min, 1)
+        expect_equal(desc$currentParams[[2]]$min, 1)
       })
     }
   )

@@ -63,7 +63,6 @@ prepareParams <- function(value, label, ...) {
 #'   Other arguments passed to function\code{\link[shiny]{sliderInput}}
 #' @param .display expression that evaluates to TRUE or FALSE, indicating when
 #'   the input control should be shown/hidden.
-#' @inheritParams mwSlider
 #'
 #' @return
 #'   A function that will generate the input control.
@@ -435,3 +434,36 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
   )
 }
 
+#' Group inputs in a collapsible box
+#'
+#' This function generates a collapsible box containing inputs. It can be useful
+#' when there are a lot of inputs and one wants to group them.
+#'
+#' @param ... inputs that will be grouped in the box
+#' @param .display expression that evaluates to TRUE or FALSE, indicating when
+#'   the group should be shown/hidden.
+#'
+#' @return List of inputs
+#'
+#' @examples
+#' if(require(dygraphs)) {
+#'   mydata <- data.frame(x = 1:100, y = rnorm(100))
+#'   manipulateWidget(
+#'     dygraph(mydata[range[1]:range[2], ],
+#'             main = title, xlab = xlab, ylab = ylab),
+#'     range = mwSlider(1, 100, c(1, 100)),
+#'     "Graphical parameters" = mwGroup(
+#'       title = mwText("Fictive time series"),
+#'       xlab = mwText("X axis label"),
+#'       ylab = mwText("Y axis label")
+#'     )
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwGroup <- function(..., .display = TRUE) {
+  res <- list(...)
+  attr(res, "display") <- lazyeval::expr_find(.display)
+  res
+}

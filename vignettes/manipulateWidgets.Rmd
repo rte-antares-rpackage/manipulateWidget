@@ -102,7 +102,7 @@ combineWidgets(
 
 ### Grouping controls
 
-If you have a large number of inputs, you can easily group them. To do so, simply pass to the function `manipulateWidget` a list of inputs instead of passing directly the inputs. Here is a toy example. Groups are by default collapsed and user can click on their title to display/collapse then. 
+If you have a large number of inputs, you can easily group them. To do so, simply use function `mwGroup()`. Here is a toy example. Groups are by default collapsed and user can click on their title to display/collapse then. 
 
 ```{r eval = FALSE}
 mydata <- data.frame(x = 1:100, y = rnorm(100))
@@ -110,7 +110,7 @@ manipulateWidget(
   dygraph(mydata[range[1]:range[2], ],
           main = title, xlab = xlab, ylab = ylab),
   range = mwSlider(1, 100, c(1, 100)),
-  "Graphical parameters" = list(
+  "Graphical parameters" = mwGroup(
     title = mwText("Fictive time series"),
     xlab = mwText("X axis label"),
     ylab = mwText("Y axis label")

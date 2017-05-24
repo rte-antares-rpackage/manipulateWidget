@@ -43,7 +43,8 @@ if (require(plotly)) {
 \seealso{
 Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
-  \code{\link{mwDate}}, \code{\link{mwNumeric}},
-  \code{\link{mwPassword}}, \code{\link{mwSelect}},
-  \code{\link{mwSlider}}, \code{\link{mwText}}
+  \code{\link{mwDate}}, \code{\link{mwGroup}},
+  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
+  \code{\link{mwSelect}}, \code{\link{mwSlider}},
+  \code{\link{mwText}}
 }

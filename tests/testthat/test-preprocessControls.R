@@ -21,11 +21,11 @@ describe("preprocessControls", {
     })
 
     it ("reads correct values", {
-      expect_equal(desc$name, names(controls))
-      expect_equal(desc$type, c("text", "select", "select"))
-      expect_equal(desc$initValue, list("value1", 2, integer()))
-      expect_equal(desc$multiple, c(NA, FALSE, TRUE))
-      expect_equal(desc$inputId, desc$name)
+      expect_equal(desc$name, c(".root", names(controls)))
+      expect_equal(desc$type, c("group", "text", "select", "select"))
+      expect_equal(desc$initValue, list(NULL, "value1", 2, integer()))
+      expect_equal(desc$multiple, c(NA, NA, FALSE, TRUE))
+      expect_equal(desc$inputId, gsub("[^a-zA-Z0-9]", "_", desc$name))
     })
   })
 
@@ -39,9 +39,9 @@ describe("preprocessControls", {
       expect_true(exists("x1", envir = sharedEnv))
       expect_true(exists("x2", envir = sharedEnv))
       expect_true(exists("x3", envir = sharedEnv))
-      expect_equal(get("x1", envir = sharedEnv), desc$initValue[[1]])
-      expect_equal(get("x2", envir = sharedEnv), desc$initValue[[2]])
-      expect_equal(get("x3", envir = sharedEnv), desc$initValue[[3]])
+      expect_equal(get("x1", envir = sharedEnv), desc$initValue[[2]])
+      expect_equal(get("x2", envir = sharedEnv), desc$initValue[[3]])
+      expect_equal(get("x3", envir = sharedEnv), desc$initValue[[4]])
     })
 
     it ("creates an individual environment", {
@@ -51,9 +51,9 @@ describe("preprocessControls", {
 
     it("can access shared variables from individual environment", {
       indEnv <- controlsPrepro$env$ind[[1]]
-      expect_equal(get("x1", envir = indEnv), desc$initValue[[1]])
-      expect_equal(get("x2", envir = indEnv), desc$initValue[[2]])
-      expect_equal(get("x3", envir = indEnv), desc$initValue[[3]])
+      expect_equal(get("x1", envir = indEnv), desc$initValue[[2]])
+      expect_equal(get("x2", envir = indEnv), desc$initValue[[3]])
+      expect_equal(get("x3", envir = indEnv), desc$initValue[[4]])
     })
   })
 
@@ -63,7 +63,7 @@ describe("preprocessControls", {
 
     it ("creates a list of shared and individual controls", {
       expect_equal(length(sharedControls), length(controls))
-      expect_equal(names(sharedControls), desc$inputId)
+      expect_equal(names(sharedControls), desc$inputId[-1])
       for (ctrl in sharedControls) {
         expect_is(ctrl, "function")
       }
@@ -82,11 +82,11 @@ describe("preprocessControls", {
     ctrlList <- controlsPrepro$controls
 
     it ("adds individual inputs in description", {
-      expect_equal(nrow(desc), 7)
-      expect_equal(desc$name, c("x1", "x2", "x3", "x2", "x3", "x2", "x3"))
-      expect_equal(desc$inputId, c("x1", "x21", "x31", "x22", "x32", "x23", "x33"))
-      expect_equal(desc$mod, c(0, 1, 1, 2, 2, 3, 3))
-      expect_equal(desc$initValue, list("value1", 2, x3Values[[1]], 2, x3Values[[2]], 2, x3Values[[3]]))
+      expect_equal(nrow(desc), 8)
+      expect_equal(desc$name, c(".root", "x1", "x2", "x3", "x2", "x3", "x2", "x3"))
+      expect_equal(desc$inputId, c("_root", "x1", "x21", "x31", "x22", "x32", "x23", "x33"))
+      expect_equal(desc$mod, c(0, 0, 1, 1, 2, 2, 3, 3))
+      expect_equal(desc$initValue, list(NULL, "value1", 2, x3Values[[1]], 2, x3Values[[2]], 2, x3Values[[3]]))
     })
 
     it ("creates an individual environment for each module", {
@@ -119,14 +119,14 @@ describe("preprocessControls", {
     ctrlList <- controlsPrepro$controls
 
     it ("updates params in description and control list", {
-      expect_equal(desc$currentParams[[2]]$choices, c(4:6))
-      expect_equal(desc$currentParams[[3]]$choices, c(4, 8, 12))
+      expect_equal(desc$currentParams[[3]]$choices, c(4:6))
+      expect_equal(desc$currentParams[[4]]$choices, c(4, 8, 12))
       expect_equal(attr(ctrlList$shared$x2, "params")$choices, c(4:6))
       expect_equal(attr(ctrlList$shared$x3, "params")$choices, c(4, 8, 12))
     })
 
     it ("updates initial values if required", {
-      expect_equal(desc$initValue, list("value1", 4, integer()))
+      expect_equal(desc$initValue, list(NULL, "value1", 4, integer()))
     })
 
     it ("updates inputs of each module", {
@@ -142,8 +142,8 @@ describe("preprocessControls", {
       ctrlList <- controlsPrepro$controls
 
       for (i in 1:3) {
-        expect_equal(desc$currentParams[[2 + (i-1) * 2]]$choices, c(1:3))
-        expect_equal(desc$currentParams[[3 + (i-1) * 2]]$choices, 1:3 * compare$x2[[i]])
+        expect_equal(desc$currentParams[[3 + (i-1) * 2]]$choices, c(1:3))
+        expect_equal(desc$currentParams[[4 + (i-1) * 2]]$choices, 1:3 * compare$x2[[i]])
         expect_equal(attr(ctrlList$ind[[i]]$x2, "params")$choices, c(1:3))
         expect_equal(attr(ctrlList$ind[[i]]$x3, "params")$choices, 1:3 * compare$x2[[i]])
       }
@@ -165,14 +165,14 @@ describe("preprocessControls", {
     it("can access .id variable", {
       controls <- list(x = mwNumeric(0, min = .id))
       controlsPrepro <- preprocessControls(controls, env = parent.frame())
-      expect_equal(controlsPrepro$desc$currentParams[[1]]$min, 1)
-      expect_equal(controlsPrepro$desc$initValue[[1]], 1)
+      expect_equal(controlsPrepro$desc$currentParams[[2]]$min, 1)
+      expect_equal(controlsPrepro$desc$initValue[[2]], 1)
 
       controlsPrepro <- preprocessControls(controls, compare = list(x = NULL), env = parent.frame())
-      expect_equal(controlsPrepro$desc$currentParams[[1]]$min, 1)
-      expect_equal(controlsPrepro$desc$currentParams[[2]]$min, 2)
-      expect_equal(controlsPrepro$desc$initValue[[1]], 1)
-      expect_equal(controlsPrepro$desc$initValue[[2]], 2)
+      expect_equal(controlsPrepro$desc$currentParams[[2]]$min, 1)
+      expect_equal(controlsPrepro$desc$currentParams[[3]]$min, 2)
+      expect_equal(controlsPrepro$desc$initValue[[2]], 1)
+      expect_equal(controlsPrepro$desc$initValue[[3]], 2)
     })
   })
 })

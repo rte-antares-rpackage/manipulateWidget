@@ -75,7 +75,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   # controls description #######################################################
 
   controlsDesc <- getControlDesc(controls)
-  controlsDesc$inputId <- controlsDesc$name
+  controlsDesc$inputId <- gsub("[^a-zA-Z0-9]", "_", controlsDesc$name)
   controlsDesc$mod <- 0
 
   controlsDescShared <- subset(controlsDesc, !name %in% names(compare))
@@ -124,12 +124,13 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   # We update values and parameters in a loop until values are stable.
   # If after 10 loops values are still changing, we give up!
   while(TRUE) {
-    if (k == 10) stop("Cannot set initial values. Is there a circular dependency in the '.updateInputs' parameter ?")
+    if (k == 10) stop("Cannot set initial values. Is there a circular dependency between parameters?")
 
     # Correct initial values
     res$desc$initValue <- getInitValue(res$desc)
     if (identical(oldValue, res$desc$initValue)) break
     for (i in seq_len(nrow(res$desc))) {
+      if (res$desc$type[i] == "group") next
       res$desc$params[[i]]$value <- res$desc$initValue[[i]]
       assign(res$desc$name[i], res$desc$initValue[[i]], envir = res$desc$env[[i]])
     }

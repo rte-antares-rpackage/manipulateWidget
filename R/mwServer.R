@@ -41,8 +41,8 @@ mwServer <- function(.expr, controls, widgets,
         input$.update
 
         for (j in seq_len(nrow(desc))) {
-          if (.updateBtn) v <- eval(parse(text = sprintf("isolate(input$%s)", desc$inputId[j])))
-          else v <- eval(parse(text = sprintf("input$%s", desc$inputId[j])))
+          if (.updateBtn) v <- isolate(input[[desc$inputId[j]]])
+          else v <- input[[desc$inputId[j]]]
           assign(desc$name[j], v, envir = desc$env[[j]])
         }
         controls$env$ind[[i]]

@@ -32,7 +32,7 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
         ctrls <- mwControlsUI(f)
         label <- attr(f, "params")$label
         if (is.null(label)) label <- id
-        id <- gsub(" ", "-", id)
+        id <- gsub("[^a-zA-Z0-9]", "_", id)
         res <- tags$div(
           class="panel panel-default",
           tags$div(
@@ -67,6 +67,7 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
   )
 
   vis_checkboxes <- lapply(ids, function(id) {
+    id <- gsub("[^a-zA-Z0-9]", "_", id)
     shiny::checkboxInput(paste0(id, "_visible"), "", value = TRUE)
   })
   vis_checkboxes$style <- "display:none"

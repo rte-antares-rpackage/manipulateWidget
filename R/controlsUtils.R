@@ -48,12 +48,7 @@ getControlDesc <- function(controls) {
    } else if (length(x) == 0) {
      return()
    } else {
-     if (".display" %in% names(x)) {
-       display <<- append(display, list(x$.display))
-       x$.display <- NULL
-     } else {
-       display <<- append(display, list(NULL))
-     }
+     display <<- append(display, list(attr(x, "display")))
      inputNames <<- append(inputNames, name)
      initValues <<- append(initValues, list(NULL))
      types <<- append(types, "group")
@@ -76,7 +71,6 @@ getControlDesc <- function(controls) {
    stringsAsFactors = FALSE
  )
 
- res <- res[res$type != "group",]
  res
 }
 
