@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New UI for manipulateWidget</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="manipulate_widget.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="mw-container">
+      <!-- LEFT MENU -->
+      <div class="mw-menu">
+        <div class="mw-btn mw-btn-settings" onclick="select(this)">
+          <i class="fa fa-gears"></i>
+          <div class="right-arrow"></div>
+        </div>
+        <div class="mw-btn mw-btn-area">
+          <div class="mw-icon-areachart">
+            <div class="mw-icon-chart" style="width:18px;height:13px;left:2px;top:2px;"></div>
+          </div>
+          <div class="right-arrow"></div>
+        </div>
+        <div class="mw-btn mw-btn-area">
+          <div class="mw-icon-areachart">
+            <div class="mw-icon-chart" style="width:18px;height:13px;left:20px;top:2px;"></div>
+          </div>
+          <div class="right-arrow"></div>
+        </div>
+        <div class="mw-btn mw-btn-area">
+          <div class="mw-icon-areachart">
+            <div class="mw-icon-chart" style="width:18px;height:13px;left:2px;top:15px;"></div>
+          </div>
+          <div class="right-arrow"></div>
+        </div>
+        <div class="mw-btn mw-btn-ok">OK</div>
+      </div>
+
+      <!-- inputs -->
+      <div class="mw-input-container">
+        <div class="mw-inputs">
+          shared inputs
+        </div>
+        <div class="mw-inputs">
+          inputs chart 1
+        </div>
+        <div class="mw-inputs">
+          inputs chart 2
+        </div>
+        <div class="mw-inputs">
+          inputs chart 3
+        </div>
+      </div>
+
+      <!-- chartarea -->
+      <div class="mw-chartarea">
+        Charts will be here
+      </div>
+    </div>
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="manipulate_widget.js" charset="utf-8"></script>
+  </body>
+</html>
