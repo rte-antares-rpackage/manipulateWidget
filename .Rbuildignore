@@ -7,3 +7,4 @@ README_files
 ^appveyor\.yml$
 ^\.travis\.yml$
 ^codecov\.yml$
+newUI

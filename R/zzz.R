@@ -75,7 +75,8 @@
 #'
 #' @rdname manipulateWidget-package
 #' @docType package
-#' @importFrom shiny tags observe observeEvent reactive isolate icon
+#' @importFrom shiny tags observe observeEvent reactive isolate icon tagAppendChild
+#' @importFrom shiny tagAppendChildren fillPage fillRow
 #' @importFrom miniUI miniContentPanel miniPage miniTabPanel miniTabstripPanel gadgetTitleBar
 #' @importFrom htmlwidgets getDependency
 #' @importFrom methods is
