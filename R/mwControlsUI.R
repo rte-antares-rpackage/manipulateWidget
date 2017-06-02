@@ -107,7 +107,7 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
 }
 
 .controlsCol <- function(controls) {
-  #controls$style <- "width:200px;"
+  controls$class <- "mw-inputs"
   do.call(tags$div, controls)
 }
 
@@ -115,4 +115,3 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
   controls$height <- "100px"
   do.call(shiny::fillRow, controls)
 }
-

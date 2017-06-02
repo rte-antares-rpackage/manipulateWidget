@@ -146,6 +146,7 @@ html, body {
   height:100%;
   display:none;
   border-right:solid 1px blue;
+  padding:10px;
 }
 
 .mw-chartarea {
@@ -153,4 +154,8 @@ html, body {
   -webkit-flex: 1;
   -moz-flex: 1;
   -ms-flex: 1;
+}
+
+.mw-chart {
+  border: solid 3px red;
 }
