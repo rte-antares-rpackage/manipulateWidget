@@ -38,6 +38,7 @@
 .uiControls <- function(controls) {
    controls <- c(list(controls$controls$shared), controls$controls$ind)
    controls <- unname(lapply(controls, function(x) {
+     if (length(x) == 0) return(NULL)
      tags$div(class = "mw-inputs", mwControlsUI(x))
    }))
    controls$class <- "mw-input-container"
@@ -48,8 +49,12 @@
   outputEls <- lapply(seq_len(nrow * ncol), function(i) {
     if (i > ncharts) return(tags$div())
     outputId <- paste0("output", i)
-    if (is.null(outputFun)) shiny::htmlOutput(outputId, style="width:100%;height:100%;", class="mw-chart")
-    else outputFun(outputId, width = "100%", height = "100%")
+    if (is.null(outputFun)) {
+      el <- shiny::htmlOutput(outputId, style="width:100%;height:100%;")
+    } else {
+      el <- outputFun(outputId, width = "100%", height = "100%")
+    }
+    tags$div(class="mw-chart", el)
   })
 
   outputEls <- split(outputEls, (1:(ncol*nrow) - 1) %/% ncol)

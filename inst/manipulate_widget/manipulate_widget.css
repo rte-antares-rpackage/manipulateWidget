@@ -140,6 +140,7 @@ html, body {
   height:100%;
   border-right:solid 1px blue;
   padding:10px;
+  display: none;
 }
 
 .mw-chartarea {
@@ -150,5 +151,6 @@ html, body {
 }
 
 .mw-chart {
-  border: solid 3px red;
+  width:100%;
+  height:100%;
 }
