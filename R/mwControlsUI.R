@@ -107,7 +107,6 @@ mwControlsUI <- function(controlList, .dir = c("v", "h"), .n = 1, .updateBtn = F
 }
 
 .controlsCol <- function(controls) {
-  controls$class <- "mw-inputs"
   do.call(tags$div, controls)
 }
 

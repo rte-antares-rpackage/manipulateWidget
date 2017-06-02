@@ -10,27 +10,36 @@
 .uiLayout <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
                       okBtn = TRUE, updateBtn = FALSE) {
 
-  showSettings <- controls$nmod == 1 || length(controls$controls$shared > 0)
-
-  menu <- tags$div(
-    class="menu"
+  htmldep <- htmltools::htmlDependency(
+    "manipulateWidget",
+    "0.7.0",
+    system.file("manipulate_widget", package = "manipulateWidget"),
+    script = "manipulate_widget.js",
+    style = "manipulate_widget.css"
   )
 
-  controls <- tags$div(
-    class="controls"
+  showSettings <- controls$nmod == 1 || length(controls$controls$shared) > 0
+
+  container <- fillPage(
+    tags$div(
+      class="mw-container",
+      fillRow(
+        flex = c(NA, NA, 1),
+        .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, updateBtn),
+        .uiControls(controls),
+        .uiChartarea(controls$nmod, nrow, ncol, outputFun)
+      )
+    )
   )
 
-  container <- tags$div(
-    class="mw-container",
-    .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, updateBtn),
-    .uiControls(controls),
-    .uiChartarea(controls$nmod, nrow, ncol, outputFun)
-  )
+  htmltools::attachDependencies(container, htmldep, TRUE)
 }
 
 .uiControls <- function(controls) {
    controls <- c(list(controls$controls$shared), controls$controls$ind)
-   controls <- unname(lapply(controls, mwControlsUI))
+   controls <- unname(lapply(controls, function(x) {
+     tags$div(class = "mw-inputs", mwControlsUI(x))
+   }))
    controls$class <- "mw-input-container"
    do.call(tags$div, controls)
 }
@@ -40,7 +49,7 @@
     if (i > ncharts) return(tags$div())
     outputId <- paste0("output", i)
     if (is.null(outputFun)) shiny::htmlOutput(outputId, style="width:100%;height:100%;", class="mw-chart")
-    else .outputFun(.outputId, width = "100%", height = "100%", class = "mw-chart")
+    else outputFun(outputId, width = "100%", height = "100%")
   })
 
   outputEls <- split(outputEls, (1:(ncol*nrow) - 1) %/% ncol)
@@ -70,7 +79,8 @@
   }
 
   if (okBtn) {
-    container <- tagAppendChild(container, tags$div(class = "mw-btn mw-btn-ok", "OK"))
+    okBtn <- shiny::actionButton("done", "OK", class = "mw-btn mw-btn-ok")
+    container <- tagAppendChild(container, okBtn)
   }
   container
 }
@@ -95,7 +105,7 @@
   h <- (HEIGHT - 2 * PAD) / nrow
 
   chartIconStyle <- sprintf("width:%spx;height:%spx;left:%spx;top:%spx;",
-                            w, h, w * (i%%ncol) + PAD, h * (i %/% nrow) + PAD)
+                            w, h, w * (i%%ncol) + PAD, h * (i %/% ncol) + PAD)
   tags$div(
     class = "mw-icon-areachart",
     tags$div(class="mw-icon-chart", style=chartIconStyle)

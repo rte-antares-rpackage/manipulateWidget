@@ -18,6 +18,7 @@ License: GPL (>= 2) | file LICENSE
 Imports:
     shiny,
     miniUI,
+    htmltools,
     htmlwidgets,
     lazyeval,
     knitr,

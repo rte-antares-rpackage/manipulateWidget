@@ -270,18 +270,18 @@ manipulateWidget <- function(.expr, ..., .main = NULL, .updateBtn = FALSE,
   }
 
   # UI
-  ui <- mwUI(
-    controls$controls,
-    .controlPos = .controlPos,
-    .tabColumns = .tabColumns,
-    .updateBtn = .updateBtn,
-    .main = .main,
-    .outputFun = outputFunction,
-    .titleBar = !isRuntimeShiny,
-    .compareLayout = .compareLayout,
-    nmod = controls$nmod
-  )
-
+  # ui <- mwUI(
+  #   controls$controls,
+  #   .controlPos = .controlPos,
+  #   .tabColumns = .tabColumns,
+  #   .updateBtn = .updateBtn,
+  #   .main = .main,
+  #   .outputFun = outputFunction,
+  #   .titleBar = !isRuntimeShiny,
+  #   .compareLayout = .compareLayout,
+  #   nmod = controls$nmod
+  # )
+  ui <- .uiLayout(controls, controls$nmod, 1, outputFunction, okBtn = !isRuntimeShiny)
   server <- mwServer(.expr, controls, initWidgets,
                      renderFunction,
                      .compareLayout,

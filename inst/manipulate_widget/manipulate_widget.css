@@ -1,0 +1,154 @@
+/* MENU */
+
+.mw-menu {
+  width:50px;
+  height:100%;
+  background-color: #ccc;
+  border-right:solid 1px blue;
+  padding-top: 50px;
+}
+
+
+/* general style for buttons */
+.mw-btn {
+  position: relative;
+  width:50px;
+  height:50px;
+  cursor:pointer;
+}
+
+.mw-btn.active {
+  background-color: blue;
+}
+
+/* Arrow that is displayed when a button is active*/
+.right-arrow {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 25px 0 25px 10px;
+  border-color: transparent transparent transparent blue;
+  position: absolute;
+  top:0;
+  left: 50px;
+  display:none;
+}
+
+.mw-btn:hover .right-arrow {
+  border-color: transparent transparent transparent orange;
+}
+
+.active .right-arrow {
+  display: block;
+}
+
+/* Settings button */
+.mw-btn-settings {
+  margin-bottom: 50px;
+  background-color: white;
+  border: solid 1px blue;
+  color: blue;
+  text-align: center;
+  vertical-align: bottom;
+  line-height: 50px;
+  font-size: 30px;
+}
+
+.mw-btn-settings.active {
+  border: none;
+  color: white;
+}
+
+.mw-btn-settings:hover {
+  color:orange;
+  border:solid 1px orange;
+}
+
+.mw-btn-settings.active:hover {
+  color:white;
+  background-color: orange;
+  border: none;
+}
+
+/* Buttons used to display inputs for a specific area */
+.mw-btn-area {
+  padding: 10px 4.5px;
+}
+
+.mw-btn-area:hover {
+  background-color: orange;
+}
+
+.mw-icon-areachart {
+  position:relative;
+  background-color: white;
+  width: 40px;
+  height: 30px;
+}
+
+.mw-icon-chart {
+  position: absolute;
+  background-color: blue;
+}
+
+.mw-btn:hover .mw-icon-chart {
+  background-color: orange;
+}
+
+
+/* OK button */
+.mw-btn-ok {
+  margin: 0 3px;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  bottom: 50px;
+  background-color: green;
+  color: white;
+  text-align: center;
+  vertical-align: bottom;
+  line-height: 44px;
+  border-radius: 5px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.mw-btn-ok:hover, .mw-btn-ok:active, .mw-btn-ok:focus  {
+  color: white;
+  background-color: darkgreen;
+}
+
+/* /!\ DO NOT MODIFY THE REST OF THE FILE /!\ */
+
+html, body {
+  height:100%;
+}
+
+.mw-container {
+  height:100%;
+  width:100%;
+  border:solid 1px blue;
+}
+
+.mw-input-container {
+  height:100%;
+}
+
+.mw-inputs {
+  width: 200px;
+  height:100%;
+  border-right:solid 1px blue;
+  padding:10px;
+}
+
+.mw-chartarea {
+  flex: 1;
+  -webkit-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
+}
+
+.mw-chart {
+  border: solid 3px red;
+}
