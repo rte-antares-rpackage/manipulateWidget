@@ -256,7 +256,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
 
   dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
 
-  ui <- .uiLayout(controls, dims$nrow, dims$ncol, outputFunction, okBtn = !isRuntimeShiny)
+  ui <- mwUI(controls, dims$nrow, dims$ncol, outputFunction, okBtn = !isRuntimeShiny)
   server <- mwServer(.expr, controls, initWidgets,
                      renderFunction,
                      .updateBtn,

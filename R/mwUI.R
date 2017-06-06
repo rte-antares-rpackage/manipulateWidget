@@ -3,11 +3,15 @@
 #' @param controls Object returned by preprocessControls
 #' @param ncol Number of columns in the chart area.
 #' @param nrow Number of rows in the chart area.
+#' @param outputFun Function that generates the html elements that will contain
+#'   a given widget
+#' @param okBtn Should the OK Button be added to the UI ?
+#' @param updateBtn Should the updateBtn be added to the UI ? Currently unused.
 #'
 #' @return shiny tags
 #'
 #' @noRd
-.uiLayout <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
+mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
                       okBtn = TRUE, updateBtn = FALSE) {
 
   htmldep <- htmltools::htmlDependency(
