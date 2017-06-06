@@ -16,7 +16,9 @@ mwServer <- function(.expr, controls, widgets,
                      renderFunction,
                      .updateBtn, .return, nrow, ncol) {
 
+
   function(input, output, session) {
+    message("Click on the 'OK' button to return to the R session.")
     # Ensure that initial values of select inputs with multiple = TRUE are in
     # same order than the user asked.
     selectInputList <- subset(controls$desc, type == "select" & multiple)
