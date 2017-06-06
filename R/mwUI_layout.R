@@ -41,6 +41,7 @@
      if (length(x) == 0) return(NULL)
      tags$div(class = "mw-inputs", mwControlsUI(x))
    }))
+
    controls$class <- "mw-input-container"
    do.call(tags$div, controls)
 }

@@ -2,7 +2,7 @@ context("mwServer")
 
 controlsSpec <- list(x1 = mwText("value1"), x2 = mwSelect(1:3))
 expr <- expression(combineWidgets(paste(x1, x2)))
-compare <- list(x2 = list(1, 2, 3), .n = 3)
+compare <- list(x2 = list(1, 2, 3))
 
 # showHideControls #############################################################
 
@@ -10,7 +10,7 @@ describe("showHideControls", {
   visible <- list(x1_visible = TRUE, x2_visible = TRUE)
   controlsSpec <- list(x1 = mwText("value1", .display = x2 == 1),
                        x2 = mwSelect(1:3, .display = FALSE))
-  controls <- preprocessControls(controlsSpec, env = parent.frame())
+  controls <- preprocessControls(controlsSpec, env = parent.frame(), ncharts = 1)
 
   it("changes visibility of inputs", {
 
@@ -40,7 +40,7 @@ describe("showHideControls", {
 
 describe("updateControls", {
   controlsSpec <- list(x1 = mwNumeric(0, min = x2), x2 = mwSelect(0:3))
-  controls <- preprocessControls(controlsSpec, env = parent.frame())
+  controls <- preprocessControls(controlsSpec, env = parent.frame(), ncharts = 1)
   desc <- controls$desc
   env <- controls$env$ind[[1]]
 
@@ -66,8 +66,8 @@ describe("updateControls", {
 # onDone #######################################################################
 
 describe("onDone", {
-  controls <- preprocessControls(controlsSpec, env = parent.frame())
-  controlsCompare <- preprocessControls(controlsSpec, compare, env = parent.frame())
+  controls <- preprocessControls(controlsSpec, env = parent.frame(), ncharts = 1)
+  controlsCompare <- preprocessControls(controlsSpec, compare, env = parent.frame(), ncharts = 3)
 
   it ("stops the shiny gadget and returns a htmlwidget", {
     with_mock(

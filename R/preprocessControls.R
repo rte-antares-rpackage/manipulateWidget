@@ -3,7 +3,6 @@
 #'
 #' @param controls list of controls
 #' @param compare list describing how comparison should be done
-#' @param update non evaluated list
 #' @param env environment
 #'
 #' @return
@@ -28,7 +27,7 @@
 #'    - ind: list of list of individual inputs (one for each module)
 #'
 #' @noRd
-preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
+preprocessControls <- function(controls, compare = NULL, env, ncharts) {
   # Initialize object returned by the function
   res <- list(
     desc = data.frame(),
@@ -48,14 +47,7 @@ preprocessControls <- function(controls, compare = NULL, update = NULL, env) {
   res$env$shared$.output <- "output1"
 
   # Number of modules to create
-  nmod <- 1
-  if (!is.null(compare)) {
-    if (!is.null(compare$.n)) {
-      nmod <- compare$.n
-    } else {
-      nmod <- 2
-    }
-  }
+  nmod <- ncharts
 
   res$nmod <- nmod
 

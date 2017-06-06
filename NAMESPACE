@@ -2,10 +2,10 @@
 
 export(combineWidgets)
 export(combineWidgetsOutput)
+export(compareOptions)
 export(manipulateWidget)
 export(mwCheckbox)
 export(mwCheckboxGroup)
-export(mwControlsUI)
 export(mwDate)
 export(mwDateRange)
 export(mwGroup)

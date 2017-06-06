@@ -4,11 +4,10 @@
 \alias{manipulateWidget}
 \title{Add Controls to Interactive Plots}
 \usage{
-manipulateWidget(.expr, ..., .main = NULL, .updateBtn = FALSE,
-  .controlPos = c("left", "top", "right", "bottom", "tab"), .tabColumns = 2,
-  .viewer = c("pane", "window", "browser"), .compare = NULL,
-  .compareLayout = c("v", "h"), .return = function(widget, envs) {    
-  widget }, .width = NULL, .height = NULL)
+manipulateWidget(.expr, ..., .updateBtn = FALSE, .viewer = c("pane",
+  "window", "browser"), .compare = NULL, .compareOpts = compareOptions(),
+  .return = function(widget, envs) {     widget }, .width = NULL,
+  .height = NULL)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -23,19 +22,9 @@ arguments. for instance \code{mygroup = list(txt = mwText(""), nb =
 mwNumeric(0))} creates a group of inputs named mygroup with two inputs
 named "txt" and "nb".}
 
-\item{.main}{Title of the shiny gadget}
-
 \item{.updateBtn}{Should an update button be added to the controls ? If
 \code{TRUE}, then the graphic is updated only when the user clicks on the
 update button.}
-
-\item{.controlPos}{Where controls should be placed ? By default, they are
-placed in the left, next to the graphic. If \code{controlPos = "tab"}, two
-tabs are created: one containing controls and the other containing the
-graphic.}
-
-\item{.tabColumns}{If controls are placed in a distinct tab, how many columns
-should be used ? This parameter is used only if \code{controlPos = "tab"}}
 
 \item{.viewer}{Controls where the gadget should be displayed. \code{"pane"}
 corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
@@ -51,9 +40,8 @@ corresponding parameter for each chart. It can also be \code{NULL}. In this
 case, the parameter is initialized with the default value for the two
 charts.}
 
-\item{.compareLayout}{Used only when \code{.compare} is set. Possible values
-are "v" for vertical layout (one chart above the other) and "h" for
-horizontal layout (one chart on the right of the other).}
+\item{.compareOpts}{List of options created \code{\link{compareOptions}}.
+These options indicate the number of charts to create and their disposition.}
 
 \item{.return}{A function that can be used to modify the output of
 \code{manipulateWidget}. It must take two parameters: the first one is the

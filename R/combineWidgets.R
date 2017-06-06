@@ -223,23 +223,14 @@ preRenderCombinedWidgets <- function(x) {
   nwidgets <- length(x$widgets)
 
   # Get number of rows and cols
-  nrow <- x$params$nrow
-  ncol <- x$params$ncol
-  if (!is.null(nrow) && !is.null(ncol) && nrow * ncol < nwidgets) {
-    stop("There are too much widgets compared to the number of rows and columns")
-  } else if (is.null(nrow) && !is.null(ncol)) {
-    nrow <- ceiling(nwidgets / ncol)
-  } else if (!is.null(nrow) && is.null(ncol)) {
-    ncol <- ceiling(nwidgets / nrow)
-  } else if (is.null(nrow) && is.null(ncol)) {
-    nrow <- ceiling(sqrt(nwidgets))
-    ncol <- ceiling(nwidgets / nrow)
-  }
+  dims <- .getRowAndCols(nwidgets, x$params$nrow, x$params$ncol)
+  nrow <- dims$nrow
+  ncol <- dims$ncol
 
   ncells <- nrow * ncol
 
   # Relative size of rows and cols
-  rowsize <- rep(x$params$rowsize, length.out=nrow)
+  rowsize <- rep(x$params$rowsize, length.out = nrow)
   colsize <- rep(x$params$colsize, length.out = ncol)
 
   # Get the html ID of each widget

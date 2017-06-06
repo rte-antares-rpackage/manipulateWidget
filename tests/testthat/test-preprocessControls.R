@@ -8,7 +8,7 @@ describe("preprocessControls", {
     x3 = mwSelect(4:6, 1, multiple = TRUE, label = "label3")
   )
 
-  controlsPrepro <- preprocessControls(controls, env = parent.frame())
+  controlsPrepro <- preprocessControls(controls, env = parent.frame(), ncharts = 1)
   desc <- controlsPrepro$desc
 
   describe("Controls description", {
@@ -75,8 +75,8 @@ describe("preprocessControls", {
 
   describe("Comparison", {
     x3Values <- as.list(sample(4:6, 3, replace = TRUE))
-    compare <- list(.n = 3, x2 = NULL, x3 = x3Values)
-    controlsPrepro <- preprocessControls(controls, compare, env = parent.frame())
+    compare <- list(x2 = NULL, x3 = x3Values)
+    controlsPrepro <- preprocessControls(controls, compare, env = parent.frame(), ncharts = 3)
     desc <- controlsPrepro$desc
     envs <- controlsPrepro$env
     ctrlList <- controlsPrepro$controls
@@ -113,7 +113,7 @@ describe("preprocessControls", {
       x3 = mwSelect(x2 * 1:3, 1, multiple = TRUE, label = "label3")
     )
 
-    controlsPrepro <- preprocessControls(controls, env = parent.frame())
+    controlsPrepro <- preprocessControls(controls, env = parent.frame(), ncharts = 1)
     desc <- controlsPrepro$desc
     envs <- controlsPrepro$env
     ctrlList <- controlsPrepro$controls
@@ -135,8 +135,8 @@ describe("preprocessControls", {
         x2 = mwSelect(choices = 1:3, label = "label2"),
         x3 = mwSelect(x2 * 1:3, 1, multiple = TRUE, label = "label3")
       )
-      compare <- list(x2 = list(1, 2, 3), x3 = NULL, .n = 3)
-      controlsPrepro <- preprocessControls(controls, compare, update, env = parent.frame())
+      compare <- list(x2 = list(1, 2, 3), x3 = NULL)
+      controlsPrepro <- preprocessControls(controls, compare, env = parent.frame(), ncharts = 3)
       desc <- controlsPrepro$desc
       envs <- controlsPrepro$env
       ctrlList <- controlsPrepro$controls
@@ -155,7 +155,7 @@ describe("preprocessControls", {
       parent <- new.env()
       assign("test", "testValue", envir = parent)
 
-      controlsPrepro <- preprocessControls(controls, env = parent)
+      controlsPrepro <- preprocessControls(controls, env = parent, ncharts = 1)
       expect_equal(get("test", envir = controlsPrepro$env$ind[[1]]), "testValue")
     })
   })
@@ -164,11 +164,11 @@ describe("preprocessControls", {
 
     it("can access .id variable", {
       controls <- list(x = mwNumeric(0, min = .id))
-      controlsPrepro <- preprocessControls(controls, env = parent.frame())
+      controlsPrepro <- preprocessControls(controls, env = parent.frame(), ncharts = 1)
       expect_equal(controlsPrepro$desc$currentParams[[2]]$min, 1)
       expect_equal(controlsPrepro$desc$initValue[[2]], 1)
 
-      controlsPrepro <- preprocessControls(controls, compare = list(x = NULL), env = parent.frame())
+      controlsPrepro <- preprocessControls(controls, compare = list(x = NULL), env = parent.frame(), ncharts = 2)
       expect_equal(controlsPrepro$desc$currentParams[[2]]$min, 1)
       expect_equal(controlsPrepro$desc$currentParams[[3]]$min, 2)
       expect_equal(controlsPrepro$desc$initValue[[2]], 1)
