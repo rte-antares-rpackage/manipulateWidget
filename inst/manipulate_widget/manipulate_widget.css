@@ -3,9 +3,9 @@
 .mw-menu {
   width:50px;
   height:100%;
-  background-color: #ccc;
-  border-right:solid 1px blue;
-  padding-top: 50px;
+  background-color: #e7e8ea;
+  border-right:solid 1px #e7e8ea;
+  padding-top: 30px;
 }
 
 
@@ -18,7 +18,7 @@
 }
 
 .mw-btn.active {
-  background-color: blue;
+  background-color: #4e9cff;
 }
 
 /* Arrow that is displayed when a button is active*/
@@ -26,8 +26,8 @@
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 25px 0 25px 10px;
-  border-color: transparent transparent transparent blue;
+  border-width: 25px 0 25px 8px;
+  border-color: transparent transparent transparent #4e9cff;
   position: absolute;
   top:0;
   left: 50px;
@@ -35,7 +35,7 @@
 }
 
 .mw-btn:hover .right-arrow {
-  border-color: transparent transparent transparent orange;
+  border-color: transparent transparent transparent #2b7be2;
 }
 
 .active .right-arrow {
@@ -44,67 +44,76 @@
 
 /* Settings button */
 .mw-btn-settings {
-  margin-bottom: 50px;
-  background-color: white;
-  border: solid 1px blue;
-  color: blue;
-  text-align: center;
-  vertical-align: bottom;
-  line-height: 50px;
-  font-size: 30px;
-}
-
-.mw-btn-settings.active {
-  border: none;
-  color: white;
+  margin-bottom: 30px;
+  padding: 2px;
 }
 
 .mw-btn-settings:hover {
-  color:orange;
-  border:solid 1px orange;
+  color:#fff;
+  background-color: #2b7be2;
 }
 
-.mw-btn-settings.active:hover {
-  color:white;
-  background-color: orange;
-  border: none;
+.bt1 {
+  color: #4e9cff;
+  text-align: center;
+  vertical-align: bottom;
+  line-height: 44px;
+  font-size: 30px;
+  background-color: white;
+  border: solid 1px #4e9cff;
+}
+.mw-btn-settings:hover .bt1 {
+  color:#fff;
+  border:solid 1px #2b7be2;
+  background-color: #2b7be2;
+}
+
+.mw-btn-settings.active .bt1 {
+  color: white;
+  background-color: #4e9cff;
+}
+
+.mw-btn-settings.active:hover .bt1 {
+  color: white;
+  background-color: #2b7be2;
+  border: solid 1px #2b7be2;
 }
 
 /* Buttons used to display inputs for a specific area */
 .mw-btn-area {
-  padding: 10px 4.5px;
+  padding: 10px 3.3px;
 }
 
 .mw-btn-area:hover {
-  background-color: orange;
+  background-color: #2b7be2;
 }
 
 .mw-icon-areachart {
   position:relative;
   background-color: white;
-  width: 40px;
+  border: solid 1px #4e9cff;
+  width: 44px;
   height: 30px;
 }
 
 .mw-icon-chart {
   position: absolute;
-  background-color: blue;
+  background-color: #4e9cff;
 }
 
 .mw-btn:hover .mw-icon-chart {
-  background-color: orange;
+  background-color: #2b7be2;
 }
 
 
 /* OK button */
 .mw-btn-ok {
   margin: 0 3px;
-  padding: 0;
   width: 44px;
   height: 44px;
   position: absolute;
-  bottom: 50px;
-  background-color: green;
+  bottom: 30px;
+  background-color: #26b48b;
   color: white;
   text-align: center;
   vertical-align: bottom;
@@ -112,11 +121,12 @@
   border-radius: 5px;
   font-size: 20px;
   font-weight: bold;
+  padding:0;
 }
 
 .mw-btn-ok:hover, .mw-btn-ok:active, .mw-btn-ok:focus  {
   color: white;
-  background-color: darkgreen;
+  background-color: #0b946c;
 }
 
 /* /!\ DO NOT MODIFY THE REST OF THE FILE /!\ */
@@ -128,7 +138,6 @@ html, body {
 .mw-container {
   height:100%;
   width:100%;
-  border:solid 1px blue;
 }
 
 .mw-input-container {
@@ -138,9 +147,9 @@ html, body {
 .mw-inputs {
   width: 200px;
   height:100%;
-  border-right:solid 1px blue;
+  display:none;
+  border-right:solid 1px #4e9cff;
   padding:10px;
-  display: none;
 }
 
 .mw-chartarea {
@@ -153,4 +162,20 @@ html, body {
 .mw-chart {
   width:100%;
   height:100%;
+}
+
+/* Overhide bootstrap style for some input controls */
+
+.form-control:focus, .selectize-input.focus  {
+  border-color: #4e9cff;
+}
+
+/* slider input */
+.irs-from, .irs-to, .irs-bar {
+  background-color: #4e9cff;
+}
+
+.irs-bar {
+  border-top: solid 1px #4e9cff;
+  border-bottom: solid 1px #4e9cff;
 }

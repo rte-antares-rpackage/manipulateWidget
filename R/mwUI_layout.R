@@ -73,7 +73,10 @@
   if (settingsBtn) {
     settingsBtn <- tags$div(
       class = "mw-btn mw-btn-settings",
-      icon("gears"),
+      tags$div(
+        class = "bt1",
+        icon("gears")
+      ),
       tags$div(class="right-arrow")
     )
     container <- tagAppendChild(container, settingsBtn)
@@ -101,8 +104,8 @@
 }
 
 .uiChartIcon <- function(i, nrow, ncol) {
-  WIDTH <- 40
-  HEIGHT <- 30
+  WIDTH <- 42
+  HEIGHT <- 28
   PAD <- 2
   i <- i - 1
 
