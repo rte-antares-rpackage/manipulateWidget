@@ -183,3 +183,36 @@ html, body {
   height:100%;
   border: solid 3px red;
 }
+
+.mw-btn-update {
+  padding: 2px;
+}
+
+.mw-btn-update .bt1 {
+  height: 46px;
+  width: 46px;
+  padding: 2px;
+}
+
+.mw-btn-update .bt1:focus {
+  color: #4e9cff;
+  background-color: white;
+  border-color: #4e9cff;
+}
+
+.mw-btn-update>.bt1:hover {
+  color: white;
+  background-color: #2b7be2;
+  border-color: #2b7be2;
+}
+
+.mw-btn-update .bt1:active {
+  color: white;
+  background-color: #4e9cff;
+  border-color: #4e9cff;
+}
+
+
+.mw-chart-selection {
+  margin-bottom: 30px;
+}

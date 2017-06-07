@@ -88,7 +88,15 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
   }
 
   if (ncharts > 1) {
-    container <- tagAppendChildren(container, list = .uiChartBtns(ncharts, nrow, ncol))
+    container <- tagAppendChild(container, .uiChartBtns(ncharts, nrow, ncol))
+  }
+
+  if (updateBtn) {
+    updateBtn <- tags$div(
+      class = "mw-btn mw-btn-update",
+      shiny::actionButton(".update", "", icon = shiny::icon("refresh"), class = "bt1")
+    )
+    container <- tagAppendChild(container, updateBtn)
   }
 
   if (okBtn) {
@@ -99,13 +107,17 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
 }
 
 .uiChartBtns <- function(ncharts, nrow, ncol) {
-  lapply(seq_len(ncharts), function(i) {
+  btns <- lapply(seq_len(ncharts), function(i) {
     tags$div(
       class = "mw-btn mw-btn-area",
       .uiChartIcon(i, nrow, ncol),
       tags$div(class="right-arrow")
     )
   })
+
+  btns$class <- "mw-chart-selection"
+
+  do.call(tags$div, btns)
 }
 
 .uiChartIcon <- function(i, nrow, ncol) {
