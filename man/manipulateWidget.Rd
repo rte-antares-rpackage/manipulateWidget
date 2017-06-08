@@ -31,14 +31,13 @@ corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 \code{"browser"} to an external web browser.}
 
 \item{.compare}{Sometimes one wants to compare the same chart but with two
-different sets of parameters. This is the purpose of this argument. It must
-be a named list whose names are the names of the inputs that should vary
-between the two charts. All other parameters are common to the two charts
-and changing their values will change the two charts. Each element of the
-list must be a vector or a list of length 2 with the initial values of the
-corresponding parameter for each chart. It can also be \code{NULL}. In this
-case, the parameter is initialized with the default value for the two
-charts.}
+different sets of parameters. This is the purpose of this argument. It can
+be a character vector of input names or a named list whose names are the
+names of the inputs that should vary between the two charts. Each element
+of the list must be a vector or a list of length equal to the number of
+charts with the initial values of the corresponding parameter for each
+chart. It can also be \code{NULL}. In this case, the parameter is
+initialized with the default value for the two charts.}
 
 \item{.compareOpts}{List of options created \code{\link{compareOptions}}.
 These options indicate the number of charts to create and their disposition.}
@@ -134,11 +133,21 @@ if (require(dygraphs)) {
     series2 = rnorm(100),
     series3 = rnorm(100)
   )
+
   manipulateWidget(
     dygraph(mydata[range[1]:range[2] - 2000, c("year", series)], main = title),
     range = mwSlider(2001, 2100, c(2001, 2100)),
     series = mwSelect(c("series1", "series2", "series3")),
     title = mwText("Fictive time series"),
+    .compare = c("title", "series")
+  )
+
+  # Setting different initial values for each chart
+  manipulateWidget(
+    dygraph(mydata[range[1]:range[2] - 2000, c("year", series)], main = title),
+    range = mwSlider(2001, 2100, c(2001, 2100)),
+    series = mwSelect(c("series1", "series2", "series3")),
+    title = mwText(),
     .compare = list(
       title = list("First chart", "Second chart"),
       series = NULL

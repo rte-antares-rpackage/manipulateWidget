@@ -12,7 +12,7 @@
 #'
 #' @noRd
 mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
-                      okBtn = TRUE, updateBtn = FALSE) {
+                      okBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE) {
 
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
@@ -29,7 +29,7 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
       class="mw-container",
       fillRow(
         flex = c(NA, NA, 1),
-        .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, updateBtn),
+        .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, updateBtn, areaBtns),
         .uiControls(controls),
         .uiChartarea(controls$nmod, nrow, ncol, outputFun)
       )
@@ -70,7 +70,7 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
   do.call(shiny::fillCol, unname(rows))
 }
 
-.uiMenu <- function(ncharts, nrow, ncol, settingsBtn, okBtn, updateBtn) {
+.uiMenu <- function(ncharts, nrow, ncol, settingsBtn, okBtn, updateBtn, areaBtns) {
   container <- tags$div(
     class="mw-menu"
   )
@@ -87,7 +87,7 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
     container <- tagAppendChild(container, settingsBtn)
   }
 
-  if (ncharts > 1) {
+  if (areaBtns && ncharts > 1) {
     container <- tagAppendChild(container, .uiChartBtns(ncharts, nrow, ncol))
   }
 
