@@ -14,7 +14,7 @@
 #'
 mwServer <- function(.expr, controls, widgets,
                      renderFunction,
-                     .updateBtn, .return, nrow, ncol) {
+                     .updateBtn, .return, nrow, ncol, useCombineWidgets) {
 
 
   function(input, output, session) {
@@ -32,6 +32,7 @@ mwServer <- function(.expr, controls, widgets,
 
     updateModule <- function(i) {
       # Initialize the widgets with their first evaluation
+      if (useCombineWidgets) widgets[[i]] <- combineWidgets(widgets[[i]])
       output[[paste0("output", i)]] <- renderFunction(widgets[[i]])
 
       desc <- subset(controls$desc, mod %in% c(0, i))
@@ -61,6 +62,7 @@ mwServer <- function(.expr, controls, widgets,
         } else {
           desc <<- updateControls(desc, session, moduleEnv())
           res <- eval(.expr, envir = moduleEnv())
+          if (useCombineWidgets) res <- combineWidgets(res)
           if (is(res, "htmlwidget")) {
             output[[paste0("output", i)]] <- renderFunction(res)
           }

@@ -266,9 +266,11 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
 
     OutputFunName <- ls(getNamespace(pkg), pattern = "Output$")
     outputFunction <- getFromNamespace(OutputFunName, pkg)
+    useCombineWidgets <- FALSE
   } else {
-    renderFunction <- shiny::renderUI
-    outputFunction <- NULL
+    renderFunction <- renderCombineWidgets
+    outputFunction <- combineWidgetsOutput
+    useCombineWidgets <- TRUE
   }
 
   dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
@@ -279,7 +281,8 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
                      renderFunction,
                      .updateBtn,
                      .return,
-                     dims$nrow, dims$ncol)
+                     dims$nrow, dims$ncol,
+                     useCombineWidgets)
 
   if (interactive()) {
     # We are in an interactive session so we start a shiny gadget

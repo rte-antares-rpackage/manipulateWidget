@@ -55,7 +55,7 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
     if (i > ncharts) return(tags$div())
     outputId <- paste0("output", i)
     if (is.null(outputFun)) {
-      el <- shiny::htmlOutput(outputId, style="width:100%;height:100%;")
+      el <- combineWidgetsOutput(outputId, width = "100%", height = "100%")
     } else {
       el <- outputFun(outputId, width = "100%", height = "100%")
     }
