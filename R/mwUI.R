@@ -12,7 +12,7 @@
 #'
 #' @noRd
 mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
-                      okBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE) {
+                      okBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
 
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
@@ -23,10 +23,12 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
   )
 
   showSettings <- controls$nmod == 1 || length(controls$controls$shared) > 0
+  if (border) class <- "mw-container with-border"
+  else class <- "mw-container"
 
   container <- fillPage(
     tags$div(
-      class="mw-container",
+      class = class,
       fillRow(
         flex = c(NA, NA, 1),
         .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, updateBtn, areaBtns),
