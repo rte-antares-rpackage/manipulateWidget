@@ -234,14 +234,21 @@ preRenderCombinedWidgets <- function(x) {
   colsize <- rep(x$params$colsize, length.out = ncol)
 
   # Get the html ID of each widget
-  elementId <- sapply(widgets[1:ncells], function(w) {
-    if (is.null(w)) res <- NULL
-    else res <- w$elementId
+  if (!is.null(names(x$widgets))) {
+    elementId <- names(x$widgets)
+    elementId[elementId == ""] <- "widget"
+    elementId <- make.unique(elementId)
+  } else {
+    elementId <- sapply(widgets[1:ncells], function(w) {
+      if (is.null(w)) res <- NULL
+      else res <- w$elementId
 
-    if (is.null(res)) res <- paste0("widget", floor(stats::runif(1, max = 1e9)))
+      if (is.null(res)) res <- paste0("widget", floor(stats::runif(1, max = 1e9)))
 
-    res
-  })
+      res
+    })
+  }
+
 
   # Construct the html of the combined widget
   dirClass <- ifelse(x$params$byrow, "cw-by-row", "cw-by-col")
@@ -249,7 +256,7 @@ preRenderCombinedWidgets <- function(x) {
   widgetEL <- mapply(
     function(id, size) {
       sprintf('<div class="cw-col" style="flex:%s;-webkit-flex:%s">
-              <div id="%s" class="cw-widget" style="width:100%%;height:100%%"></div>
+              <div id="%s" class="cw-widget shiny-bound-output" style="width:100%%;height:100%%"></div>
               </div>',
               size, size, id)
     },
