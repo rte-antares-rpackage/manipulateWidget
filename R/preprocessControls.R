@@ -70,6 +70,18 @@ preprocessControls <- function(controls, compare = NULL, env, ncharts) {
   controlsDesc$inputId <- gsub("[^a-zA-Z0-9]", "_", controlsDesc$name)
   controlsDesc$mod <- 0
 
+  # Check if groups have to be compared. if so indicate that the controls belonging
+  # to these groups need to be compared.
+  groupnames <- controlsDesc$name[controlsDesc$type == "group"]
+  while (any(names(compare) %in% groupnames)) {
+    addToCompare <- controlsDesc$name[controlsDesc$group %in% names(compare)]
+    addToCompare <- sapply(addToCompare, function(x) NULL,
+                           simplify = FALSE, USE.NAMES = TRUE)
+
+    compare[intersect(names(compare), groupnames)] <- NULL
+    compare <- append(compare, addToCompare)
+  }
+
   controlsDescShared <- subset(controlsDesc, !name %in% names(compare))
   tmp <- list()
   for (i in seq_len(nrow(controlsDescShared))) {

@@ -104,6 +104,22 @@ describe("preprocessControls", {
         expect_equal(names(ctrlList$ind[[i]]), paste0(c("x2", "x3"), i))
       }
     })
+
+    it("compares a group of inputs", {
+      controls <- list(
+        group = mwGroup(
+          x1 = mwText(value = "value1", label = "label1"),
+          x2 = mwSelect(choices = 1:3, value = 2, label = "label2")
+        ),
+        x3 = mwSelect(4:6, 1, multiple = TRUE, label = "label3")
+      )
+      compare <- list(group = NULL)
+      controlsPrepro <- preprocessControls(controls, compare, env = parent.frame(), ncharts = 2)
+      compare2 <- list(x1 = NULL, x2 = NULL)
+      controlsPrepro2 <- preprocessControls(controls, compare2, env = parent.frame(), ncharts = 2)
+      expect_equal(controlsPrepro, controlsPrepro2)
+    })
+
   })
 
   describe("Update inputs", {

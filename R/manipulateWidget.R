@@ -225,18 +225,12 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   .expr <- substitute(.expr)
   .viewer <- match.arg(.viewer)
   .env <- parent.frame()
-  compareMode <-
   .compareOpts <- do.call(compareOptions, .compareOpts)
 
   if (is.null(.compare)) {
       .compareOpts$ncharts <- 1
   } else {
     if (is.character(.compare)) {
-      .compare <- match.arg(
-        .compare,
-        names(list(...)),
-        several.ok = TRUE
-      )
       .compare <- sapply(.compare, function(x) NULL,
                          simplify = FALSE, USE.NAMES = TRUE)
     }
@@ -253,8 +247,6 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   initWidgets <- lapply(controls$env$ind, function(e) {
     eval(.expr, envir = e)
   })
-
-  controlDesc <- getControlDesc(controls[c("common", "ind")])
 
   # Get shiny output and render functions
   if (is(initWidgets[[1]], "htmlwidget")) {

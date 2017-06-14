@@ -23,17 +23,21 @@ getControlDesc <- function(controls) {
  initValues <- list()
  types <- c()
  groupLevel <- c()
+ group <- c()
  multiple <- c()
  params <- list()
  display <- list()
 
- getControlDescRecursive <- function(x, name = "", level = 0) {
+ getControlDescRecursive <- function(x, name = "", parent = "", level = 0) {
+   groupLevel <<- append(groupLevel, level)
+   group <<- append(group, parent)
+   display <<- append(display, list(attr(x, "display")))
+   inputNames <<- append(inputNames, name)
+
    if (is.function(x)) {
      value <- list(attr(x, "params")$value)
-     inputNames <<- append(inputNames, name)
      initValues <<- append(initValues, value)
      types <<- append(types, attr(x, "type"))
-     groupLevel <<- append(groupLevel, level)
      m <- if (is.null(attr(x, "params")$multiple)) NA else eval(attr(x, "params")$multiple)
      multiple <<- append(multiple, m)
 
@@ -44,18 +48,14 @@ getControlDesc <- function(controls) {
        attr(x, "params")$label <- name
      }
      params <<- append(params, list(attr(x, "params")))
-     display <<- append(display, list(attr(x, "display")))
    } else if (length(x) == 0) {
      return()
    } else {
-     display <<- append(display, list(attr(x, "display")))
-     inputNames <<- append(inputNames, name)
      initValues <<- append(initValues, list(NULL))
      types <<- append(types, "group")
-     groupLevel <<- append(groupLevel, level)
      multiple <<- append(multiple, NA)
      params <<- append(params, list(NULL))
-     mapply(getControlDescRecursive, x=x, name = names(x), level = level + 1)
+     mapply(getControlDescRecursive, x=x, name = names(x), parent = name, level = level + 1)
    }
  }
  getControlDescRecursive(controls, ".root")
@@ -65,6 +65,7 @@ getControlDesc <- function(controls) {
    initValue = I(initValues),
    type = types,
    level = groupLevel,
+   group = group,
    multiple = multiple,
    params = I(params),
    display = I(display),
