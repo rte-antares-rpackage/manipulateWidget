@@ -28,7 +28,7 @@ mwControlsUI <- function(controlList) {
         res <- tags$div(
           class="panel panel-default",
           tags$div(
-            class="panel-heading",
+            class="panel-heading collapsed",
             style = "cursor: pointer;",
             "data-toggle"="collapse",
             "data-target"=paste0("#panel-body-", id),

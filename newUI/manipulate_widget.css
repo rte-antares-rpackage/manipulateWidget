@@ -216,3 +216,22 @@ html, body {
 .mw-chart-selection {
   margin-bottom: 30px;
 }
+
+/* Group of inputs */
+.panel-default>.panel-heading {
+  background-color: #4e9cff;
+  color: white;
+}
+
+.panel-default>.panel-heading.collapsed::before {
+  content: "\f0da";
+}
+
+.panel-default>.panel-heading::before {
+  font-family: FontAwesome;
+  font-size: 20px;
+  content: "\f0d7";
+  display: inline-block;
+  padding-right: 10px;
+  vertical-align: middle;
+}

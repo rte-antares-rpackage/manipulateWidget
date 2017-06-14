@@ -76,7 +76,64 @@
           inputs chart 2
         </div>
         <div class="mw-inputs">
-          inputs chart 3
+          <div>
+            <div data-display-if="input.group2_visible">
+              <div class="panel panel-default">
+                <div class="panel-heading collapsed" style="cursor: pointer;" data-toggle="collapse" data-target="#panel-body-group2">group</div>
+                <div class="panel-body collapse" id="panel-body-group2">
+                  <div>
+                    <div data-display-if="input.x12_visible">
+                      <div class="form-group shiny-input-container" style="width: 100%;">
+                        <label for="x12">label1</label>
+                        <input id="x12" type="text" class="form-control" value="value1"/>
+                      </div>
+                    </div>
+                    <div data-display-if="input.x22_visible">
+                      <div class="form-group shiny-input-container" style="width: 100%;">
+                        <label class="control-label" for="x22">label2</label>
+                        <div>
+                          <select id="x22">
+                            <option value="1">1</option>
+                            <option value="2" selected>2</option>
+                            <option value="3">3</option>
+                          </select>
+                          <script type="application/json" data-for="x22" data-nonempty="">{}</script>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="display:none">
+                      <div class="form-group shiny-input-container">
+                        <div class="checkbox">
+                          <label>
+                            <input id="x12_visible" type="checkbox" checked="checked"/>
+                            <span></span>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="form-group shiny-input-container">
+                        <div class="checkbox">
+                          <label>
+                            <input id="x22_visible" type="checkbox" checked="checked"/>
+                            <span></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:none">
+              <div class="form-group shiny-input-container">
+                <div class="checkbox">
+                  <label>
+                    <input id="group2_visible" type="checkbox" checked="checked"/>
+                    <span></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
