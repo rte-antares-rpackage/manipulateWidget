@@ -227,8 +227,7 @@ html, body {
 
 /* Group of inputs */
 .panel-default>.panel-heading {
-  background-color: #4e9cff;
-  color: white;
+  background-color: #f0f0f0;
 }
 
 .panel-default>.panel-heading::before {
