@@ -222,15 +222,20 @@ html, body {
   background-color: #f0f0f0;
 }
 
-.panel-default>.panel-heading.collapsed::before {
-  content: "\f0da";
+.panel-heading .arrow {
+  width: 22px;
+  text-align: center;
 }
 
-.panel-default>.panel-heading::before {
+.panel-heading .arrow::before {
   font-family: FontAwesome;
   font-size: 20px;
   content: "\f0d7";
   display: inline-block;
   padding-right: 10px;
   vertical-align: middle;
+}
+
+.panel-heading.collapsed .arrow::before {
+  content: "\f0da";
 }

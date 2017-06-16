@@ -32,7 +32,14 @@ mwControlsUI <- function(controlList) {
             style = "cursor: pointer;",
             "data-toggle"="collapse",
             "data-target"=paste0("#panel-body-", id),
-            label
+            tags$table(
+              tags$tbody(
+                tags$tr(
+                  tags$td(class = "arrow"),
+                  tags$td(label)
+                )
+              )
+            )
           ),
           tags$div(
             class="panel-body collapse",

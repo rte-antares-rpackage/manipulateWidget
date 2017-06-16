@@ -194,6 +194,7 @@ html, body {
   display:none;
   border-right:solid 1px #4e9cff;
   padding:10px;
+  overflow: auto;
 }
 
 .mw-chartarea {
@@ -230,7 +231,12 @@ html, body {
   background-color: #f0f0f0;
 }
 
-.panel-default>.panel-heading::before {
+.panel-heading .arrow {
+  width: 22px;
+  text-align: center;
+}
+
+.panel-heading .arrow::before {
   font-family: FontAwesome;
   font-size: 20px;
   content: "\f0d7";
@@ -239,10 +245,6 @@ html, body {
   vertical-align: middle;
 }
 
-.panel-default>.panel-heading.collapsed::before {
+.panel-heading.collapsed .arrow::before {
   content: "\f0da";
-}
-
-.panel-body {
-  padding: 5px;
 }
