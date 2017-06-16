@@ -1,7 +1,7 @@
 Add more interactivity to interactive charts
 ================
 
-[![CRAN Status Badge](http://www.r-pkg.org/badges/version/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget) [![CRAN Downloads Badge](https://cranlogs.r-pkg.org/badges/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget)[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rte-antares-rpackage/manipulateWidget?branch=master&svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/manipulateWidget)[![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/manipulateWidget.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/manipulateWidget)[![Coverage Status](https://img.shields.io/codecov/c/github/rte-antares-rpackage/manipulateWidget/master.svg)](https://codecov.io/github/rte-antares-rpackage/manipulateWidget?branch=master)
+[![CRAN Status Badge](http://www.r-pkg.org/badges/version/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget) [![CRAN Downloads Badge](https://cranlogs.r-pkg.org/badges/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget)
 
 This R package is largely inspired by the `manipulate` package from Rstudio. It provides the function `manipulateWidget` that can be used to create in a very easy way a graphical interface that let the user modify the data or the parameters of an interactive chart. Technically, the function generates a Shiny gadget, but the user does not even have to know what is Shiny.
 

@@ -100,6 +100,31 @@ combineWidgets(
 
 ## Advanced usage
 
+### Comparison mode
+
+Sometimes one wants to compare two similar charts to visualize the impact of some parameter or to compare different data sets. `manipulateWidget` has an argument to perform such comparison without writing much code: `.compare`. One just has to write the code to generate one chart and use this argument to specify which parameters should vary between the two charts. Here is a toy example that uses `dygraphs`.
+
+```{r eval=FALSE}
+mydata <- data.frame(
+  timeId = 1:100,
+  series1 = rnorm(100),
+  series2 = rnorm(100),
+  series3 = rnorm(100)
+)
+manipulateWidget(
+  dygraph(mydata[range[1]:range[2], c("timeId", series)], main = title),
+  range = mwSlider(1, 100, c(1, 100)),
+  series = mwSelect(c("series1", "series2", "series3")),
+  title = mwText(),
+  .compare = list(
+    title = list("First chart", "Second chart"),
+    series = NULL
+  )
+)
+```
+
+![Comparison mode](comparison.gif)
+
 ### Grouping controls
 
 If you have a large number of inputs, you can easily group them. To do so, simply use function `mwGroup()`. Here is a toy example. Groups are by default collapsed and user can click on their title to display/collapse then. 
@@ -217,31 +242,6 @@ manipulateWidget(myMapFun(radius, color, .initial, .session, .output),
 ```
 
 ![Conditional inputs](update-widget.gif)
-
-### Comparison mode
-
-Sometimes one wants to compare two similar charts to visualize the impact of some parameter or to compare different data sets. `manipulateWidget` has an argument to perform such comparison without writing much code: `.compare`. One just has to write the code to generate one chart and use this argument to specify which parameters should vary between the two charts. Here is a toy example that uses `dygraphs`.
-
-```{r eval=FALSE}
-mydata <- data.frame(
-  timeId = 1:100,
-  series1 = rnorm(100),
-  series2 = rnorm(100),
-  series3 = rnorm(100)
-)
-manipulateWidget(
-  dygraph(mydata[range[1]:range[2], c("timeId", series)], main = title),
-  range = mwSlider(1, 100, c(1, 100)),
-  series = mwSelect(c("series1", "series2", "series3")),
-  title = mwText(),
-  .compare = list(
-    title = list("First chart", "Second chart"),
-    series = NULL
-  )
-)
-```
-
-![Comparison mode](comparison.gif)
 
 ### Using `manipulateWidget` in a document
 
