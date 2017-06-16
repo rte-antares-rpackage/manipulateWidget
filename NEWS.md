@@ -3,11 +3,11 @@
 # manipulateWidget 0.7.0 (2017-06-08)
 
 ## Breaking changes
-* `manipulateWidget()` has lost all argument that were used to customize the UI. Parameters `.controlPos`, `.tabColumns` and `.compareLayout` do not exist anymore.
+* `manipulateWidget()` has lost all arguments that were used to customize the UI. Parameters `.controlPos`, `.tabColumns` and `.compareLayout` do not exist anymore.
 
 ## New features
-* `manipulateWidget()` now creates a more compact and elegant interface.
-* It is now possible to compare more than two charts. `manipulateWidget()` has a new argument `compareOpts` to control the number of charts and their position.
+* `manipulateWidget()` now creates a more compact and elegant user interface.
+* It is now possible to compare more than two charts. `manipulateWidget()` has a new argument `.compareOpts` to control the number of charts and their position.
 * Argument `.compare` of `manipulateWidget` can now be a character vector. 
 
 # manipulateWidget 0.6.0 (2017-05-24)
