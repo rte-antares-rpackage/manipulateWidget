@@ -1,7 +1,11 @@
 Add more interactivity to interactive charts
 ================
 
-[![CRAN Status Badge](http://www.r-pkg.org/badges/version/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget) [![CRAN Downloads Badge](https://cranlogs.r-pkg.org/badges/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget)
+[![CRAN Status Badge](http://www.r-pkg.org/badges/version/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget) [![CRAN Downloads Badge](https://cranlogs.r-pkg.org/badges/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget) [![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/manipulateWidget.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/manipulateWidget) [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/6y3tdofl0nk7oc4g/branch/master?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/manipulatewidget/branch/master)
+
+`manipulateWidget` lets you create in just a few lines of R code a nice user interface to modify the data or the graphical parameters of one or multiple interactive charts. It is useful to quickly explore visually some data or for package developers to generate user interfaces easy to maintain.
+
+![Combining widgets and some html content](vignettes/fancy-example.gif)
 
 This R package is largely inspired by the `manipulate` package from Rstudio. It provides the function `manipulateWidget` that can be used to create in a very easy way a graphical interface that let the user modify the data or the parameters of an interactive chart. Technically, the function generates a Shiny gadget, but the user does not even have to know what is Shiny.
 
@@ -54,7 +58,7 @@ plotClusters <- function(xvar, yvar, nclusters) {
 plotClusters("Sepal.Width", "Sepal.Length", 3)
 ```
 
-![](README_files/figure-markdown_github/kmeans-1.png)
+<img src="README_files/figure-markdown_github/kmeans-1.png" width="600" height="400" />
 
 Once this code has been written, it is very easy to produce a UI that lets the user change the values of the three parameters of the function `plotClusters`:
 
@@ -71,7 +75,7 @@ manipulateWidget(
 
 ![An example of output of manipulateWidget](vignettes/example-kmeans.gif)
 
-The package also provides the `combineWidgets` function to easily combine multiple interactive charts in a single view. Of course both functions can be used together: here is a more complex example that uses packages `dygraphs` and `plot_ly`.
+The package also provides the `combineWidgets` function to easily combine multiple interactive charts in a single view. Of course both functions can be used together. Here is the code to generate the UI in the first animation.
 
 ``` r
 myPlotFun <- function(distribution, range, title) {
@@ -103,6 +107,4 @@ manipulateWidget(
 )
 ```
 
-![Combining widgets and some html content](vignettes/fancy-example.gif)
-
-For more information take a look at the package vignettes.
+For more information take a look at the [package vignette](https://cran.r-project.org/web/packages/manipulateWidget/vignettes/manipulateWidgets.html).
