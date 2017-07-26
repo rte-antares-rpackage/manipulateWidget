@@ -1,0 +1,541 @@
+htmlFuncFactory <- function(func, valueArgName = "value") {
+  function(id, label, value, params) {
+    params$inputId <- id
+    params$label <- label
+    params[[valueArgName]] <- value
+    do.call(func, params)
+  }
+}
+
+#' Add a Slider to a manipulateWidget gadget
+#'
+#' @param min
+#'   The minimum value that can be selected.
+#' @param max
+#'   The maximum value that can be selected.
+#' @param value
+#'   Initial value of the slider  A numeric vector of length one will create a
+#'   regular slider; a numeric vector of length two will create a double-ended
+#'   range slider
+#' @param label
+#'   Display label for the control. If \code{NULL}, the name of the corresponding
+#'   variable is used.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{sliderInput}}
+#' @param .display expression that evaluates to TRUE or FALSE, indicating when
+#'   the input control should be shown/hidden.
+#'
+#' @return
+#'   A function that will generate the input control.
+#'
+#' @examples
+#'
+#' if (require(plotly)) {
+#'
+#'   myWidget <- manipulateWidget(
+#'     plot_ly(data.frame(x = 1:n, y = rnorm(n)), x=~x, y=~y, type = "scatter", mode = "markers"),
+#'     n = mwSlider(1, 100, 10, label = "Number of values")
+#'   )
+#'
+#'   Sys.sleep(0.5)
+#'
+#'   # Create a double ended slider to choose a range instead of a single value
+#'   mydata <- data.frame(x = 1:100, y = rnorm(100))
+#'
+#'   manipulateWidget(
+#'     plot_ly(mydata[n[1]:n[2], ], x=~x, y=~y, type = "scatter", mode = "markers"),
+#'     n = mwSlider(1, 100, c(1, 10), label = "Number of values")
+#'   )
+#'
+#' }
+#'
+#' @export
+#' @family controls
+mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...,.follow_symbols = FALSE), function(x) x$expr)
+  params$min <- lazyeval::expr_find(min)
+  params$max <- lazyeval::expr_find(max)
+
+  Input(
+    type = "slider", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      pmin(pmax(params$min, x), params$max)
+    },
+    htmlFunc = htmlFuncFactory(function(...) {
+      tags$div(style = "padding:0 5px;", shiny::sliderInput(...))
+    })
+  )
+}
+
+#' Add a text input to a manipulateWidget gadget
+#'
+#' @param value
+#'   Initial value of the text input.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{textInput}}
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#' if (require(plotly)) {
+#'   mydata <- data.frame(x = 1:100, y = rnorm(100))
+#'   manipulateWidget({
+#'       plot_ly(mydata, x=~x, y=~y, type = "scatter", mode = "markers") %>%
+#'         layout(title = mytitle)
+#'     },
+#'     mytitle = mwText("Awesome title !")
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  Input(
+    type = "text", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      if(length(x) == 0) return("")
+      as.character(x)[1]
+    },
+    htmlFunc = htmlFuncFactory(shiny::textInput)
+  )
+}
+
+#' Add a numeric input to a manipulateWidget gadget
+#'
+#' @param value
+#'   Initial value of the numeric input.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{numericInput}}
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#'
+#' if (require(plotly)) {
+#'   manipulateWidget({
+#'       plot_ly(data.frame(x = 1:10, y = rnorm(10, mean, sd)), x=~x, y=~y,
+#'               type = "scatter", mode = "markers")
+#'     },
+#'     mean = mwNumeric(0),
+#'     sd = mwNumeric(1, min = 0, step = 0.1)
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  Input(
+    type = "numeric", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      min(max(params$min, x), params$max)
+    },
+    htmlFunc = htmlFuncFactory(shiny::numericInput)
+  )
+}
+
+#' Add a password to a manipulateWidget gadget
+#'
+#' @param value
+#'   Default value of the input.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{passwordInput}}
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#' if (require(plotly)) {
+#'   manipulateWidget(
+#'     {
+#'       if (passwd != 'abc123') {
+#'         plot_ly(type = "scatter", mode="markers") %>%
+#'           layout(title = "Wrong password. True password is 'abc123'")
+#'       } else {
+#'         plot_ly(data.frame(x = 1:10, y = rnorm(10)), x=~x, y=~y, type = "scatter", mode = "markers")
+#'       }
+#'     },
+#'     user = mwText(label = "Username"),
+#'     passwd = mwPassword(label = "Password")
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwPassword <- function(value = "", label = NULL, ..., .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  Input(
+    type = "password", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      if(length(x) == 0) return("")
+      as.character(x)[1]
+    },
+    htmlFunc = htmlFuncFactory(shiny::passwordInput)
+  )
+}
+
+#' Add a Select list input to a manipulateWidget gadget
+#'
+#' @param choices
+#'   Vector or list of choices. If it is named, then the names rather than the
+#'   values are displayed to the user.
+#' @param value
+#'   Initial value of the input. If not specified, the first choice is used.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{selectInput}}.
+#' @param multiple
+#'   Is selection of multiple items allowed?
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#' if (require(plotly)) {
+#'   mydata <- data.frame(x = 1:100, y = rnorm(100))
+#'
+#'   manipulateWidget(
+#'     {
+#'       mode <- switch(type, points = "markers", lines = "lines", both = "markers+lines")
+#'       plot_ly(mydata, x=~x, y=~y, type = "scatter", mode = mode)
+#'     },
+#'     type = mwSelect(c("points", "lines", "both"))
+#'   )
+#'
+#'   Sys.sleep(0.5)
+#'
+#'   # Select multiple values
+#'   manipulateWidget(
+#'     {
+#'       if (length(species) == 0) mydata <- iris
+#'       else mydata <- iris[iris$Species %in% species,]
+#'
+#'       plot_ly(mydata, x = ~Sepal.Length, y = ~Sepal.Width,
+#'               color = ~droplevels(Species), type = "scatter", mode = "markers")
+#'     },
+#'     species = mwSelect(levels(iris$Species), multiple = TRUE)
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
+                      multiple = FALSE, .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...),
+                   function(x) x$expr)
+  params$choices <- lazyeval::expr_find(choices)
+  params$multiple <- lazyeval::expr_find(multiple)
+
+  Input(
+    type = "select", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      if (params$multiple) return(intersect(x, params$choices))
+      if (length(x) > 1 && x %in% choices) return(x[1])
+      else return(choices[1])
+    },
+    htmlFunc = htmlFuncFactory(shiny::selectInput, "selected")
+  )
+}
+
+#' Add a checkbox to a manipulateWidget gadget
+#'
+#' @param value
+#'   Initial value of the input.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{checkboxInput}}
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#'
+#' if(require(plotly)) {
+#'  manipulateWidget(
+#'    {
+#'        plot_ly(iris, x = ~Sepal.Length, y = ~Sepal.Width,
+#'                color = ~Species, type = "scatter", mode = "markers") %>%
+#'          layout(showlegend = legend)
+#'    },
+#'    legend = mwCheckbox(TRUE, "Show legend")
+#'  )
+#' }
+#'
+#' @export
+#' @family controls
+mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  Input(
+    type = "checkbox", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      if (is.null(x)) return(FALSE)
+      x <- as.logical(x)
+      if (is.na(x)) x <- FALSE
+      x
+    },
+    htmlFunc = htmlFuncFactory(shiny::checkboxInput)
+  )
+}
+
+#' Add radio buttons to a manipulateWidget gadget
+#'
+#' @param choices
+#'   Vector or list of choices. If it is named, then the names rather than the
+#'   values are displayed to the user.
+#' @param value
+#'   Initial value of the input. If not specified, the first choice is used.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{radioButtons}}
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#' if (require(plotly)) {
+#'   mydata <- data.frame(x = 1:100, y = rnorm(100))
+#'
+#'   manipulateWidget(
+#'     {
+#'       mode <- switch(type, points = "markers", lines = "lines", both = "markers+lines")
+#'       plot_ly(mydata, x=~x, y=~y, type = "scatter", mode = mode)
+#'     },
+#'     type = mwRadio(c("points", "lines", "both"))
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  params$choices <- lazyeval::expr_find(choices)
+  Input(
+    type = "radio", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      if (length(params$choices) == 0) return(NULL)
+      if (is.null(x) || !x %in% params$choices) return(params$choices[[1]])
+      x
+    },
+    htmlFunc = htmlFuncFactory(shiny::radioButtons, valueArgName = "selected")
+  )
+}
+
+#' Add a date picker to a manipulateWidget gadget
+#'
+#' @param value
+#'   Default value of the input.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{dateInput}}
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#' if (require(dygraphs) && require(xts)) {
+#'   mydata <- xts(rnorm(365), order.by = as.Date("2017-01-01") + 0:364)
+#'
+#'   manipulateWidget(
+#'     dygraph(mydata) %>% dyEvent(date, "Your birthday"),
+#'     date = mwDate("2017-03-27", label = "Your birthday date",
+#'                   min = "2017-01-01", max = "2017-12-31")
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  Input(
+    type = "date", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      if (length(x) == 0) x <- Sys.Date()
+      x <- as.Date(x)
+      if (!is.null(params$min)) params$min <- as.Date(params$min)
+      if (!is.null(params$max)) params$max <- as.Date(params$max)
+      x <- min(max(x, params$min), params$max)
+    },
+    htmlFunc = htmlFuncFactory(shiny::dateInput)
+  )
+}
+
+#' Add a date range picker to a manipulateWidget gadget
+#'
+#' @param value
+#'   Vector containing two dates (either Date objects pr a string in yyy-mm-dd
+#'   format) representing the initial date range selected.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{dateRangeInput}}
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#' if (require(dygraphs) && require(xts)) {
+#'   mydata <- xts(rnorm(365), order.by = as.Date("2017-01-01") + 0:364)
+#'
+#'   manipulateWidget(
+#'     dygraph(mydata) %>% dyShading(from=period[1], to = period[2], color = "#CCEBD6"),
+#'     period = mwDateRange(c("2017-03-01", "2017-04-01"),
+#'                   min = "2017-01-01", max = "2017-12-31")
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...,
+                        .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  Input(
+    type = "dateRange", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      if (length(x) == 0) x <- c(Sys.Date(), Sys.Date())
+      else if (length(x) == 1) x <-  c(x, Sys.Date())
+      x <- as.Date(x)
+      if (!is.null(params$min)) params$min <- as.Date(params$min)
+      if (!is.null(params$max)) params$max <- as.Date(params$max)
+
+      x <- sapply(x, function(d) min(max(d, params$min), params$max))
+      as.Date(x, origin = "1970-01-01")
+    },
+    htmlFunc = function(id, label, value, params) {
+      params$inputId <- id
+      params$label <- label
+      params$start <- value[[1]]
+      params$end <- value[[2]]
+      do.call(func, params)
+    }
+  )
+}
+
+#' Add a group of checkboxes to a manipulateWidget gadget
+#'
+#' @param choices
+#'   Vector or list of choices. If it is named, then the names rather than the
+#'   values are displayed to the user.
+#' @param value
+#'   Vector containing the values initially selected
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{checkboxGroupInput}}
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#' if (require(plotly)) {
+#'   manipulateWidget(
+#'     {
+#'       if (length(species) == 0) mydata <- iris
+#'       else mydata <- iris[iris$Species %in% species,]
+#'
+#'       plot_ly(mydata, x = ~Sepal.Length, y = ~Sepal.Width,
+#'               color = ~droplevels(Species), type = "scatter", mode = "markers")
+#'     },
+#'     species = mwCheckboxGroup(levels(iris$Species))
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = TRUE) {
+  params <- lapply(lazyeval::lazy_dots(...),
+                   function(x) x$expr)
+  params$choices <- lazyeval::expr_find(choices)
+
+  Input(
+    type = "checkboxGroup", value = value, label = label, params = params,
+    display = lazyeval::expr_find(.display),
+    validFunc = function(x, params) {
+      intersect(x, params$choices)
+    },
+    htmlFunc = htmlFuncFactory(shiny::checkboxGroupInput, "selected")
+  )
+
+  mwControlFactory(
+    "checkboxGroup", shiny::checkboxGroupInput,
+    prepareParams(choices = choices, value = value, label = label, ...),
+    valueVar = "selected",
+    .display = .display
+  )
+}
+
+#' Group inputs in a collapsible box
+#'
+#' This function generates a collapsible box containing inputs. It can be useful
+#' when there are a lot of inputs and one wants to group them.
+#'
+#' @param ... inputs that will be grouped in the box
+#' @param .display expression that evaluates to TRUE or FALSE, indicating when
+#'   the group should be shown/hidden.
+#'
+#' @return List of inputs
+#'
+#' @examples
+#' if(require(dygraphs)) {
+#'   mydata <- data.frame(x = 1:100, y = rnorm(100))
+#'   manipulateWidget(
+#'     dygraph(mydata[range[1]:range[2], ],
+#'             main = title, xlab = xlab, ylab = ylab),
+#'     range = mwSlider(1, 100, c(1, 100)),
+#'     "Graphical parameters" = mwGroup(
+#'       title = mwText("Fictive time series"),
+#'       xlab = mwText("X axis label"),
+#'       ylab = mwText("Y axis label")
+#'     )
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwGroup <- function(..., .display = TRUE) {
+  inputs <- list(...)
+  Input(
+    type = "group",
+    value = list(...),
+    idFunc = idFunc,
+    display = lazyeval::expr_find(.display),
+    htmlFunc = function(id, label, value, params) {
+      htmlElements <- lapply(value, function(x) x$getHTML())
+
+      tags$div(
+        class="panel panel-default",
+        tags$div(
+          class="panel-heading collapsed",
+          style = "cursor: pointer;",
+          "data-toggle"="collapse",
+          "data-target"=paste0("#panel-body-", id),
+          tags$table(
+            tags$tbody(
+              tags$tr(
+                tags$td(class = "arrow"),
+                tags$td(label)
+              )
+            )
+          )
+        ),
+        tags$div(
+          class="panel-body collapse",
+          id=paste0("panel-body-", id),
+          tagList(htmlElements)
+        )
+      )
+    }
+  )
+}

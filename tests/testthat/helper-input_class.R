@@ -8,10 +8,6 @@ test_input <- function(input, values = NULL, expectedValues = NULL, name = "myIn
       expect_equal(input$label, name)
       expect_equal(input$value, get(name, envir = env))
       expect_is(input$params, "list")
-      for (p in input$params) {
-        expect_is(p, "expression")
-      }
-      expect_is(input$display, "expression")
     })
 
     it ("sets valid values", {
