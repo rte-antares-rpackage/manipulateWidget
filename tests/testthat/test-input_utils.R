@@ -64,6 +64,24 @@ describe("filterAndInitInputs", {
     expect_length(filteredInputs, 1)
     expect_equal(names(filteredInputs), c("c"))
   })
+
+  it ("can select/remove a whole group", {
+    inputs <- list(grp = mwGroup(a = mwText(), b = mwText()), c = mwText())
+    filteredInputs <- filterAndInitInputs(inputs, c("grp"))
+    expect_is(filteredInputs, "list")
+    expect_length(filteredInputs, 1)
+    expect_equal(names(filteredInputs), c("grp"))
+    expect_is(filteredInputs$grp$value, "list")
+    expect_length(filteredInputs$grp$value, 2)
+    expect_equal(names(filteredInputs$grp$value), c("a", "b"))
+    expect_initialized(filteredInputs$grp$value$a)
+    expect_initialized(filteredInputs$grp$value$b)
+
+    filteredInputs <- filterAndInitInputs(inputs, c("grp"), TRUE)
+    expect_is(filteredInputs, "list")
+    expect_length(filteredInputs, 1)
+    expect_equal(names(filteredInputs), c("c"))
+  })
 })
 
 describe("flattenInputs", {

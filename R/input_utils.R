@@ -12,8 +12,21 @@ filterAndInitInputs <- function(inputs, names, drop = FALSE, env = parent.frame(
   for (n in names(inputs)) {
     i <- inputs[[n]]$copy()
     if (inputs[[n]]$type == "group") {
-      i$value <- filterAndInitInputs(inputs[[n]]$value, names, drop, env)
-      if (length(i$value) == 0) next
+      if (drop) {
+        if (n %in% names) next # Remove the whole group
+        else {
+          i$value <- filterAndInitInputs(inputs[[n]]$value, names, drop, env)
+          if (length(i$value) == 0) next
+        }
+      } else {
+        if (n %in% names) {
+          # Keep the whole group
+          i$value <- filterAndInitInputs(inputs[[n]]$value, names(i$value), drop, env)
+        } else {
+          i$value <- filterAndInitInputs(inputs[[n]]$value, names, drop, env)
+          if (length(i$value) == 0) next
+        }
+      }
     } else {
       if (!drop && ! n %in% names) next
       if (drop && n %in% names) next
