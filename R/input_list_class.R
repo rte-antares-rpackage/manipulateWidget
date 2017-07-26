@@ -8,8 +8,9 @@ InputList <- setRefClass(
       "args:
        - inputs: list of initialized inputs
        - session: shiny session"
-      inputs <<- inputs
-      names(inputs) <<- sapply(inputs, function(x) {x$getID()})
+      inputList <- flattenInputs(inputs)
+      inputs <<- inputList
+      names(inputs) <<- sapply(inputList, function(x) {x$getID()})
       session <<- session
       update()
     },
