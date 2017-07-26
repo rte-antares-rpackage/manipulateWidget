@@ -499,6 +499,9 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
 #' @family controls
 mwGroup <- function(..., .display = TRUE) {
   inputs <- list(...)
+  if (is.null(names(inputs))) stop("All arguments need to be named.")
+  for (i in inputs) if (!inherits(i, "Input")) stop("All arguments need to be Input objects.")
+
   Input(
     type = "group", value = list(...), params = list(),
     display = lazyeval::expr_find(.display),
