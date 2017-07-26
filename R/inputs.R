@@ -467,13 +467,6 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
     },
     htmlFunc = htmlFuncFactory(shiny::checkboxGroupInput, "selected")
   )
-
-  mwControlFactory(
-    "checkboxGroup", shiny::checkboxGroupInput,
-    prepareParams(choices = choices, value = value, label = label, ...),
-    valueVar = "selected",
-    .display = .display
-  )
 }
 
 #' Group inputs in a collapsible box
@@ -507,9 +500,7 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
 mwGroup <- function(..., .display = TRUE) {
   inputs <- list(...)
   Input(
-    type = "group",
-    value = list(...),
-    idFunc = idFunc,
+    type = "group", value = list(...), params = list(),
     display = lazyeval::expr_find(.display),
     htmlFunc = function(id, label, value, params) {
       htmlElements <- lapply(value, function(x) x$getHTML())

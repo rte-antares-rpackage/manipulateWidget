@@ -72,3 +72,6 @@ test_input(
   list(1, integer(0), integer(0), 3:4)
 )
 
+# Groups of input
+test_input(mwGroup(a = mwText(), b = mwText()))
+

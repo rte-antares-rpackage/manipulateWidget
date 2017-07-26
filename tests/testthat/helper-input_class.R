@@ -4,6 +4,7 @@ test_input <- function(input, values = NULL, expectedValues = NULL, name = "myIn
       env <- initEnv(parent.frame(), 1)
       input$init(name, env)
 
+      expect_initialized(input)
       expect_equal(input$env, env)
       expect_equal(input$label, name)
       expect_equal(input$value, get(name, envir = env))
@@ -18,4 +19,9 @@ test_input <- function(input, values = NULL, expectedValues = NULL, name = "myIn
       }
     })
   })
+}
+
+expect_initialized <- function(input) {
+  expect_is(input, "Input")
+  expect(!emptyField(input$name) & !emptyField(input$env), "Input unitialized")
 }
