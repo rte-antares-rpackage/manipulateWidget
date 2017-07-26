@@ -1,3 +1,14 @@
+#' Private function that generates functions that generate HTML corresponding
+#' to a shiny input.
+#'
+#' @param func shiny function that generate the HTML of an input
+#' @param valueArgName name of the parameter of 'func' corresponding to the
+#'   value of the input.
+#'
+#' @return
+#' A function that takes arguments id, label, value, params and returns
+#' shiny tag.
+#' @noRd
 htmlFuncFactory <- function(func, valueArgName = "value") {
   function(id, label, value, params) {
     params$inputId <- id

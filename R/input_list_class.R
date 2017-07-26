@@ -2,7 +2,7 @@
 # when the value of an input changes.
 InputList <- setRefClass(
   "InputList",
-  fields = c("inputs", "shiny"),
+  fields = c("inputs", "session"),
   methods = list(
     initialize = function(inputs, session = NULL) {
       "args:
@@ -11,6 +11,7 @@ InputList <- setRefClass(
       inputs <<- inputs
       names(inputs) <<- sapply(inputs, function(x) {x$getID()})
       session <<- session
+      update()
     },
 
     setValue = function(inputId, newVal) {
