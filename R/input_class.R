@@ -1,5 +1,11 @@
 emptyField <- function(x) inherits(x, "uninitializedField")
 
+evalParams <- function(params, env) {
+  lapply(params, function(x) {
+    tryCatch(eval(x, envir = env), silent = TRUE, error = function(e) {NULL})
+  })
+}
+
 # Private reference class representing an input.
 Input <- setRefClass(
   "Input",
