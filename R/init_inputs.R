@@ -11,7 +11,8 @@ initEnv <- function(parentEnv, id) {
   res$.initial <- TRUE
   res$.session <- NULL
   res$.id <- id
-  res$.output <- paste0("output_", id)
+  if (id == 0) res$.output <- "shared"
+  else res$.output <- paste0("output_", id)
   res
 }
 
@@ -36,7 +37,7 @@ initInputs <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1
   if (is.null(names(inputs))) stop("All arguments need to be named.")
   for (i in inputs) if (!inherits(i, "Input")) stop("All arguments need to be Input objects.")
 
-  sharedEnv <- initEnv(env, 1)
+  sharedEnv <- initEnv(env, 0)
   indEnvs <- lapply(seq_len(ncharts), function(i) initEnv(sharedEnv, i))
 
   sharedInputs <- filterAndInitInputs(inputs, compare, drop = TRUE, sharedEnv)

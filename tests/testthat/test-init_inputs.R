@@ -22,14 +22,16 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
 
   expect_is(res$inputList, "InputList")
   expectedLength <- length(inputList) + length(compare) * (ncharts - 1)
+  # inexact when one tries to compare grouped inputs
   expect_length(res$inputList$inputs, expectedLength)
 
-  expected_names <- paste0("output_1_", names(inputList))
+  sharedInputs <- setdiff(names(inputList), compare)
+  expected_names <- paste0("shared_", sharedInputs)
   if (length(compare) > 0) {
-    for (i in seq_len(ncharts - 1)) {
+    for (i in seq_len(ncharts)) {
       expected_names <- append(
         expected_names,
-        paste0("output_", i+1, "_", compare)
+        paste0("output_", i, "_", compare)
       )
     }
   }
