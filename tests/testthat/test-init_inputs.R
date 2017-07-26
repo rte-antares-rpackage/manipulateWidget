@@ -9,7 +9,7 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   inputList <- flattenInputs(inputList)
 
   expect_is(res, "list")
-  expect_named(res, c("envs", "inputs", "inputList"))
+  expect_named(res, c("envs", "inputs", "inputList", "ncharts"))
   expect_is(res$envs, "list")
   expect_named(res$envs, c("shared", "ind"))
   expect_is(res$envs$ind, "list")

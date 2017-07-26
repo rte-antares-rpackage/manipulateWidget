@@ -32,6 +32,7 @@ initEnv <- function(parentEnv, id) {
 #'    -ind: list of individual inputs (initialized) for each chart. Length is
 #'          equal to ncharts
 #' - inputList: same as inputs but flattened to facilitate looping.
+#' - ncharts: number of charts
 #' @noRd
 initInputs <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1) {
   if (is.null(names(inputs))) stop("All arguments need to be named.")
@@ -56,6 +57,7 @@ initInputs <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1
       shared = sharedInputs,
       ind = indInputs
     ),
-    inputList = inputList
+    inputList = inputList,
+    ncharts = ncharts
   )
 }
