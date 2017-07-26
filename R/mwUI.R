@@ -1,6 +1,6 @@
 #' Private function that generates the general layout of the application
 #'
-#' @param controls Object returned by preprocessControls
+#' @param inputs Object returned by preprocessInputs
 #' @param ncol Number of columns in the chart area.
 #' @param nrow Number of rows in the chart area.
 #' @param outputFun Function that generates the html elements that will contain
@@ -11,8 +11,8 @@
 #' @return shiny tags
 #'
 #' @noRd
-mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
-                      okBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
+mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
+                 okBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
 
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
@@ -22,7 +22,7 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
     style = "manipulate_widget.css"
   )
 
-  showSettings <- controls$nmod == 1 || length(controls$controls$shared) > 0
+  showSettings <- inputs$ncharts == 1 || length(inputs$inputs$shared) > 0
   if (border) class <- "mw-container with-border"
   else class <- "mw-container"
 
@@ -31,9 +31,9 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
       class = class,
       fillRow(
         flex = c(NA, NA, 1),
-        .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, updateBtn, areaBtns),
-        .uiControls(controls),
-        .uiChartarea(controls$nmod, nrow, ncol, outputFun)
+        .uiMenu(inputs$ncharts, nrow, ncol, showSettings, okBtn, updateBtn, areaBtns),
+        .uiInputs(inputs),
+        .uiChartarea(inputs$ncharts, nrow, ncol, outputFun)
       )
     )
   )
@@ -41,15 +41,16 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
   htmltools::attachDependencies(container, htmldep, TRUE)
 }
 
-.uiControls <- function(controls) {
-   controls <- c(list(controls$controls$shared), controls$controls$ind)
-   controls <- unname(lapply(controls, function(x) {
+.uiInputs <- function(inputs) {
+   inputs <- c(list(inputs$inputs$shared), inputs$inputs$ind)
+   inputs <- unname(lapply(inputs, function(x) {
      if (length(x) == 0) return(NULL)
-     tags$div(class = "mw-inputs", mwControlsUI(x))
+     content <- lapply(x, function(i) i$getHTML())
+     tags$div(class = "mw-inputs", shiny::tagList(content))
    }))
 
-   controls$class <- "mw-input-container"
-   do.call(tags$div, controls)
+   inputs$class <- "mw-input-container"
+   do.call(tags$div, inputs)
 }
 
 .uiChartarea <- function(ncharts, nrow, ncol, outputFun) {
