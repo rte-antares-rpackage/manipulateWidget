@@ -12,16 +12,17 @@ describe("InputList", {
     expect_equal(inputList$inputs$output_1_y$value, 7)
   })
 
+  inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(0, 10, 0))
+  inputs2 <- list(x = mwSlider(0, 10, 6), y = mwSlider(0, 10, 1))
+  inputs <- c(
+    filterAndInitInputs(list(shared = mwText("test")), c(), TRUE,
+                        initEnv(parent.frame(), 0)),
+    filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1)),
+    filterAndInitInputs(inputs2, c(), TRUE, initEnv(parent.frame(), 2))
+  )
+  inputList <- InputList(inputs)
+
   it ("gets and updates an input by name and chartId", {
-    inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(0, 10, 0))
-    inputs2 <- list(x = mwSlider(0, 10, 6), y = mwSlider(0, 10, 1))
-    inputs <- c(
-      filterAndInitInputs(list(shared = mwText("test")), c(), TRUE,
-                          initEnv(parent.frame(), 0)),
-      filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1)),
-      filterAndInitInputs(inputs2, c(), TRUE, initEnv(parent.frame(), 2))
-    )
-    inputList <- InputList(inputs)
     # Get Input
     # Individual inputs
     expect_equal(inputList$getInput("x", 1)$value, 5)
@@ -49,5 +50,22 @@ describe("InputList", {
     expect_equal(inputList$getValue("shared", 1), "test1")
     expect_equal(inputList$setValue("shared", "test2", 1), "test2")
     expect_equal(inputList$getValue("shared", 2), "test2")
+
+    it ("gets all values for one chart", {
+      for (i in 1:2) {
+        values <- inputList$getValues(i)
+        expect_is(values, "list")
+        expect_named(values, c("shared", "x", "y"), ignore.order = TRUE)
+        for (n in c("shared", "x", "y")) {
+          expect_equal(values[[n]], inputList$getValue(n, i))
+        }
+      }
+    })
+
+    it ("indicates if an input is shared or not", {
+      expect_true(inputList$isShared("shared"))
+      expect_true(! inputList$isShared("x"))
+      expect_true(! inputList$isShared("y"))
+    })
   })
 })

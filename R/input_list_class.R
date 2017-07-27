@@ -17,6 +17,17 @@ InputList <- setRefClass(
       update()
     },
 
+    isShared = function(name) {
+      idx <- which(names == name)
+      if (length(idx) == 0) stop("cannot find input ", name)
+      any(chartIds[idx] == 0)
+    },
+
+    isVisible = function(name, chartId = 1) {
+      i <- getInput(name, chartId)
+      eval(i$display, envir = i$env)
+    },
+
     getInput = function(name, chartId = 1) {
       idx <- which(names == name & chartIds %in% c(0, chartId))
       if (length(idx) == 0) stop("cannot find input ", name)
@@ -25,6 +36,13 @@ InputList <- setRefClass(
 
     getValue = function(name, chartId = 1) {
       getInput(name, chartId)$value
+    },
+
+    getValues = function(chartId = 1) {
+      idx <- which(chartIds %in% c(0, chartId))
+      res <- lapply(names[idx], function(n) getValue(n, chartId))
+      names(res) <- names[idx]
+      res
     },
 
     setValue = function(name, value, chartId = 1) {
