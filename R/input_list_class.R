@@ -2,26 +2,45 @@
 # when the value of an input changes.
 InputList <- setRefClass(
   "InputList",
-  fields = c("inputs", "session"),
+  fields = c("inputs", "session", "names", "chartIds"),
   methods = list(
     initialize = function(inputs, session = NULL) {
       "args:
        - inputs: list of initialized inputs
        - session: shiny session"
-      inputList <- flattenInputs(inputs)
+      inputList <- flattenInputs(unname(inputs))
       inputs <<- inputList
       names(inputs) <<- sapply(inputList, function(x) {x$getID()})
+      names <<- sapply(inputList, function(x) x$name)
+      chartIds <<- sapply(inputList, function(x) get(".id", envir = x$env))
       session <<- session
       update()
     },
 
-    setValue = function(inputId, newVal) {
+    getInput = function(name, chartId = 1) {
+      idx <- which(names == name & chartIds %in% c(0, chartId))
+      if (length(idx) == 0) stop("cannot find input ", name)
+      inputs[[idx]]
+    },
+
+    getValue = function(name, chartId = 1) {
+      getInput(name, chartId)$value
+    },
+
+    setValue = function(name, value, chartId = 1) {
+      res <- getInput(name, chartId)$setValue(value)
+      update()
+      res
+    },
+
+    setValueById = function(inputId, value) {
       "Change the value of an input and update the other inputs
        args:
        - inputId: id of the input to update
-       - newVal: new value for the input"
-      inputs[[inputId]]$setValue(newVal)
+       - value: new value for the input"
+      res <- inputs[[inputId]]$setValue(value)
       update()
+      res
     },
 
     update = function() {
