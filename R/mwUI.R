@@ -62,15 +62,15 @@ mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
     } else {
       el <- outputFun(outputId, width = "100%", height = "100%")
     }
-    tags$div(class="mw-chart", el)
+    style <- sprintf("float:left;width:%s%%;height:%s%%",
+                     floor(100 / ncol), floor(100 / nrow))
+    tags$div(class="mw-chart", el, style = style)
   })
 
-  outputEls <- split(outputEls, (1:(ncol*nrow) - 1) %/% ncol)
-  rows <- lapply(outputEls, function(x) {
-    do.call(shiny::fillRow, x)
-  })
-
-  do.call(shiny::fillCol, unname(rows))
+  tags$div(
+    style = "height:100%;width:100%",
+    shiny::tagList(outputEls)
+  )
 }
 
 .uiMenu <- function(ncharts, nrow, ncol, settingsBtn, okBtn, updateBtn, areaBtns) {
