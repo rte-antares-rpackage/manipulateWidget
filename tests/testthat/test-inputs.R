@@ -1,4 +1,4 @@
-context("inputs")
+context("Shiny inputs")
 
 # Slider
 test_input(mwSlider(0, 10, 0), c(5, -20, 20), c(5, 0, 10))

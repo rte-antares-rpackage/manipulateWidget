@@ -240,24 +240,22 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     }
   }
 
-  # Evaluate a first time .expr to determine the class of the output
-  controls <- preprocessControls(list(...), .compare, env = .env,
-                                 ncharts = .compareOpts$ncharts)
-
-  initWidgets <- lapply(controls$env$ind, function(e) {
-    eval(.expr, envir = e)
-  })
+  # Initialize inputs
+  inputs <- initInputs(list(...), env = .env, compare = names(.compare),
+                       ncharts = .compareOpts$ncharts)
+  # Initialize controller
+  controller <- Controller(.expr, inputs)
 
   # Get shiny output and render functions
-  if (is(initWidgets[[1]], "htmlwidget")) {
-    cl <- class(initWidgets[[1]])[1]
-    pkg <- attr(initWidgets[[1]], "package")
+  if (is(controller$charts[[1]], "htmlwidget")) {
+    cl <- class(controller$charts[[1]])[1]
+    pkg <- attr(controller$charts[[1]], "package")
 
     renderFunName <- ls(getNamespace(pkg), pattern = "^render")
     renderFunction <- getFromNamespace(renderFunName, pkg)
 
-    OutputFunName <- ls(getNamespace(pkg), pattern = "Output$")
-    outputFunction <- getFromNamespace(OutputFunName, pkg)
+    outputFunName <- ls(getNamespace(pkg), pattern = "Output$")
+    outputFunction <- getFromNamespace(outputFunName, pkg)
     useCombineWidgets <- FALSE
   } else {
     renderFunction <- renderCombineWidgets
@@ -265,16 +263,30 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     useCombineWidgets <- TRUE
   }
 
+  controller$renderFunc <- renderFunction
+
   dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
 
-  ui <- mwUI(controls, dims$nrow, dims$ncol, outputFunction, okBtn = !isRuntimeShiny,
+  ui <- mwUI(inputs, dims$nrow, dims$ncol, outputFunction, okBtn = !isRuntimeShiny,
              updateBtn = .updateBtn, areaBtns = length(.compare) > 0, border = isRuntimeShiny)
-  server <- mwServer(.expr, controls, initWidgets,
-                     renderFunction,
-                     .updateBtn,
-                     .return,
-                     dims$nrow, dims$ncol,
-                     useCombineWidgets)
+  # server <- mwServer(.expr, controls, initWidgets,
+  #                    renderFunction,
+  #                    .updateBtn,
+  #                    .return,
+  #                    dims$nrow, dims$ncol,
+  #                    useCombineWidgets)
+  server <- function(input, output, session) {
+    controller$output <- output
+    controller$session <- session
+    controller$renderShinyOutputs()
+
+    observe({
+      for (id in names(controller$inputList$inputs)) {
+        controller$setValueById(id, input[[id]])
+      }
+    })
+
+  }
 
   if (interactive()) {
     # We are in an interactive session so we start a shiny gadget
@@ -291,6 +303,6 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.
-    mwReturn(initWidgets, .return, controls$env$ind, dims$nrow, dims$ncol)
+    mwReturn(controller$widgets, .return, controls$env$ind, dims$nrow, dims$ncol)
   }
 }

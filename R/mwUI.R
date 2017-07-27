@@ -56,7 +56,7 @@ mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
 .uiChartarea <- function(ncharts, nrow, ncol, outputFun) {
   outputEls <- lapply(seq_len(nrow * ncol), function(i) {
     if (i > ncharts) return(tags$div())
-    outputId <- paste0("output", i)
+    outputId <- paste0("output_", i)
     if (is.null(outputFun)) {
       el <- combineWidgetsOutput(outputId, width = "100%", height = "100%")
     } else {

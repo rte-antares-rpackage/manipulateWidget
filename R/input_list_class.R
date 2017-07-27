@@ -38,6 +38,10 @@ InputList <- setRefClass(
       getInput(name, chartId)$value
     },
 
+    getValueById = function(inputId) {
+      inputs[[inputId]]$value
+    },
+
     getValues = function(chartId = 1) {
       idx <- which(chartIds %in% c(0, chartId))
       res <- lapply(names[idx], function(n) getValue(n, chartId))
