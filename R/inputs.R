@@ -251,8 +251,9 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
     type = "select", value = value, label = label, params = params,
     display = lazyeval::expr_find(.display),
     validFunc = function(x, params) {
-      if (params$multiple) return(intersect(x, params$choices))
-      if (length(x) > 1 && x %in% choices) return(x[1])
+      x <- intersect(x, params$choices)
+      if (params$multiple) return(x)
+      else if (length(x) > 0) return(x[1])
       else return(choices[1])
     },
     htmlFunc = htmlFuncFactory(shiny::selectInput, "selected")

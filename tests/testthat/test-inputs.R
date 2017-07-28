@@ -20,7 +20,7 @@ test_input(mwNumeric(0, min = 0, max = 10), c(5, -20, 20), c(5, 0, 10))
 test_input(mwText(), list("1", 1, NULL), list("1", "1", ""))
 
 # Select
-test_input(mwSelect(1:4), list(1, 5, NULL), list(1, 1, 1))
+test_input(mwSelect(1:4), list(1, 2, 5, NULL), list(1, 2, 1, 1))
 test_input(
   mwSelect(1:4, multiple = TRUE),
   list(1, 5, NULL, 3:5),
@@ -35,7 +35,7 @@ test_input(
 )
 
 # Radio buttons
-test_input(mwRadio(1:4), list(1, 5, NULL), list(1, 1, 1))
+test_input(mwRadio(1:4), list(1, 2, 5, NULL), list(1, 2, 1, 1))
 
 # Date picker
 test_input(
