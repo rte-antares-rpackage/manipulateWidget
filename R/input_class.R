@@ -82,7 +82,7 @@ Input <- setRefClass(
 
     updateHTML = function(session) {
       "Update the input HTML."
-      if (emptyField(htmlFunc)) return()
+      if (emptyField(htmlUpdateFunc)) return()
       if (valueHasChanged || length(changedParams) > 0) {
         htmlFunc(session, getID(), label, value, lastParams)
         valueHasChanged <<- FALSE

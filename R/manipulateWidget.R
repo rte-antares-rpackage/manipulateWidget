@@ -277,8 +277,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   #                    useCombineWidgets)
   server <- function(input, output, session) {
     controller <- controller$clone()
-    controller$output <- output
-    controller$session <- session
+    controller$setShinySession(output, session)
     controller$renderShinyOutputs()
 
     observe({

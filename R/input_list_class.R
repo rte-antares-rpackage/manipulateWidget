@@ -78,7 +78,14 @@ InputList <- setRefClass(
       }
 
       if (!is.null(session)) {
-        for (input in inputs) input$updateHTML(session)
+        for (input in inputs) {
+          shiny::updateCheckboxInput(
+            session,
+            paste0(input$getID(), "_visible"),
+            value = eval(input$display, envir = input$env)
+          )
+          input$updateHTML(session)
+        }
       }
     }
   )

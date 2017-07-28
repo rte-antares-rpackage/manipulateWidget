@@ -1,3 +1,5 @@
+mwDebug <- TRUE
+
 Controller <- setRefClass(
   "Controller",
   fields = c("inputList", "envs", "session", "output", "expr", "ncharts", "charts",
@@ -11,13 +13,15 @@ Controller <- setRefClass(
       envs <<- inputs$envs$ind
       autoUpdate <<- autoUpdate
       renderFunc <<- NULL
+      session <<- NULL
       output <<- NULL
       charts <<- list()
       updateCharts()
     },
 
-    setShinySession = function(session) {
+    setShinySession = function(output, session) {
       session <<- session
+      output <<- output
       inputList$session <<- session
     },
 
@@ -39,6 +43,7 @@ Controller <- setRefClass(
     },
 
     setValueById = function(id, value) {
+      if (mwDebug) cat("update input", id, "- new value = ", value, "\n")
       oldValue <- getValueById(id)
       newValue <- inputList$setValueById(id, value)
       if (autoUpdate && !isTRUE(all.equal(oldValue, newValue))) {
@@ -55,6 +60,7 @@ Controller <- setRefClass(
     },
 
     updateChart = function(chartId = 1) {
+      if (mwDebug) cat("Update chart", chartId, "\n")
       charts[[chartId]] <<- eval(expr, envir = envs[[chartId]])
       renderShinyOutput(chartId)
     },
