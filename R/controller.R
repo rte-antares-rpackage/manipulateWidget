@@ -72,7 +72,42 @@ Controller <- setRefClass(
 
     renderShinyOutputs = function() {
       for (i in seq_len(ncharts)) renderShinyOutput(i)
-    }
+    },
 
+    clone = function(env = parent.frame()) {
+      # Clone environments
+      newSharedEnv <- cloneEnv(parent.env(envs[[1]]))
+      newEnvs <- lapply(envs, cloneEnv, parentEnv = newSharedEnv)
+
+      newInputs <- lapply(seq_along(inputList$inputs), function(i) {
+        x <- inputList$inputs[[i]]$copy()
+        chartId <- inputList$chartIds[i]
+        if (chartId == 0) x$env <- newSharedEnv
+        else x$env <- newEnvs[[chartId]]
+        x
+      })
+
+      res <- Controller(
+        expr,
+        list(
+          inputList = InputList(newInputs, session),
+          envs = list(
+            shared = newSharedEnv,
+            ind = newEnvs
+          ),
+          ncharts = ncharts
+        ),
+        autoUpdate
+      )
+      res$renderFunc <- renderFunc
+      res$charts <- charts
+      res
+    }
   )
 )
+
+cloneEnv <- function(env, parentEnv = parent.env(env)) {
+  res <- as.environment(as.list(env, all.names = TRUE))
+  parent.env(res) <- parentEnv
+  res
+}

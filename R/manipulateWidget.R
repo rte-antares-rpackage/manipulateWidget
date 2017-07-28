@@ -276,6 +276,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   #                    dims$nrow, dims$ncol,
   #                    useCombineWidgets)
   server <- function(input, output, session) {
+    controller <- controller$clone()
     controller$output <- output
     controller$session <- session
     controller$renderShinyOutputs()

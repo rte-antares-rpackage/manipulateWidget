@@ -29,4 +29,15 @@ describe("Controller", {
     # Update a with same value
     expect_silent(controller$setValue("a", "b"))
   })
+
+  it("creates a copy that is completely autonomous", {
+    inputs <- initInputs(list(a = mwText("a"), b = mwText("b")))
+    expr <- expression(paste(a, b))
+    controller1 <- Controller(expr, inputs)
+    controller2 <- controller1$clone()
+
+    controller1$setValue("a", "test")
+    expect_equal(controller1$getValue("a"), "test")
+    expect_equal(controller2$getValue("a"), "a")
+  })
 })
