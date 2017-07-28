@@ -568,7 +568,7 @@ mwGroup <- function(..., .display = TRUE) {
         tags$div(
           class="panel-body collapse",
           id=paste0("panel-body-", id),
-          tagList(htmlElements)
+          shiny::tagList(htmlElements)
         )
       )
     }

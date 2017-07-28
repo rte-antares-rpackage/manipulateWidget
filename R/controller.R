@@ -1,7 +1,7 @@
 Controller <- setRefClass(
   "Controller",
   fields = c("inputList", "envs", "session", "output", "expr", "ncharts", "charts",
-             "autoUpdate", "renderFunc"),
+             "autoUpdate", "renderFunc", "useCombineWidgets"),
   methods = list(
 
     initialize = function(expr, inputs, autoUpdate = TRUE) {
@@ -13,6 +13,7 @@ Controller <- setRefClass(
       renderFunc <<- NULL
       session <<- NULL
       output <<- NULL
+      useCombineWidgets <<- FALSE
       charts <<- list()
     },
 
@@ -20,6 +21,10 @@ Controller <- setRefClass(
       session <<- session
       output <<- output
       inputList$session <<- session
+      for (env in envs) {
+        assign(".initial", FALSE, envir = env)
+        assign(".session", session, envir = env)
+      }
     },
 
     getValue = function(name, chartId = 1) {
@@ -59,6 +64,9 @@ Controller <- setRefClass(
     updateChart = function(chartId = 1) {
       catIfDebug("Update chart", chartId)
       charts[[chartId]] <<- eval(expr, envir = envs[[chartId]])
+      if (useCombineWidgets) {
+        charts[[chartId]] <<- combineWidgets(charts[[chartId]])
+      }
       renderShinyOutput(chartId)
     },
 
@@ -67,7 +75,8 @@ Controller <- setRefClass(
     },
 
     renderShinyOutput = function(chartId) {
-      if (!is.null(renderFunc) & !is.null(output)) {
+      if (!is.null(renderFunc) & !is.null(output) &
+          is(charts[[chartId]], "htmlwidget")) {
         outputId <- get(".output", envir = envs[[chartId]])
         output[[outputId]] <<- renderFunc(charts[[chartId]])
       }
@@ -104,6 +113,7 @@ Controller <- setRefClass(
       )
       res$renderFunc <- renderFunc
       res$charts <- charts
+      res$useCombineWidgets <- useCombineWidgets
       res
     }
   )

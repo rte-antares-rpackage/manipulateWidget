@@ -93,14 +93,14 @@ getUpdateInputFun <- function(type) {
 #'
 #' @return a htmlwidget
 #' @noRd
-onDone <- function(.expr, controls, .return = function(w, e) {w}, nrow = NULL, ncol = NULL) {
-  widgets <- lapply(controls$env$ind, function(e) {
-    assign(".initial", TRUE, envir = e)
-    assign(".session", NULL, envir = e)
-    eval(.expr, envir = e)
-  })
+onDone <- function(controller, .return = function(w, e) {w}, nrow = NULL, ncol = NULL) {
+  for (env in controller$envs) {
+    assign(".initial", TRUE, envir = env)
+    assign(".session", NULL, envir = env)
+  }
+  controller$updateCharts()
 
-  shiny::stopApp(mwReturn(widgets, .return, controls$env$ind, nrow, ncol))
+  shiny::stopApp(mwReturn(controller$charts, .return, controls$env$ind, nrow, ncol))
 }
 
 #' Function that takes a list of widgets and returns the first one if there is

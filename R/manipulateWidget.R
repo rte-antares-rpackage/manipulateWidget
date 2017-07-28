@@ -265,6 +265,11 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   }
 
   controller$renderFunc <- renderFunction
+  if (useCombineWidgets) {
+    controller$useCombineWidgets <- TRUE
+    controller$charts <- lapply(controller$charts, combineWidgets)
+  }
+
 
   dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
 
@@ -281,12 +286,15 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     controller$setShinySession(output, session)
     controller$renderShinyOutputs()
 
+    message("Click on the 'OK' button to return to the R session.")
+
     observe({
       for (id in names(controller$inputList$inputs)) {
         controller$setValueById(id, input[[id]])
       }
     })
 
+    observeEvent(input$done, onDone(controller, .return, dims$nrow, dims$ncol))
   }
 
   if (interactive()) {
@@ -304,6 +312,6 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.
-    mwReturn(controller$widgets, .return, controls$env$ind, dims$nrow, dims$ncol)
+    mwReturn(controller$charts, .return, controller$envs, dims$nrow, dims$ncol)
   }
 }
