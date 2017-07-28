@@ -92,7 +92,7 @@ Input <- setRefClass(
         do.call(htmlUpdateFunc, htmlParams)
         valueHasChanged <<- FALSE
         changedParams <<- list()
-        if (mwDebug) cat("Update HTML of ", getID(), "\n")
+        catIfDebug("Update HTML of ", getID(), "\n")
       }
     },
 
