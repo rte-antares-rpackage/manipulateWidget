@@ -1,4 +1,4 @@
-mwDebug <- TRUE
+mwDebug <- FALSE
 
 Controller <- setRefClass(
   "Controller",
@@ -16,7 +16,6 @@ Controller <- setRefClass(
       session <<- NULL
       output <<- NULL
       charts <<- list()
-      updateCharts()
     },
 
     setShinySession = function(output, session) {
@@ -43,7 +42,7 @@ Controller <- setRefClass(
     },
 
     setValueById = function(id, value) {
-      if (mwDebug) cat("update input", id, "- new value = ", value, "\n")
+      if (mwDebug) cat("Update value of input", id, "\n")
       oldValue <- getValueById(id)
       newValue <- inputList$setValueById(id, value)
       if (autoUpdate && !isTRUE(all.equal(oldValue, newValue))) {

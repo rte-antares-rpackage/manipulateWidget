@@ -18,6 +18,17 @@ htmlFuncFactory <- function(func, valueArgName = "value") {
   }
 }
 
+changeValueParam <- function(func, valueArgName) {
+  function(...) {
+    params <- list(...)
+    if ("value" %in% names(params)) {
+      params[[valueArgName]] <- params$value
+      params$value <- NULL
+    }
+    do.call(shiny::updateSelectInput, params)
+  }
+}
+
 #' Add a Slider to a manipulateWidget gadget
 #'
 #' @param min
@@ -75,7 +86,8 @@ mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
     },
     htmlFunc = htmlFuncFactory(function(...) {
       tags$div(style = "padding:0 5px;", shiny::sliderInput(...))
-    })
+    }),
+    htmlUpdateFunc = shiny::updateSliderInput
   )
 }
 
@@ -112,7 +124,8 @@ mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
       if(length(x) == 0) return("")
       as.character(x)[1]
     },
-    htmlFunc = htmlFuncFactory(shiny::textInput)
+    htmlFunc = htmlFuncFactory(shiny::textInput),
+    htmlUpdateFunc = shiny::updateTextInput
   )
 }
 
@@ -149,7 +162,8 @@ mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
     validFunc = function(x, params) {
       min(max(params$min, x), params$max)
     },
-    htmlFunc = htmlFuncFactory(shiny::numericInput)
+    htmlFunc = htmlFuncFactory(shiny::numericInput),
+    htmlUpdateFunc = shiny::updateNumericInput
   )
 }
 
@@ -191,7 +205,8 @@ mwPassword <- function(value = "", label = NULL, ..., .display = TRUE) {
       if(length(x) == 0) return("")
       as.character(x)[1]
     },
-    htmlFunc = htmlFuncFactory(shiny::passwordInput)
+    htmlFunc = htmlFuncFactory(shiny::passwordInput),
+    htmlUpdateFunc = shiny::updateTextInput
   )
 }
 
@@ -254,9 +269,10 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
       x <- intersect(x, params$choices)
       if (params$multiple) return(x)
       else if (length(x) > 0) return(x[1])
-      else return(choices[1])
+      else return(params$choices[1])
     },
-    htmlFunc = htmlFuncFactory(shiny::selectInput, "selected")
+    htmlFunc = htmlFuncFactory(shiny::selectInput, "selected"),
+    htmlUpdateFunc = changeValueParam(shiny::updateSelectInput, "selected")
   )
 }
 
@@ -297,7 +313,8 @@ mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
       if (is.na(x)) x <- FALSE
       x
     },
-    htmlFunc = htmlFuncFactory(shiny::checkboxInput)
+    htmlFunc = htmlFuncFactory(shiny::checkboxInput),
+    htmlUpdateFunc = shiny::updateCheckboxInput
   )
 }
 
@@ -341,7 +358,8 @@ mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
       if (is.null(x) || !x %in% params$choices) return(params$choices[[1]])
       x
     },
-    htmlFunc = htmlFuncFactory(shiny::radioButtons, valueArgName = "selected")
+    htmlFunc = htmlFuncFactory(shiny::radioButtons, valueArgName = "selected"),
+    htmlUpdateFunc = changeValueParam(shiny::updateRadioButtons, "selected")
   )
 }
 
@@ -381,7 +399,8 @@ mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
       if (!is.null(params$max)) params$max <- as.Date(params$max)
       x <- min(max(x, params$min), params$max)
     },
-    htmlFunc = htmlFuncFactory(shiny::dateInput)
+    htmlFunc = htmlFuncFactory(shiny::dateInput),
+    htmlUpdateFunc = shiny::updateDateInput
   )
 }
 
@@ -431,7 +450,16 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
       params$label <- label
       params$start <- value[[1]]
       params$end <- value[[2]]
-      do.call(func, params)
+      do.call(shiny::dateRangeInput, params)
+    },
+    htmlUpdateFunc = function(...) {
+      params <- list(...)
+      if ("value" %in% names(params)) {
+        params$start <- params$value[[1]]
+        params$end <- params$value[[2]]
+        params$value <- NULL
+      }
+      do.call(shiny::updateDateRangeInput, params)
     }
   )
 }
@@ -477,7 +505,8 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
     validFunc = function(x, params) {
       intersect(x, params$choices)
     },
-    htmlFunc = htmlFuncFactory(shiny::checkboxGroupInput, "selected")
+    htmlFunc = htmlFuncFactory(shiny::checkboxGroupInput, "selected"),
+    htmlUpdateFunc = changeValueParam(shiny::updateCheckboxGroupInput, "selected")
   )
 }
 

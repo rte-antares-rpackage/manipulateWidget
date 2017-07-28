@@ -245,6 +245,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
   controller <- Controller(.expr, inputs)
+  controller$updateCharts()
 
   # Get shiny output and render functions
   if (is(controller$charts[[1]], "htmlwidget")) {

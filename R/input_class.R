@@ -57,7 +57,8 @@ Input <- setRefClass(
       lastParams <<- evalParams(params, env)
 
       for (n in names(lastParams)) {
-        if (!is.null(oldParams[[n]]) && lastParams[[n]] != oldParams[[n]]) {
+        if (!is.null(oldParams[[n]]) &&
+            !isTRUE(all.equal(lastParams[[n]], oldParams[[n]]))) {
           changedParams[[n]] <<- lastParams[[n]]
         }
       }
@@ -84,9 +85,14 @@ Input <- setRefClass(
       "Update the input HTML."
       if (emptyField(htmlUpdateFunc)) return()
       if (valueHasChanged || length(changedParams) > 0) {
-        htmlFunc(session, getID(), label, value, lastParams)
+        htmlParams <- changedParams
+        if (valueHasChanged) htmlParams$value <- value
+        htmlParams$session <- session
+        htmlParams$inputId <- getID()
+        do.call(htmlUpdateFunc, htmlParams)
         valueHasChanged <<- FALSE
         changedParams <<- list()
+        if (mwDebug) cat("Update HTML of ", getID(), "\n")
       }
     },
 
