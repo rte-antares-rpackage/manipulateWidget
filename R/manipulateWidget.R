@@ -241,7 +241,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   }
 
   # Initialize inputs
-  inputs <- initInputs(list(...), env = .env, compare = names(.compare),
+  inputs <- initInputs(list(...), env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
   controller <- Controller(.expr, inputs)

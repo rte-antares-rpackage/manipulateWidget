@@ -41,9 +41,13 @@ initInputs <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1
   sharedEnv <- initEnv(env, 0)
   indEnvs <- lapply(seq_len(ncharts), function(i) initEnv(sharedEnv, i))
 
-  sharedInputs <- filterAndInitInputs(inputs, compare, drop = TRUE, sharedEnv)
+  sharedInputs <- filterAndInitInputs(inputs, names(compare), drop = TRUE, sharedEnv)
   indInputs <- lapply(seq_len(ncharts), function(i) {
-    filterAndInitInputs(inputs, compare, env = indEnvs[[i]])
+    newValues <- list()
+    for (n in names(compare)) {
+      if(!is.null(compare[[n]])) newValues[[n]] <- compare[[n]][[i]]
+    }
+    filterAndInitInputs(inputs, names(compare), env = indEnvs[[i]], newValues = newValues)
   })
 
   inputList <- InputList(list(sharedInputs, indInputs))

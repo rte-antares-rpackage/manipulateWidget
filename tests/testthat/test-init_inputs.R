@@ -25,13 +25,13 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   # inexact when one tries to compare grouped inputs
   expect_length(res$inputList$inputs, expectedLength)
 
-  sharedInputs <- setdiff(names(inputList), compare)
+  sharedInputs <- setdiff(names(inputList), names(compare))
   expected_names <- paste0("shared_", sharedInputs)
   if (length(compare) > 0) {
     for (i in seq_len(ncharts)) {
       expected_names <- append(
         expected_names,
-        paste0("output_", i, "_", compare)
+        paste0("output_", i, "_", names(compare))
       )
     }
   }
@@ -55,7 +55,14 @@ describe("initInputs", {
   })
 
   it("prepares inputs for comparison", {
-    test_structure(list(a = mwText(), b = mwText()), ncharts = 2, compare = "a")
+    test_structure(list(a = mwText(), b = mwText()), ncharts = 2,
+                   compare = list(a = NULL))
+  })
+
+  it("prepares inputs for comparison with different initial values", {
+    res <- test_structure(list(a = mwText(), b = mwText()), ncharts = 2,
+                          compare = list(a = c("a", "b")))
+
   })
 
   it("throws errors if inputs are not inputs or not named", {

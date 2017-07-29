@@ -26,7 +26,7 @@ describe("filterAndInitInputs", {
     }
   })
 
-  it ("can filter grouped inputs", {
+  it ("filters grouped inputs", {
     inputs <- list(grp = mwGroup(a = mwText(), b = mwText()), c = mwText())
 
     # Keep inputs
@@ -65,7 +65,7 @@ describe("filterAndInitInputs", {
     expect_equal(names(filteredInputs), c("c"))
   })
 
-  it ("can select/remove a whole group", {
+  it ("selects/removes a whole group", {
     inputs <- list(grp = mwGroup(a = mwText(), b = mwText()), c = mwText())
     filteredInputs <- filterAndInitInputs(inputs, c("grp"))
     expect_is(filteredInputs, "list")
@@ -81,6 +81,13 @@ describe("filterAndInitInputs", {
     expect_is(filteredInputs, "list")
     expect_length(filteredInputs, 1)
     expect_equal(names(filteredInputs), c("c"))
+  })
+
+  it ("updates initial value of an input", {
+    inputs <- list(a = mwText(), b = mwText(), c = mwText())
+    filteredInputs <- filterAndInitInputs(inputs, "a", newValues = list(a = "test"))
+    expect_equal(filteredInputs$a$value, "test")
+    expect_equal(filteredInputs$a$env$a, "test")
   })
 })
 

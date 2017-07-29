@@ -7,10 +7,12 @@
 #'
 #' @return a list of inputs
 #' @noRd
-filterAndInitInputs <- function(inputs, names, drop = FALSE, env = parent.frame()) {
+filterAndInitInputs <- function(inputs, names, drop = FALSE,
+                                env = parent.frame(), newValues = list()) {
   res <- list()
   for (n in names(inputs)) {
     i <- inputs[[n]]$copy()
+    if (n %in% names(newValues)) i$value <- newValues[[n]]
     if (inputs[[n]]$type == "group") {
       if (drop) {
         if (n %in% names) next # Remove the whole group
