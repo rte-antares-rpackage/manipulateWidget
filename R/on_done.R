@@ -13,7 +13,7 @@ onDone <- function(controller, .return = function(w, e) {w}, nrow = NULL, ncol =
   }
   controller$updateCharts()
 
-  shiny::stopApp(mwReturn(controller$charts, .return, controls$env$ind, nrow, ncol))
+  shiny::stopApp(mwReturn(controller$charts, .return, controller$envs, nrow, ncol))
 }
 
 #' Function that takes a list of widgets and returns the first one if there is

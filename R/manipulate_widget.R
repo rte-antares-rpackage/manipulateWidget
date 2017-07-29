@@ -142,7 +142,7 @@
 #'   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ],
 #'                            main = title, xlab = xlab, ylab = ylab),
 #'                    range = mwSlider(2001, 2100, c(2001, 2100)),
-#'                    "Graphical parameters" = list(
+#'                    "Graphical parameters" = mwGroup(
 #'                       title = mwText("Fictive time series"),
 #'                       xlab = mwText("X axis label"),
 #'                       ylab = mwText("Y axis label")
