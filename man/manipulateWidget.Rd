@@ -7,7 +7,7 @@
 manipulateWidget(.expr, ..., .updateBtn = FALSE, .viewer = c("pane",
   "window", "browser"), .compare = NULL, .compareOpts = compareOptions(),
   .return = function(widget, envs) {     widget }, .width = NULL,
-  .height = NULL)
+  .height = NULL, .runApp = TRUE)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -53,6 +53,13 @@ is null, two or more if it has been defined.}
 
 \item{.height}{Height of the UI. Used only on Rmarkdown documents with option
 \code{runtime: shiny}.}
+
+\item{.runApp}{(advanced usage) If true, a shiny gadget is started. If false,
+the function returns a \code{\link{MWController}} object. This object can be
+used to check with command line instructions the behavior of the application.
+(See help page of \code{\link{MWController}}). Notice that this parameter is
+always false in a non-interactive session (for instance when running tests of
+a package).}
 }
 \value{
 The result of the expression evaluated with the last values of the controls.

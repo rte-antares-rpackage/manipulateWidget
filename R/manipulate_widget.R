@@ -47,6 +47,13 @@
 #'   \code{runtime: shiny}.
 #' @param .height Height of the UI. Used only on Rmarkdown documents with option
 #'   \code{runtime: shiny}.
+#' @param .runApp (advanced usage) If true, a shiny gadget is started. If false,
+#' the function returns a \code{\link{MWController}} object. This object can be
+#' used to check with command line instructions the behavior of the application.
+#' (See help page of \code{\link{MWController}}). Notice that this parameter is
+#' always false in a non-interactive session (for instance when running tests of
+#' a package).
+#'
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the controls.
@@ -217,7 +224,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
                              .compare = NULL,
                              .compareOpts = compareOptions(),
                              .return = function(widget, envs) {widget},
-                             .width = NULL, .height = NULL, runApp = TRUE) {
+                             .width = NULL, .height = NULL, .runApp = TRUE) {
 
   # check if we are in runtime shiny
   isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
@@ -246,7 +253,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   inputs <- initInputs(list(...), env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
-  controller <- Controller(.expr, inputs, autoUpdate = !.updateBtn,
+  controller <- MWController(.expr, inputs, autoUpdate = !.updateBtn,
                            nrow = dims$nrow, ncol = dims$ncol,
                            returnFunc = .return)
   controller$updateCharts()
@@ -290,14 +297,14 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     message("Click on the 'OK' button to return to the R session.")
 
     lapply(names(controller$inputList$inputs), function(id) {
-      observe({controller$setValueById(id, input[[id]]))
+      observe(controller$setValueById(id, input[[id]]))
     })
 
     observeEvent(input$.update, controller$updateCharts())
     observeEvent(input$done, onDone(controller, .return))
   }
 
-  if (runApp & interactive()) {
+  if (.runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget
     .viewer <- switch(
       .viewer,
@@ -306,7 +313,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
       browser = shiny::browserViewer()
     )
     shiny::runGadget(ui, server, viewer = .viewer)
-  } else if (runApp & isRuntimeShiny) {
+  } else if (.runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
     shiny::shinyApp(ui = ui, server = server, options = list(width = .width, height = .height))
   } else {

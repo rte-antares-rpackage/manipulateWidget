@@ -1,21 +1,21 @@
-context("Controller class")
+context("MWController class")
 
-describe("Controller", {
+describe("MWController", {
   it("can be created with the result of initInputs()", {
     inputs <- initInputs(list(a = mwText("a"), b = mwText("b")))
     expr <- expression(paste(a, b))
-    controller <- Controller(expr, inputs)
+    controller <- MWController(expr, inputs)
     controller$updateCharts()
     expect_is(controller$charts, "list")
     expect_length(controller$charts, 1)
     expect_equal(controller$charts[[1]], "a b")
   })
 
-  it("can create multiple charts in comparison mode", {
+  it("creates multiple charts in comparison mode", {
     inputs <- initInputs(list(a = mwText("a"), b = mwText("b")), compare = "b",
                          ncharts = 3)
     expr <- expression(paste(a, b))
-    controller <- Controller(expr, inputs)
+    controller <- MWController(expr, inputs)
     controller$updateCharts()
     expect_is(controller$charts, "list")
     expect_length(controller$charts, 3)
@@ -25,7 +25,7 @@ describe("Controller", {
   it ("does not update charts if values do not change", {
     inputs <- initInputs(list(a = mwText("a"), b = mwText("b")))
     expr <- expression(print("chart updated"))
-    controller <- Controller(expr, inputs)
+    controller <- MWController(expr, inputs)
     expect_output(controller$updateCharts(), "chart updated")
     # Update a with different value
     expect_output(controller$setValue("a", "b"), "chart updated")
@@ -36,11 +36,18 @@ describe("Controller", {
   it("creates a copy that is completely autonomous", {
     inputs <- initInputs(list(a = mwText("a"), b = mwText("b")))
     expr <- expression(paste(a, b))
-    controller1 <- Controller(expr, inputs)
+    controller1 <- MWController(expr, inputs)
     controller2 <- controller1$clone()
 
     controller1$setValue("a", "test")
     expect_equal(controller1$getValue("a"), "test")
     expect_equal(controller2$getValue("a"), "a")
+  })
+
+  it("accesses parameters of a given input", {
+    inputs <- initInputs(list(a = mwSelect(c("a", "b", "c")), b = mwText("b")))
+    expr <- expression(paste(a, b))
+    controller <- MWController(expr, inputs)
+    expect_equal(controller$getParams("a")$choices, c("a", "b", "c"))
   })
 })
