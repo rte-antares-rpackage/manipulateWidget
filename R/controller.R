@@ -1,10 +1,12 @@
 Controller <- setRefClass(
   "Controller",
   fields = c("inputList", "envs", "session", "output", "expr", "ncharts", "charts",
-             "autoUpdate", "renderFunc", "useCombineWidgets"),
+             "autoUpdate", "renderFunc", "useCombineWidgets", "nrow", "ncol",
+             "returnFunc"),
   methods = list(
 
-    initialize = function(expr, inputs, autoUpdate = TRUE) {
+    initialize = function(expr, inputs, autoUpdate = TRUE, nrow = NULL,
+                          ncol = NULL, returnFunc = function(widget, envs) {widget}) {
       expr <<- expr
       inputList <<- inputs$inputList
       ncharts <<- inputs$ncharts
@@ -14,6 +16,9 @@ Controller <- setRefClass(
       session <<- NULL
       output <<- NULL
       useCombineWidgets <<- FALSE
+      nrow <<- nrow
+      ncol <<- ncol
+      returnFunc <<- returnFunc
       charts <<- list()
     },
 
@@ -68,6 +73,15 @@ Controller <- setRefClass(
         charts[[chartId]] <<- combineWidgets(charts[[chartId]])
       }
       renderShinyOutput(chartId)
+    },
+
+    returnCharts = function() {
+      if (length(charts) == 1) {
+        finalWidget <-  charts[[1]]
+      } else {
+        finalWidget <- combineWidgets(list = charts, nrow = nrow, ncol = ncol)
+      }
+      returnFunc(finalWidget, envs)
     },
 
     updateCharts = function() {

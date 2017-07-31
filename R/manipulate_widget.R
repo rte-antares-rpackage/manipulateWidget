@@ -240,11 +240,14 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     }
   }
 
+  dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
+
   # Initialize inputs
   inputs <- initInputs(list(...), env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
-  controller <- Controller(.expr, inputs)
+  controller <- Controller(.expr, inputs, nrow = dims$nrow, ncol = dims$ncol,
+                           returnFunc = .return)
   controller$updateCharts()
 
   # Get shiny output and render functions
@@ -270,9 +273,6 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     controller$charts <- lapply(controller$charts, combineWidgets)
   }
 
-
-  dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
-
   ui <- mwUI(inputs, dims$nrow, dims$ncol, outputFunction, okBtn = !isRuntimeShiny,
              updateBtn = .updateBtn, areaBtns = length(.compare) > 0, border = isRuntimeShiny)
   # server <- mwServer(.expr, controls, initWidgets,
@@ -294,7 +294,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
       }
     })
 
-    observeEvent(input$done, onDone(controller, .return, dims$nrow, dims$ncol))
+    observeEvent(input$done, onDone(controller, .return))
   }
 
   if (interactive()) {
@@ -312,6 +312,6 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.
-    mwReturn(controller$charts, .return, controller$envs, dims$nrow, dims$ncol)
+    controller$returnCharts()
   }
 }
