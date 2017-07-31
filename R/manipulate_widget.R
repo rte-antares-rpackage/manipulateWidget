@@ -217,7 +217,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
                              .compare = NULL,
                              .compareOpts = compareOptions(),
                              .return = function(widget, envs) {widget},
-                             .width = NULL, .height = NULL) {
+                             .width = NULL, .height = NULL, runApp = TRUE) {
 
   # check if we are in runtime shiny
   isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
@@ -289,16 +289,15 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
 
     message("Click on the 'OK' button to return to the R session.")
 
-    observe({
-      for (id in names(controller$inputList$inputs)) {
-        controller$setValueById(id, input[[id]])
-      }
+    lapply(names(controller$inputList$inputs), function(id) {
+      observe({controller$setValueById(id, input[[id]]))
     })
+
     observeEvent(input$.update, controller$updateCharts())
     observeEvent(input$done, onDone(controller, .return))
   }
 
-  if (interactive()) {
+  if (runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget
     .viewer <- switch(
       .viewer,
@@ -307,12 +306,12 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
       browser = shiny::browserViewer()
     )
     shiny::runGadget(ui, server, viewer = .viewer)
-  } else if (isRuntimeShiny) {
+  } else if (runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
     shiny::shinyApp(ui = ui, server = server, options = list(width = .width, height = .height))
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.
-    controller$returnCharts()
+    controller
   }
 }

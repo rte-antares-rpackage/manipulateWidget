@@ -84,6 +84,10 @@ Controller <- setRefClass(
       returnFunc(finalWidget, envs)
     },
 
+    show = function() {
+      print(returnCharts())
+    },
+
     updateCharts = function() {
       for (i in seq_len(ncharts)) updateChart(i)
     },
@@ -137,4 +141,9 @@ cloneEnv <- function(env, parentEnv = parent.env(env)) {
   res <- as.environment(as.list(env, all.names = TRUE))
   parent.env(res) <- parentEnv
   res
+}
+
+#' @export
+knit_print.Controller <- function(x, ...) {
+  knitr::knit_print(x$returnCharts(), ...)
 }
