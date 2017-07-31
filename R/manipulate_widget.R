@@ -246,7 +246,8 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   inputs <- initInputs(list(...), env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
-  controller <- Controller(.expr, inputs, nrow = dims$nrow, ncol = dims$ncol,
+  controller <- Controller(.expr, inputs, autoUpdate = !.updateBtn,
+                           nrow = dims$nrow, ncol = dims$ncol,
                            returnFunc = .return)
   controller$updateCharts()
 
@@ -293,7 +294,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
         controller$setValueById(id, input[[id]])
       }
     })
-
+    observeEvent(input$.update, controller$updateCharts())
     observeEvent(input$done, onDone(controller, .return))
   }
 
