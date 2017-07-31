@@ -14,6 +14,16 @@ InputList <- setRefClass(
       names <<- sapply(inputList, function(x) x$name)
       chartIds <<- sapply(inputList, function(x) get(".id", envir = x$env))
       session <<- session
+
+      # Set dependencies
+      for (input in inputList) {
+        inputId <- input$getID()
+        revdeps <- getRevDeps(input)
+        for (d in revdeps) {
+          inputs[[d]]$deps <<- c(inputList[[d]]$deps, inputId)
+        }
+      }
+
       update()
     },
 
@@ -28,18 +38,28 @@ InputList <- setRefClass(
       eval(i$display, envir = i$env)
     },
 
-    getInput = function(name, chartId = 1) {
+    getRevDeps = function(input) {
+      deps <- c()
+      for (p in input$params) {
+        f <- function() {}
+        body(f) <- p
+        deps <- union(deps, codetools::findGlobals(f, merge = FALSE)$variables)
+      }
+      names(inputs)[names %in% deps]
+    },
+
+    getInput = function(name, chartId = 1, inputId = NULL) {
+      if (!is.null(inputId)) {
+        if (!inputId %in% names(inputs)) stop("cannot find input with id", inputId)
+        return(inputs[[inputId]])
+      }
       idx <- which(names == name & chartIds %in% c(0, chartId))
-      if (length(idx) == 0) stop("cannot find input ", name)
+      if (length(idx) == 0) stop("cannot find input with name", name)
       inputs[[idx]]
     },
 
-    getValue = function(name, chartId = 1) {
-      getInput(name, chartId)$value
-    },
-
-    getValueById = function(inputId) {
-      inputs[[inputId]]$value
+    getValue = function(name, chartId = 1, inputId = NULL) {
+      getInput(name, chartId, inputId)$value
     },
 
     getValues = function(chartId = 1) {
@@ -49,20 +69,21 @@ InputList <- setRefClass(
       res
     },
 
-    setValue = function(name, value, chartId = 1) {
-      res <- getInput(name, chartId)$setValue(value)
-      update()
+    setValue = function(name, value, chartId = 1, inputId = NULL) {
+      input <- getInput(name, chartId, inputId)
+      res <- input$setValue(value)
+      updateDeps(input)
       res
     },
 
-    setValueById = function(inputId, value) {
-      "Change the value of an input and update the other inputs
-       args:
-       - inputId: id of the input to update
-       - value: new value for the input"
-      res <- inputs[[inputId]]$setValue(value)
-      update()
-      res
+    updateDeps = function(input) {
+      for (inputId in input$deps) {
+        depInput <- getInput(inputId = inputId)
+        if(!isTRUE(all.equal(depInput$value, depInput$updateValue()))) {
+          updateDeps(depInput)
+        }
+      }
+      updateHTML()
     },
 
     update = function() {
@@ -76,7 +97,10 @@ InputList <- setRefClass(
         })
         if (all(!valueHasChanged) | n > 10) break
       }
+      updateHTML()
+    },
 
+    updateHTML = function() {
       if (!is.null(session)) {
         for (input in inputs) {
           shiny::updateCheckboxInput(

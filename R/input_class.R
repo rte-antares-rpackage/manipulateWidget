@@ -11,7 +11,7 @@ Input <- setRefClass(
   "Input",
   fields = c("type", "name", "idFunc", "label", "value", "display", "params", "env",
              "validFunc", "htmlFunc", "htmlUpdateFunc",
-             "lastParams", "changedParams", "valueHasChanged"),
+             "lastParams", "changedParams", "valueHasChanged", "deps"),
 
   methods = list(
     init = function(name, env) {
@@ -20,6 +20,7 @@ Input <- setRefClass(
       env <<- env
       valueHasChanged <<- FALSE
       changedParams <<- list()
+      deps <<- character()
       if (emptyField(label) || is.null(label)) label <<- name
       if (emptyField(idFunc)) {
         idFunc <<- function(oid, name) paste(oid, name, sep = "_")
@@ -35,6 +36,7 @@ Input <- setRefClass(
 
     setValue = function(newValue) {
       "Modify value of the input. If newValue is invalid, it sets a valid value"
+      catIfDebug("Set value of ", getID())
       if (!emptyField(validFunc)) value <<- validFunc(newValue, getParams())
       assign(name, value, envir = env)
       value
@@ -42,6 +44,7 @@ Input <- setRefClass(
 
     updateValue = function() {
       "Update value after a change in environment"
+      catIfDebug("Update value of ", getID())
       oldValue <- value
       if (!emptyField(validFunc)) value <<- validFunc(value, getParams())
       if (!isTRUE(all.equal(value, oldValue))) {
@@ -85,6 +88,7 @@ Input <- setRefClass(
       "Update the input HTML."
       if (emptyField(htmlUpdateFunc)) return()
       if (valueHasChanged || length(changedParams) > 0) {
+        catIfDebug("Update HTML of ", getID(), "\n")
         htmlParams <- changedParams
         if (valueHasChanged) htmlParams$value <- value
         htmlParams$session <- session
@@ -92,7 +96,6 @@ Input <- setRefClass(
         do.call(htmlUpdateFunc, htmlParams)
         valueHasChanged <<- FALSE
         changedParams <<- list()
-        catIfDebug("Update HTML of ", getID(), "\n")
       }
     },
 
