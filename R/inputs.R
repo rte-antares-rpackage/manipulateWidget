@@ -10,7 +10,7 @@
 #' shiny tag.
 #' @noRd
 htmlFuncFactory <- function(func, valueArgName = "value") {
-  function(id, label, value, params) {
+  function(id, label, value, params, ns = NULL) {
     params$inputId <- id
     params$label <- label
     params[[valueArgName]] <- value
@@ -445,7 +445,7 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
       x <- sapply(x, function(d) min(max(d, params$min), params$max))
       as.Date(x, origin = "1970-01-01")
     },
-    htmlFunc = function(id, label, value, params) {
+    htmlFunc = function(id, label, value, params, ns) {
       params$inputId <- id
       params$label <- label
       params$start <- value[[1]]
@@ -600,8 +600,9 @@ mwGroup <- function(..., .display = TRUE) {
   Input(
     type = "group", value = list(...), params = list(),
     display = lazyeval::expr_find(.display),
-    htmlFunc = function(id, label, value, params) {
-      htmlElements <- lapply(value, function(x) x$getHTML())
+    htmlFunc = function(id, label, value, params, ns) {
+      browser()
+      htmlElements <- lapply(value, function(x) x$getHTML(ns))
 
       tags$div(
         class="panel panel-default",

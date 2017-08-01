@@ -283,8 +283,8 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
     controller$charts <- lapply(controller$charts, combineWidgets)
   }
 
-  ui <- controller$getModuleUI(gadget = !isRuntimeShiny, saveBtn = .saveBtn)
-  server <- controller$getModuleServer()
+  mwModuleInput <- controller$getModuleUI(gadget = !isRuntimeShiny, saveBtn = .saveBtn)
+  mwModule <- controller$getModuleServer()
 
   if (.runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget
@@ -294,10 +294,20 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
       window = shiny::dialogViewer("manipulateWidget"),
       browser = shiny::browserViewer()
     )
-    shiny::runGadget(ui("ui"), server, viewer = .viewer)
+
+    ui <- mwModuleInput("ui")
+    server <- function(input, output, session, ...) {
+      controller <- shiny::callModule(mwModule, "ui")
+    }
+
+    shiny::runGadget(ui, server, viewer = .viewer)
   } else if (.runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
-    shiny::shinyApp(ui = ui("ui"), server = server, options = list(width = .width, height = .height))
+    ui <- mwModuleInput("ui")
+    server <- function(input, output, session, ...) {
+      controller <- shiny::callModule(mwModule, "ui")
+    }
+    shiny::shinyApp(ui = ui, server = server, options = list(width = .width, height = .height))
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.

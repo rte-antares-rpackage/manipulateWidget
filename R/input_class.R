@@ -69,18 +69,19 @@ Input <- setRefClass(
       lastParams
     },
 
-    getHTML = function() {
+    getHTML = function(ns = NULL) {
       "Get the input HTML"
       if (emptyField(htmlFunc)) return(NULL)
 
       id <- getID()
+      if (!is.null(ns)) id <- ns(id)
       shiny::conditionalPanel(
         condition = sprintf("input['%s_visible']", id),
         tags$div(
           style="display:none;",
           shiny::checkboxInput(paste0(id, "_visible"), "", value = TRUE)
         ),
-        htmlFunc(getID(), label, value, lastParams)
+        htmlFunc(id, label, value, lastParams, ns)
       )
     },
 

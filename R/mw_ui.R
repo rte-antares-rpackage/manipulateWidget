@@ -1,5 +1,7 @@
 #' Private function that generates the general layout of the application
 #'
+#' @param ns namespace function created with shiny::NS(). Useful to create
+#'   modules.
 #' @param inputs Object returned by preprocessInputs
 #' @param ncol Number of columns in the chart area.
 #' @param nrow Number of rows in the chart area.
@@ -12,7 +14,7 @@
 #' @return shiny tags
 #'
 #' @noRd
-mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
+mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
                  okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
 
   htmldep <- htmltools::htmlDependency(
@@ -32,9 +34,9 @@ mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
       class = class,
       fillRow(
         flex = c(NA, NA, 1),
-        .uiMenu(inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns),
-        .uiInputs(inputs),
-        .uiChartarea(inputs$ncharts, nrow, ncol, outputFun)
+        .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns),
+        .uiInputs(ns, inputs),
+        .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
       )
     )
   )
@@ -42,11 +44,11 @@ mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
   htmltools::attachDependencies(container, htmldep, TRUE)
 }
 
-.uiInputs <- function(inputs) {
+.uiInputs <- function(ns, inputs) {
    inputs <- c(list(inputs$inputs$shared), inputs$inputs$ind)
    inputs <- unname(lapply(inputs, function(x) {
      if (length(x) == 0) return(NULL)
-     content <- lapply(x, function(i) i$getHTML())
+     content <- lapply(x, function(i) i$getHTML(ns))
      tags$div(class = "mw-inputs", shiny::tagList(content))
    }))
 
@@ -54,10 +56,10 @@ mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
    do.call(tags$div, inputs)
 }
 
-.uiChartarea <- function(ncharts, nrow, ncol, outputFun) {
+.uiChartarea <- function(ns, ncharts, nrow, ncol, outputFun) {
   outputEls <- lapply(seq_len(nrow * ncol), function(i) {
     if (i > ncharts) return(tags$div())
-    outputId <- paste0("output_", i)
+    outputId <- ns(paste0("output_", i))
     if (is.null(outputFun)) {
       el <- combineWidgetsOutput(outputId, width = "100%", height = "100%")
     } else {
@@ -74,7 +76,7 @@ mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
   )
 }
 
-.uiMenu <- function(ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn, updateBtn, areaBtns) {
+.uiMenu <- function(ns, ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn, updateBtn, areaBtns) {
   container <- tags$div(
     class="mw-menu"
   )
@@ -98,19 +100,19 @@ mwUI <- function(inputs, nrow = 1, ncol = 1, outputFun = NULL,
   if (updateBtn) {
     updateBtn <- tags$div(
       class = "mw-btn mw-btn-update",
-      shiny::actionButton(".update", "", icon = shiny::icon("refresh"), class = "bt1")
+      shiny::actionButton(ns(".update"), "", icon = shiny::icon("refresh"), class = "bt1")
     )
     container <- tagAppendChild(container, updateBtn)
   }
 
   if (okBtn) {
-    okBtnInput <- shiny::actionButton("done", "OK", class = "mw-btn mw-btn-ok")
+    okBtnInput <- shiny::actionButton(ns("done"), "OK", class = "mw-btn mw-btn-ok")
     container <- tagAppendChild(container, okBtnInput)
   }
 
   if (saveBtn) {
     bottom_px <- ifelse(okBtn, "bottom: 80px;", "bottom: 30px;")
-    saveBtnInput <- shiny::downloadButton("save", label = "", class = "mw-btn mw-btn-ok",
+    saveBtnInput <- shiny::downloadButton(ns("save"), label = "", class = "mw-btn mw-btn-ok",
                                      style = bottom_px)
     container <- tagAppendChild(container, saveBtnInput)
   }

@@ -199,7 +199,7 @@ MWController <- setRefClass(
     getModuleUI = function(gadget = TRUE, saveBtn = TRUE, addBorder = !gadget) {
       function(id) {
         ns <- shiny::NS(id)
-        mwUI(uiSpec, nrow, ncol, outputFunc,
+        mwUI(ns, uiSpec, nrow, ncol, outputFunc,
              okBtn = gadget, updateBtn = !autoUpdate, saveBtn = saveBtn,
              areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder)
       }
