@@ -75,5 +75,16 @@ mwServer <- function(.expr, controls, widgets,
     }
 
     observeEvent(input$done, onDone(.expr, controls, .return, nrow, ncol))
+
+    # save
+    output$save <- downloadHandler(
+      filename = function() {
+        paste('mpWidget-', Sys.Date(), '.html', sep='')
+      },
+      content = function(con) {
+        htmlwidgets::saveWidget(widget = onSave(.expr, controls, .return, nrow, ncol),
+                                file = con, selfcontained = TRUE)
+      }
+    )
   }
 }

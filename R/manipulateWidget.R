@@ -25,6 +25,7 @@
 #' @param .updateBtn Should an update button be added to the controls ? If
 #'   \code{TRUE}, then the graphic is updated only when the user clicks on the
 #'   update button.
+#' @param .saveBtn Should an save button be added to the controls ?
 #' @param .viewer Controls where the gadget should be displayed. \code{"pane"}
 #'   corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 #'   \code{"browser"} to an external web browser.
@@ -212,7 +213,7 @@
 #'
 #' @export
 #'
-manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
+manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareOpts = compareOptions(),
@@ -268,7 +269,8 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
   dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
 
   ui <- mwUI(controls, dims$nrow, dims$ncol, outputFunction, okBtn = !isRuntimeShiny,
-             updateBtn = .updateBtn, areaBtns = length(.compare) > 0, border = isRuntimeShiny)
+             updateBtn = .updateBtn, saveBtn = .saveBtn,
+             areaBtns = length(.compare) > 0, border = isRuntimeShiny)
   server <- mwServer(.expr, controls, initWidgets,
                      renderFunction,
                      .updateBtn,

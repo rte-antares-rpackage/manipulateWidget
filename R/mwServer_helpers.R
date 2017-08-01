@@ -118,3 +118,21 @@ mwReturn <- function(widgets, .return, envs, nrow = NULL, ncol = NULL) {
   }
   .return(finalWidget, envs)
 }
+
+#' Function called when user clicks on the "Save" button. It saves the final htmlwidget
+#'
+#' @param .expr Expression that generates a htmlwidget
+#' @param controls Object created with function preprocessControls
+#'
+#' @return a htmlwidget
+#' @noRd
+onSave <- function(.expr, controls, .return = function(w, e) {w}, nrow = NULL, ncol = NULL) {
+  widgets <- lapply(controls$env$ind, function(e) {
+    assign(".initial", TRUE, envir = e)
+    assign(".session", NULL, envir = e)
+    eval(.expr, envir = e)
+  })
+
+  mwReturn(widgets, .return, controls$env$ind, nrow, ncol)
+}
+
