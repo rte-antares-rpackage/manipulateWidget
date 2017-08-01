@@ -300,7 +300,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
     observeEvent(input$.update, controller$updateCharts())
     observeEvent(input$done, onDone(controller))
 
-    output$save <- downloadHandler(
+    output$save <- shiny::downloadHandler(
       filename = function() {
         paste('mpWidget-', Sys.Date(), '.html', sep='')
       },
