@@ -23,6 +23,8 @@ if (require(plotly)) {
   # cars with same number of cylinders.
   # The shared variable 'subsetCars' is used to avoid subsetting multiple times
   # the data: this value is updated only when input 'cylinders' changes.
+  colMax <- apply(mtcars, 2, max)
+
   plotCar <- function(cardata, carName) {
     carValues <- unlist(cardata[carName, ])
     carValuesRel <- carValues / colMax
