@@ -6,13 +6,14 @@
 #' @param outputFun Function that generates the html elements that will contain
 #'   a given widget
 #' @param okBtn Should the OK Button be added to the UI ?
+#' @param saveBtn Should the Save Button be added to the UI ?
 #' @param updateBtn Should the updateBtn be added to the UI ? Currently unused.
 #'
 #' @return shiny tags
 #'
 #' @noRd
 mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
-                      okBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
+                      okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
 
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
@@ -31,7 +32,7 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
       class = class,
       fillRow(
         flex = c(NA, NA, 1),
-        .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, updateBtn, areaBtns),
+        .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns),
         .uiControls(controls),
         .uiChartarea(controls$nmod, nrow, ncol, outputFun)
       )
@@ -72,7 +73,7 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
   do.call(shiny::fillCol, unname(rows))
 }
 
-.uiMenu <- function(ncharts, nrow, ncol, settingsBtn, okBtn, updateBtn, areaBtns) {
+.uiMenu <- function(ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn, updateBtn, areaBtns) {
   container <- tags$div(
     class="mw-menu"
   )
@@ -102,9 +103,17 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
   }
 
   if (okBtn) {
-    okBtn <- shiny::actionButton("done", "OK", class = "mw-btn mw-btn-ok")
-    container <- tagAppendChild(container, okBtn)
+    okBtnInput <- shiny::actionButton("done", "OK", class = "mw-btn mw-btn-ok")
+    container <- tagAppendChild(container, okBtnInput)
   }
+
+  if (saveBtn) {
+    bottom_px <- ifelse(okBtn, "bottom: 80px;", "bottom: 30px;")
+    saveBtnInput <- shiny::downloadButton("save", label = "", class = "mw-btn mw-btn-ok",
+                                     style = bottom_px)
+    container <- tagAppendChild(container, saveBtnInput)
+  }
+
   container
 }
 
