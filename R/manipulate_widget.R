@@ -25,6 +25,7 @@
 #' @param .updateBtn Should an update button be added to the controls ? If
 #'   \code{TRUE}, then the graphic is updated only when the user clicks on the
 #'   update button.
+#' @param .saveBtn Should an save button be added to the controls ?
 #' @param .viewer Controls where the gadget should be displayed. \code{"pane"}
 #'   corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 #'   \code{"browser"} to an external web browser.
@@ -219,7 +220,7 @@
 #'
 #' @export
 #'
-manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
+manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareOpts = compareOptions(),
@@ -281,14 +282,10 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     controller$charts <- lapply(controller$charts, combineWidgets)
   }
 
-  ui <- mwUI(inputs, dims$nrow, dims$ncol, outputFunction, okBtn = !isRuntimeShiny,
-             updateBtn = .updateBtn, areaBtns = length(.compare) > 0, border = isRuntimeShiny)
-  # server <- mwServer(.expr, controls, initWidgets,
-  #                    renderFunction,
-  #                    .updateBtn,
-  #                    .return,
-  #                    dims$nrow, dims$ncol,
-  #                    useCombineWidgets)
+  ui <- mwUI(inputs, dims$nrow, dims$ncol, outputFunction,
+             okBtn = !isRuntimeShiny, updateBtn = .updateBtn, saveBtn = .saveBtn,
+             areaBtns = length(.compare) > 0, border = isRuntimeShiny)
+
   server <- function(input, output, session) {
     controller <- controller$clone()
     controller$setShinySession(output, session)
@@ -301,7 +298,17 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     })
 
     observeEvent(input$.update, controller$updateCharts())
-    observeEvent(input$done, onDone(controller, .return))
+    observeEvent(input$done, onDone(controller))
+
+    output$save <- downloadHandler(
+      filename = function() {
+        paste('mpWidget-', Sys.Date(), '.html', sep='')
+      },
+      content = function(con) {
+        htmlwidgets::saveWidget(widget = onDone(controller, stopApp = FALSE),
+                                file = con, selfcontained = TRUE)
+      }
+    )
   }
 
   if (.runApp & interactive()) {

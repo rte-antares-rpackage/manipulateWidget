@@ -4,10 +4,10 @@
 \alias{manipulateWidget}
 \title{Add Controls to Interactive Plots}
 \usage{
-manipulateWidget(.expr, ..., .updateBtn = FALSE, .viewer = c("pane",
-  "window", "browser"), .compare = NULL, .compareOpts = compareOptions(),
-  .return = function(widget, envs) {     widget }, .width = NULL,
-  .height = NULL, .runApp = TRUE)
+manipulateWidget(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
+  .viewer = c("pane", "window", "browser"), .compare = NULL,
+  .compareOpts = compareOptions(), .return = function(widget, envs) {    
+  widget }, .width = NULL, .height = NULL, .runApp = TRUE)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -25,6 +25,8 @@ named "txt" and "nb".}
 \item{.updateBtn}{Should an update button be added to the controls ? If
 \code{TRUE}, then the graphic is updated only when the user clicks on the
 update button.}
+
+\item{.saveBtn}{Should an save button be added to the controls ?}
 
 \item{.viewer}{Controls where the gadget should be displayed. \code{"pane"}
 corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and

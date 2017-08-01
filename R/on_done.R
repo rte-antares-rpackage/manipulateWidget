@@ -6,12 +6,14 @@
 #'
 #' @return a htmlwidget
 #' @noRd
-onDone <- function(controller, .return = function(w, e) {w}) {
+onDone <- function(controller, stopApp = TRUE) {
   for (env in controller$envs) {
     assign(".initial", TRUE, envir = env)
     assign(".session", NULL, envir = env)
   }
   controller$updateCharts()
+  res <- controller$returnCharts()
 
-  shiny::stopApp(controller$returnCharts())
+  if (stopApp) shiny::stopApp(res)
+  else return(res)
 }
