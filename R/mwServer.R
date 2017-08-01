@@ -77,7 +77,7 @@ mwServer <- function(.expr, controls, widgets,
     observeEvent(input$done, onDone(.expr, controls, .return, nrow, ncol))
 
     # save
-    output$save <- downloadHandler(
+    output$save <- shiny::downloadHandler(
       filename = function() {
         paste('mpWidget-', Sys.Date(), '.html', sep='')
       },
