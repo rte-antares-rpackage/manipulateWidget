@@ -46,8 +46,8 @@
 #' @export
 MWController <- setRefClass(
   "MWController",
-  fields = c("inputList", "envs", "session", "output", "expr", "ncharts", "charts",
-             "autoUpdate", "renderFunc", "useCombineWidgets", "nrow", "ncol",
+  fields = c("inputList", "uiSpec", "envs", "session", "shinyOutput", "expr", "ncharts", "charts",
+             "autoUpdate", "renderFunc", "outputFunc", "useCombineWidgets", "nrow", "ncol",
              "returnFunc"),
   methods = list(
 
@@ -55,12 +55,13 @@ MWController <- setRefClass(
                           ncol = NULL, returnFunc = function(widget, envs) {widget}) {
       expr <<- expr
       inputList <<- inputs$inputList
+      uiSpec <<- inputs
       ncharts <<- inputs$ncharts
       envs <<- inputs$envs$ind
       autoUpdate <<- autoUpdate
       renderFunc <<- NULL
       session <<- NULL
-      output <<- NULL
+      shinyOutput <<- NULL
       useCombineWidgets <<- FALSE
       nrow <<- nrow
       ncol <<- ncol
@@ -70,7 +71,7 @@ MWController <- setRefClass(
 
     setShinySession = function(output, session) {
       session <<- session
-      output <<- output
+      shinyOutput <<- output
       inputList$session <<- session
       for (env in envs) {
         assign(".initial", FALSE, envir = env)
@@ -153,10 +154,10 @@ MWController <- setRefClass(
     },
 
     renderShinyOutput = function(chartId) {
-      if (!is.null(renderFunc) & !is.null(output) &
+      if (!is.null(renderFunc) & !is.null(shinyOutput) &
           is(charts[[chartId]], "htmlwidget")) {
         outputId <- get(".output", envir = envs[[chartId]])
-        output[[outputId]] <<- renderFunc(charts[[chartId]])
+        shinyOutput[[outputId]] <<- renderFunc(charts[[chartId]])
       }
     },
 
@@ -193,6 +194,42 @@ MWController <- setRefClass(
       res$charts <- charts
       res$useCombineWidgets <- useCombineWidgets
       res
+    },
+
+    getModuleUI = function(gadget = TRUE, saveBtn = TRUE, addBorder = !gadget) {
+      function(id) {
+        ns <- shiny::NS(id)
+        mwUI(uiSpec, nrow, ncol, outputFunc,
+             okBtn = gadget, updateBtn = !autoUpdate, saveBtn = saveBtn,
+             areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder)
+      }
+    },
+
+    getModuleServer = function() {
+      function(input, output, session, ...) {
+        controller <- .self$clone()
+        controller$setShinySession(output, session)
+        controller$renderShinyOutputs()
+
+        message("Click on the 'OK' button to return to the R session.")
+
+        lapply(names(controller$inputList$inputs), function(id) {
+          observe(controller$setValueById(id, value = input[[id]]))
+        })
+
+        observeEvent(input$.update, controller$updateCharts())
+        observeEvent(input$done, onDone(controller))
+
+        output$save <- shiny::downloadHandler(
+          filename = function() {
+            paste('mpWidget-', Sys.Date(), '.html', sep='')
+          },
+          content = function(con) {
+            htmlwidgets::saveWidget(widget = onDone(controller, stopApp = FALSE),
+                                    file = con, selfcontained = TRUE)
+          }
+        )
+      }
     }
   )
 )

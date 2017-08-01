@@ -277,39 +277,14 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   }
 
   controller$renderFunc <- renderFunction
+  controller$outputFunc <- outputFunction
   if (useCombineWidgets) {
     controller$useCombineWidgets <- TRUE
     controller$charts <- lapply(controller$charts, combineWidgets)
   }
 
-  ui <- mwUI(inputs, dims$nrow, dims$ncol, outputFunction,
-             okBtn = !isRuntimeShiny, updateBtn = .updateBtn, saveBtn = .saveBtn,
-             areaBtns = length(.compare) > 0, border = isRuntimeShiny)
-
-  server <- function(input, output, session) {
-    controller <- controller$clone()
-    controller$setShinySession(output, session)
-    controller$renderShinyOutputs()
-
-    message("Click on the 'OK' button to return to the R session.")
-
-    lapply(names(controller$inputList$inputs), function(id) {
-      observe(controller$setValueById(id, value = input[[id]]))
-    })
-
-    observeEvent(input$.update, controller$updateCharts())
-    observeEvent(input$done, onDone(controller))
-
-    output$save <- shiny::downloadHandler(
-      filename = function() {
-        paste('mpWidget-', Sys.Date(), '.html', sep='')
-      },
-      content = function(con) {
-        htmlwidgets::saveWidget(widget = onDone(controller, stopApp = FALSE),
-                                file = con, selfcontained = TRUE)
-      }
-    )
-  }
+  ui <- controller$getModuleUI(gadget = !isRuntimeShiny, saveBtn = .saveBtn)
+  server <- controller$getModuleServer()
 
   if (.runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget
@@ -319,10 +294,10 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
       window = shiny::dialogViewer("manipulateWidget"),
       browser = shiny::browserViewer()
     )
-    shiny::runGadget(ui, server, viewer = .viewer)
+    shiny::runGadget(ui("ui"), server, viewer = .viewer)
   } else if (.runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
-    shiny::shinyApp(ui = ui, server = server, options = list(width = .width, height = .height))
+    shiny::shinyApp(ui = ui("ui"), server = server, options = list(width = .width, height = .height))
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.

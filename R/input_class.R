@@ -75,7 +75,7 @@ Input <- setRefClass(
 
       id <- getID()
       shiny::conditionalPanel(
-        condition = sprintf("input.%s_visible", id),
+        condition = sprintf("input['%s_visible']", id),
         tags$div(
           style="display:none;",
           shiny::checkboxInput(paste0(id, "_visible"), "", value = TRUE)

@@ -50,4 +50,15 @@ describe("MWController", {
     controller <- MWController(expr, inputs)
     expect_equal(controller$getParams("a")$choices, c("a", "b", "c"))
   })
+
+  it("generates server and ui functions", {
+    inputs <- initInputs(list(a = mwSelect(c("a", "b", "c")), b = mwText("b")))
+    expr <- expression(paste(a, b))
+    controller <- MWController(expr, inputs)
+    ui <- controller$getModuleUI()
+    server <- controller$getModuleServer()
+    expect_is(ui, "function")
+    expect_is(server, "function")
+    expect_equal(names(formals(server)), c("input", "output", "session", "..."))
+  })
 })
