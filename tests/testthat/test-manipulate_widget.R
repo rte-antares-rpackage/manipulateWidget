@@ -78,4 +78,20 @@ describe("manipulateWidget", {
     c$setValue("x", 6)
     expect_true(!c$isVisible("y"))
   })
+
+  it ("shares values between inputs and outputs", {
+    c <- manipulateWidget(
+      x2 + y,
+      x = mwSlider(0, 10, 5),
+      x2 = mwSharedValue(x * 2),
+      y = mwSlider(0, x2, 0)
+    )
+    expect_equal(c$getParams("y")$max, 10)
+    expect_equal(c$charts[[1]]$widgets[[1]], 10)
+    c$setValue("x", 8)
+    expect_equal(c$getValue("x2"), 16)
+    expect_equal(c$getParams("y")$max, 16)
+    expect_equal(c$charts[[1]]$widgets[[1]], 16)
+
+  })
 })

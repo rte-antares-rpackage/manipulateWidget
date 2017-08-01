@@ -20,7 +20,7 @@ variable is used.}
 the input control should be shown/hidden.}
 }
 \value{
-A function that will generate the input control.
+An Input object
 }
 \description{
 Add a date range picker to a manipulateWidget gadget
@@ -42,6 +42,6 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwCheckbox}}, \code{\link{mwDate}},
   \code{\link{mwGroup}}, \code{\link{mwNumeric}},
   \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelect}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+  \code{\link{mwSelect}}, \code{\link{mwSharedValue}},
+  \code{\link{mwSlider}}, \code{\link{mwText}}
 }

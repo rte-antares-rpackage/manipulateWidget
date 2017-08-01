@@ -414,7 +414,7 @@ mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
 #' @inheritParams mwSlider
 #'
 #' @return
-#' A function that will generate the input control.
+#' An Input object
 #'
 #' @examples
 #' if (require(dygraphs) && require(xts)) {
@@ -510,6 +510,58 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
   )
 }
 
+#' Shared Value
+#'
+#' This function creates a virtual input that can be used to store a dynamic
+#' shared variable that is accessible in inputs as well as in output.
+#'
+#' @param expr Expression used to compute the value of the input.
+#'
+#' @return An Input object of type "sharedValue".
+#'
+#' @examples
+#'
+#' if (require(plotly)) {
+#'   # Plot the characteristics of a car and compare with the average values for
+#'   # cars with same number of cylinders.
+#'   # The shared variable 'subsetCars' is used to avoid subsetting multiple times
+#'   # the data: this value is updated only when input 'cylinders' changes.
+#'   plotCar <- function(cardata, carName) {
+#'     carValues <- unlist(cardata[carName, ])
+#'     carValuesRel <- carValues / colMax
+#'
+#'     avgValues <- round(colMeans(cardata), 2)
+#'     avgValuesRel <- avgValues / colMax
+#'
+#'     plot_ly() %>%
+#'       add_bars(x = names(cardata), y = carValuesRel, text = carValues,
+#'                hoverinfo = c("x+text"), name = carName) %>%
+#'       add_bars(x = names(cardata), y = avgValuesRel, text = avgValues,
+#'                hoverinfo = c("x+text"), name = "average") %>%
+#'       layout(barmode = 'group')
+#'   }
+#'
+#'   c <- manipulateWidget(
+#'     plotCar(subsetCars, car),
+#'     cylinders = mwSelect(c("4", "6", "8")),
+#'     subsetCars = mwSharedValue(subset(mtcars, cylinders == cyl)),
+#'     car = mwSelect(choices = row.names(subsetCars))
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwSharedValue <- function(expr) {
+  params <- list(expr = lazyeval::expr_find(expr))
+  Input(
+    type = "sharedValue", value = NULL, label = NULL, params = params,
+    display = FALSE,
+    validFunc = function(x, params) {
+      params$expr
+    }
+  )
+}
+
 #' Group inputs in a collapsible box
 #'
 #' This function generates a collapsible box containing inputs. It can be useful
@@ -519,7 +571,7 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
 #' @param .display expression that evaluates to TRUE or FALSE, indicating when
 #'   the group should be shown/hidden.
 #'
-#' @return List of inputs
+#' @return Input of type "group".
 #'
 #' @examples
 #' if(require(dygraphs)) {
