@@ -297,7 +297,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     message("Click on the 'OK' button to return to the R session.")
 
     lapply(names(controller$inputList$inputs), function(id) {
-      observe(controller$setValueById(id, input[[id]]))
+      observe(controller$setValueById(id, value = input[[id]]))
     })
 
     observeEvent(input$.update, controller$updateCharts())

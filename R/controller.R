@@ -84,7 +84,7 @@ MWController <- setRefClass(
     },
 
     getValueById = function(id) {
-      inputList$getValueById(id)
+      inputList$getValue(inputId = id)
     },
 
     setValue = function(name, value, chartId = 1) {
@@ -98,9 +98,8 @@ MWController <- setRefClass(
     },
 
     setValueById = function(id, value) {
-      catIfDebug("Update value of input", id)
       oldValue <- getValueById(id)
-      newValue <- inputList$setValueById(id, value)
+      newValue <- inputList$setValue(inputId = id, value = value)
       if (autoUpdate && !isTRUE(all.equal(oldValue, newValue))) {
         if (grepl("^shared_", id)) updateCharts()
         else {

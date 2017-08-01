@@ -8,8 +8,18 @@ describe("InputList", {
 
     expect_equal(inputList$inputs$output_1_y$value, 5)
 
-    inputList$setValueById("output_1_x", 7)
+    inputList$setValue(inputId = "output_1_x", value = 7)
     expect_equal(inputList$inputs$output_1_y$value, 7)
+  })
+
+  it("detects dependencies between inputs", {
+    inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
+    inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
+    inputList <- InputList(inputs)
+    expect_length(inputList$getRevDeps(inputList$inputs$output_1_x), 0)
+    expect_length(inputList$inputs$output_1_y$deps, 0)
+    expect_equal(inputList$getRevDeps(inputList$inputs$output_1_y), c("output_1_x"))
+    expect_equal(inputList$inputs$output_1_x$deps, "output_1_y")
   })
 
   inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(0, 10, 0))
