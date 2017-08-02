@@ -15,16 +15,18 @@ describe("InputList", {
   it("detects dependencies between inputs", {
     inputs <- list(
       x = mwSlider(0, 10, 5),
-      y = mwSlider(x, 10, 0),
+      y = mwSlider(x, 10, 0, .display = z > 3),
       z = mwSlider(0, x, 0)
     )
     inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
     inputList <- InputList(inputs)
-    expect_length(inputList$getRevDeps(inputList$inputs$output_1_x), 0)
-    expect_length(inputList$inputs$output_1_y$deps, 0)
-    expect_equal(inputList$getRevDeps(inputList$inputs$output_1_y), c("output_1_x"))
-    expect_equal(inputList$inputs$output_1_x$deps,
-                 c("output_1_y", "output_1_z"))
+    expect_equal(inputList$getDeps(inputList$inputs$output_1_x),
+                 list(params = character(), display = character()))
+    expect_length(inputList$inputs$output_1_y$revDeps, 0)
+    expect_equal(inputList$getDeps(inputList$inputs$output_1_y),
+                 list(params = "output_1_x", display = "output_1_z"))
+    expect_equal(inputList$inputs$output_1_x$revDeps, c("output_1_y", "output_1_z"))
+    expect_equal(inputList$inputs$output_1_z$displayRevDeps, c("output_1_y"))
   })
 
   inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(0, 10, 0))
