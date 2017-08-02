@@ -20,7 +20,7 @@ InputList <- setRefClass(
         inputId <- input$getID()
         revdeps <- getRevDeps(input)
         for (d in revdeps) {
-          inputs[[d]]$deps <<- c(inputList[[d]]$deps, inputId)
+          inputs[[d]]$deps <<- c(.self$inputs[[d]]$deps, inputId)
         }
       }
 

@@ -606,7 +606,6 @@ mwGroup <- function(..., .display = TRUE) {
     type = "group", value = list(...), params = list(),
     display = substitute(.display),
     htmlFunc = function(id, label, value, params, ns) {
-      browser()
       htmlElements <- lapply(value, function(x) x$getHTML(ns))
 
       tags$div(
