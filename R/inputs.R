@@ -1,3 +1,10 @@
+#' Private function that converts ... in a list of expressions. This is
+#' similar to "substitute" but for the dots argument.
+#' @noRd
+dotsToExpr <- function() {
+  eval(substitute(alist(...), parent.frame()))
+}
+
 #' Private function that generates functions that generate HTML corresponding
 #' to a shiny input.
 #'
@@ -74,13 +81,13 @@ changeValueParam <- function(func, valueArgName) {
 #' @export
 #' @family controls
 mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...,.follow_symbols = FALSE), function(x) x$expr)
-  params$min <- lazyeval::expr_find(min)
-  params$max <- lazyeval::expr_find(max)
+  params <- dotsToExpr()
+  params$min <- substitute(min)
+  params$max <- substitute(max)
 
   Input(
     type = "slider", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       pmin(pmax(params$min, x), params$max)
     },
@@ -116,10 +123,10 @@ mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
 #' @export
 #' @family controls
 mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  params <- dotsToExpr()
   Input(
     type = "text", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       if(length(x) == 0) return("")
       as.character(x)[1]
@@ -155,10 +162,10 @@ mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
 #' @export
 #' @family controls
 mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  params <- dotsToExpr()
   Input(
     type = "numeric", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       min(max(params$min, x), params$max)
     },
@@ -197,10 +204,10 @@ mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
 #' @export
 #' @family controls
 mwPassword <- function(value = "", label = NULL, ..., .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  params <- dotsToExpr()
   Input(
     type = "password", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       if(length(x) == 0) return("")
       as.character(x)[1]
@@ -257,14 +264,13 @@ mwPassword <- function(value = "", label = NULL, ..., .display = TRUE) {
 #' @family controls
 mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
                       multiple = FALSE, .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...),
-                   function(x) x$expr)
-  params$choices <- lazyeval::expr_find(choices)
-  params$multiple <- lazyeval::expr_find(multiple)
+  params <- dotsToExpr()
+  params$choices <- substitute(choices)
+  params$multiple <- substitute(multiple)
 
   Input(
     type = "select", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       x <- intersect(x, params$choices)
       if (params$multiple) return(x)
@@ -303,10 +309,10 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
 #' @export
 #' @family controls
 mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  params <- dotsToExpr()
   Input(
     type = "checkbox", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       if (is.null(x)) return(FALSE)
       x <- as.logical(x)
@@ -348,11 +354,11 @@ mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
 #' @export
 #' @family controls
 mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
-  params$choices <- lazyeval::expr_find(choices)
+  params <- dotsToExpr()
+  params$choices <- substitute(choices)
   Input(
     type = "radio", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       if (length(params$choices) == 0) return(NULL)
       if (is.null(x) || !x %in% params$choices) return(params$choices[[1]])
@@ -388,10 +394,10 @@ mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
 #' @export
 #' @family controls
 mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  params <- dotsToExpr()
   Input(
     type = "date", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       if (length(x) == 0) x <- Sys.Date()
       x <- as.Date(x)
@@ -431,10 +437,10 @@ mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
 #' @family controls
 mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...,
                         .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...), function(x) x$expr)
+  params <- dotsToExpr()
   Input(
     type = "dateRange", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       if (length(x) == 0) x <- c(Sys.Date(), Sys.Date())
       else if (length(x) == 1) x <-  c(x, Sys.Date())
@@ -495,13 +501,12 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 #' @export
 #' @family controls
 mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = TRUE) {
-  params <- lapply(lazyeval::lazy_dots(...),
-                   function(x) x$expr)
-  params$choices <- lazyeval::expr_find(choices)
+  params <- dotsToExpr()
+  params$choices <- substitute(choices)
 
   Input(
     type = "checkboxGroup", value = value, label = label, params = params,
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     validFunc = function(x, params) {
       intersect(x, params$choices)
     },
@@ -554,7 +559,7 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
 #' @export
 #' @family controls
 mwSharedValue <- function(expr) {
-  params <- list(expr = lazyeval::expr_find(expr))
+  params <- list(expr = substitute(expr))
   Input(
     type = "sharedValue", value = NULL, label = NULL, params = params,
     display = FALSE,
@@ -599,7 +604,7 @@ mwGroup <- function(..., .display = TRUE) {
 
   Input(
     type = "group", value = list(...), params = list(),
-    display = lazyeval::expr_find(.display),
+    display = substitute(.display),
     htmlFunc = function(id, label, value, params, ns) {
       browser()
       htmlElements <- lapply(value, function(x) x$getHTML(ns))
