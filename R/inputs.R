@@ -20,7 +20,7 @@ htmlFuncFactory <- function(func, valueArgName = "value") {
   function(id, label, value, params, ns = NULL) {
     params$inputId <- id
     params$label <- label
-    params[[valueArgName]] <- value
+    params[valueArgName] <- list(value)
     do.call(func, params)
   }
 }
@@ -167,6 +167,7 @@ mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
     type = "numeric", value = value, label = label, params = params,
     display = substitute(.display),
     validFunc = function(x, params) {
+      if (is.null(x) || !is.numeric(x)) return(NULL)
       min(max(params$min, x), params$max)
     },
     htmlFunc = htmlFuncFactory(shiny::numericInput),

@@ -13,7 +13,7 @@ test_input(
 test_input(mwText(), list("1", 1, NULL), list("1", "1", ""))
 
 # Numeric
-test_input(mwNumeric(0), c(5, -20, 20), c(5, -20, 20))
+test_input(mwNumeric(0), list(5, -20, 20, NULL, "a"), list(5, -20, 20, NULL, NULL))
 test_input(mwNumeric(0, min = 0, max = 10), c(5, -20, 20), c(5, 0, 10))
 
 # Password
