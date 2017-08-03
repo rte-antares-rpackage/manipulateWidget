@@ -25,7 +25,8 @@ Imports:
     methods,
     tools,
     base64enc,
-    grDevices
+    grDevices,
+    codetools
 Suggests:
     dygraphs,
     leaflet,

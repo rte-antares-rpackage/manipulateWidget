@@ -67,6 +67,8 @@ MWController <- setRefClass(
       ncol <<- ncol
       returnFunc <<- returnFunc
       charts <<- list()
+
+      inputList$init()
     },
 
     setShinySession = function(output, session) {

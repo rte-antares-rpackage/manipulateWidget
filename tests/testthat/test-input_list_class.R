@@ -4,7 +4,7 @@ describe("InputList", {
   it ("correctly updates values when an input value changes", {
     inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
     inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
-    inputList <- InputList(inputs)
+    inputList <- InputList(inputs)$init()
 
     expect_equal(inputList$inputs$output_1_y$value, 5)
 
@@ -19,7 +19,7 @@ describe("InputList", {
       z = mwSlider(0, x, 0)
     )
     inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
-    inputList <- InputList(inputs)
+    inputList <- InputList(inputs)$init()
     expect_equal(inputList$getDeps(inputList$inputs$output_1_x),
                  list(params = character(), display = character()))
     expect_length(inputList$inputs$output_1_y$revDeps, 0)
@@ -37,7 +37,7 @@ describe("InputList", {
     filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1)),
     filterAndInitInputs(inputs2, c(), TRUE, initEnv(parent.frame(), 2))
   )
-  inputList <- InputList(inputs)
+  inputList <- InputList(inputs)$init()
 
   it ("gets and updates an input by name and chartId", {
     # Get Input
@@ -83,6 +83,21 @@ describe("InputList", {
       expect_true(inputList$isShared("shared"))
       expect_true(! inputList$isShared("x"))
       expect_true(! inputList$isShared("y"))
+    })
+
+    it ("does not modify values until it is initialized", {
+      inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
+      inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
+      inputList <- InputList(inputs)
+
+      expect_equal(inputList$inputs$output_1_y$value, 0)
+      inputList$setValue(inputId = "output_1_x", value = 7)
+      expect_equal(inputList$inputs$output_1_y$value, 0)
+
+      inputList$init()
+      expect_equal(inputList$inputs$output_1_y$value, 7)
+      inputList$setValue(inputId = "output_1_x", value = 8)
+      expect_equal(inputList$inputs$output_1_y$value, 8)
     })
   })
 })

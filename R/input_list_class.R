@@ -33,13 +33,14 @@ InputList <- setRefClass(
           inputs[[d]]$displayRevDeps <<- c(.self$inputs[[d]]$displayRevDeps, inputId)
         }
       }
-
-      init()
     },
 
     init = function() {
-      update()
-      initialized <<- TRUE
+      if (!initialized) {
+        update()
+        initialized <<- TRUE
+      }
+      return(.self)
     },
 
     isShared = function(name) {
@@ -105,6 +106,8 @@ InputList <- setRefClass(
     },
 
     updateRevDeps = function(input) {
+      if (!initialized) return()
+
       for (inputId in input$revDeps) {
         revDepInput <- getInput(inputId = inputId)
         if(!identical(revDepInput$value, revDepInput$updateValue())) {
