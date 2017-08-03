@@ -79,7 +79,7 @@
 #' @importFrom shiny tagAppendChildren fillPage fillRow
 #' @importFrom miniUI miniContentPanel miniPage miniTabPanel miniTabstripPanel gadgetTitleBar
 #' @importFrom htmlwidgets getDependency
-#' @importFrom methods is
+#' @importFrom methods is new setRefClass
 #' @importFrom utils getFromNamespace
 #' @importFrom stats runif
 NULL

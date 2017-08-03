@@ -95,14 +95,15 @@ myPlotFun <- function(distribution, range, title) {
     value = randomFun(n = diff(range) + 1)
   )
   combineWidgets(
-    ncol = 2, colsize = c(2, 1),
+    ncol = 1, rowsize = c(2, 1),
     dygraph(myData, main = title),
     combineWidgets(
+      ncol = 2,
       plot_ly(x = myData$value, type = "histogram"),
       paste(
-        "The graph on the left represents a random time series generated using a <b>",
+        "The graph above represents a random time series generated using a <b>",
         distribution, "</b>distribution function.<br/>",
-        "The chart above represents the empirical distribution of the generated values."
+        "The chart on the left represents the empirical distribution of the generated values."
       )
     )
   )

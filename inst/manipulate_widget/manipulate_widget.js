@@ -16,13 +16,14 @@ function select(e) {
 	var i = el.data("index");
 	$(".mw-inputs").eq(i).css("display", "block");
   }
-  
+
   // Resize all widgets
   var widgets = HTMLWidgets.findAll(document, ".mw-chart>.html-widget");
+  var ids = $.map($(".mw-chart>.html-widget"), function(x, i) {return x.id});
   var container;
   if (widgets) {
 	  for (var i = 0; i < widgets.length; i++) {
-		  container = document.getElementById("output" + (i + 1));
+		  container = document.getElementById(ids[i]);
 		  HTMLWidgets.widgets[0].resize(container, container.clientWidth, container.clientHeight, widgets[i]);
 	  }
   }

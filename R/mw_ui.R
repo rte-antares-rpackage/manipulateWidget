@@ -1,18 +1,21 @@
 #' Private function that generates the general layout of the application
 #'
-#' @param controls Object returned by preprocessControls
+#' @param ns namespace function created with shiny::NS(). Useful to create
+#'   modules.
+#' @param inputs Object returned by preprocessInputs
 #' @param ncol Number of columns in the chart area.
 #' @param nrow Number of rows in the chart area.
 #' @param outputFun Function that generates the html elements that will contain
 #'   a given widget
 #' @param okBtn Should the OK Button be added to the UI ?
+#' @param saveBtn Should the Save Button be added to the UI ?
 #' @param updateBtn Should the updateBtn be added to the UI ? Currently unused.
 #'
 #' @return shiny tags
 #'
 #' @noRd
-mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
-                      okBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
+mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
+                 okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
 
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
@@ -22,7 +25,7 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
     style = "manipulate_widget.css"
   )
 
-  showSettings <- controls$nmod == 1 || length(controls$controls$shared) > 0
+  showSettings <- inputs$ncharts == 1 || length(inputs$inputs$shared) > 0
   if (border) class <- "mw-container with-border"
   else class <- "mw-container"
 
@@ -31,9 +34,9 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
       class = class,
       fillRow(
         flex = c(NA, NA, 1),
-        .uiMenu(controls$nmod, nrow, ncol, showSettings, okBtn, updateBtn, areaBtns),
-        .uiControls(controls),
-        .uiChartarea(controls$nmod, nrow, ncol, outputFun)
+        .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns),
+        .uiInputs(ns, inputs),
+        .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
       )
     )
   )
@@ -41,38 +44,39 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
   htmltools::attachDependencies(container, htmldep, TRUE)
 }
 
-.uiControls <- function(controls) {
-   controls <- c(list(controls$controls$shared), controls$controls$ind)
-   controls <- unname(lapply(controls, function(x) {
+.uiInputs <- function(ns, inputs) {
+   inputs <- c(list(inputs$inputs$shared), inputs$inputs$ind)
+   inputs <- unname(lapply(inputs, function(x) {
      if (length(x) == 0) return(NULL)
-     tags$div(class = "mw-inputs", mwControlsUI(x))
+     content <- lapply(x, function(i) i$getHTML(ns))
+     tags$div(class = "mw-inputs", shiny::tagList(content))
    }))
 
-   controls$class <- "mw-input-container"
-   do.call(tags$div, controls)
+   inputs$class <- "mw-input-container"
+   do.call(tags$div, inputs)
 }
 
-.uiChartarea <- function(ncharts, nrow, ncol, outputFun) {
+.uiChartarea <- function(ns, ncharts, nrow, ncol, outputFun) {
   outputEls <- lapply(seq_len(nrow * ncol), function(i) {
     if (i > ncharts) return(tags$div())
-    outputId <- paste0("output", i)
+    outputId <- ns(paste0("output_", i))
     if (is.null(outputFun)) {
       el <- combineWidgetsOutput(outputId, width = "100%", height = "100%")
     } else {
       el <- outputFun(outputId, width = "100%", height = "100%")
     }
-    tags$div(class="mw-chart", el)
+    style <- sprintf("float:left;width:%s%%;height:%s%%",
+                     floor(100 / ncol), floor(100 / nrow))
+    tags$div(class="mw-chart", el, style = style)
   })
 
-  outputEls <- split(outputEls, (1:(ncol*nrow) - 1) %/% ncol)
-  rows <- lapply(outputEls, function(x) {
-    do.call(shiny::fillRow, x)
-  })
-
-  do.call(shiny::fillCol, unname(rows))
+  tags$div(
+    style = "height:100%;width:100%",
+    shiny::tagList(outputEls)
+  )
 }
 
-.uiMenu <- function(ncharts, nrow, ncol, settingsBtn, okBtn, updateBtn, areaBtns) {
+.uiMenu <- function(ns, ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn, updateBtn, areaBtns) {
   container <- tags$div(
     class="mw-menu"
   )
@@ -96,15 +100,23 @@ mwUI <- function(controls, nrow = 1, ncol = 1, outputFun = NULL,
   if (updateBtn) {
     updateBtn <- tags$div(
       class = "mw-btn mw-btn-update",
-      shiny::actionButton(".update", "", icon = shiny::icon("refresh"), class = "bt1")
+      shiny::actionButton(ns(".update"), "", icon = shiny::icon("refresh"), class = "bt1")
     )
     container <- tagAppendChild(container, updateBtn)
   }
 
   if (okBtn) {
-    okBtn <- shiny::actionButton("done", "OK", class = "mw-btn mw-btn-ok")
-    container <- tagAppendChild(container, okBtn)
+    okBtnInput <- shiny::actionButton(ns("done"), "OK", class = "mw-btn mw-btn-ok")
+    container <- tagAppendChild(container, okBtnInput)
   }
+
+  if (saveBtn) {
+    bottom_px <- ifelse(okBtn, "bottom: 80px;", "bottom: 30px;")
+    saveBtnInput <- shiny::downloadButton(ns("save"), label = "", class = "mw-btn mw-btn-ok",
+                                     style = bottom_px)
+    container <- tagAppendChild(container, saveBtnInput)
+  }
+
   container
 }
 

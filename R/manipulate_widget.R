@@ -25,6 +25,7 @@
 #' @param .updateBtn Should an update button be added to the controls ? If
 #'   \code{TRUE}, then the graphic is updated only when the user clicks on the
 #'   update button.
+#' @param .saveBtn Should an save button be added to the controls ?
 #' @param .viewer Controls where the gadget should be displayed. \code{"pane"}
 #'   corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 #'   \code{"browser"} to an external web browser.
@@ -47,6 +48,13 @@
 #'   \code{runtime: shiny}.
 #' @param .height Height of the UI. Used only on Rmarkdown documents with option
 #'   \code{runtime: shiny}.
+#' @param .runApp (advanced usage) If true, a shiny gadget is started. If false,
+#' the function returns a \code{\link{MWController}} object. This object can be
+#' used to check with command line instructions the behavior of the application.
+#' (See help page of \code{\link{MWController}}). Notice that this parameter is
+#' always false in a non-interactive session (for instance when running tests of
+#' a package).
+#'
 #'
 #' @return
 #' The result of the expression evaluated with the last values of the controls.
@@ -142,7 +150,7 @@
 #'   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ],
 #'                            main = title, xlab = xlab, ylab = ylab),
 #'                    range = mwSlider(2001, 2100, c(2001, 2100)),
-#'                    "Graphical parameters" = list(
+#'                    "Graphical parameters" = mwGroup(
 #'                       title = mwText("Fictive time series"),
 #'                       xlab = mwText("X axis label"),
 #'                       ylab = mwText("Y axis label")
@@ -212,12 +220,12 @@
 #'
 #' @export
 #'
-manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
+manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareOpts = compareOptions(),
                              .return = function(widget, envs) {widget},
-                             .width = NULL, .height = NULL) {
+                             .width = NULL, .height = NULL, .runApp = TRUE) {
 
   # check if we are in runtime shiny
   isRuntimeShiny <- identical(knitr::opts_knit$get("rmarkdown.runtime"), "shiny")
@@ -240,24 +248,27 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     }
   }
 
-  # Evaluate a first time .expr to determine the class of the output
-  controls <- preprocessControls(list(...), .compare, env = .env,
-                                 ncharts = .compareOpts$ncharts)
+  dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
 
-  initWidgets <- lapply(controls$env$ind, function(e) {
-    eval(.expr, envir = e)
-  })
+  # Initialize inputs
+  inputs <- initInputs(list(...), env = .env, compare = .compare,
+                       ncharts = .compareOpts$ncharts)
+  # Initialize controller
+  controller <- MWController(.expr, inputs, autoUpdate = !.updateBtn,
+                           nrow = dims$nrow, ncol = dims$ncol,
+                           returnFunc = .return)
+  controller$updateCharts()
 
   # Get shiny output and render functions
-  if (is(initWidgets[[1]], "htmlwidget")) {
-    cl <- class(initWidgets[[1]])[1]
-    pkg <- attr(initWidgets[[1]], "package")
+  if (is(controller$charts[[1]], "htmlwidget")) {
+    cl <- class(controller$charts[[1]])[1]
+    pkg <- attr(controller$charts[[1]], "package")
 
     renderFunName <- ls(getNamespace(pkg), pattern = "^render")
     renderFunction <- getFromNamespace(renderFunName, pkg)
 
-    OutputFunName <- ls(getNamespace(pkg), pattern = "Output$")
-    outputFunction <- getFromNamespace(OutputFunName, pkg)
+    outputFunName <- ls(getNamespace(pkg), pattern = "Output$")
+    outputFunction <- getFromNamespace(outputFunName, pkg)
     useCombineWidgets <- FALSE
   } else {
     renderFunction <- renderCombineWidgets
@@ -265,18 +276,17 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
     useCombineWidgets <- TRUE
   }
 
-  dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
+  controller$renderFunc <- renderFunction
+  controller$outputFunc <- outputFunction
+  if (useCombineWidgets) {
+    controller$useCombineWidgets <- TRUE
+    controller$charts <- lapply(controller$charts, combineWidgets)
+  }
 
-  ui <- mwUI(controls, dims$nrow, dims$ncol, outputFunction, okBtn = !isRuntimeShiny,
-             updateBtn = .updateBtn, areaBtns = length(.compare) > 0, border = isRuntimeShiny)
-  server <- mwServer(.expr, controls, initWidgets,
-                     renderFunction,
-                     .updateBtn,
-                     .return,
-                     dims$nrow, dims$ncol,
-                     useCombineWidgets)
+  mwModuleInput <- controller$getModuleUI(gadget = !isRuntimeShiny, saveBtn = .saveBtn)
+  mwModule <- controller$getModuleServer()
 
-  if (interactive()) {
+  if (.runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget
     .viewer <- switch(
       .viewer,
@@ -284,13 +294,23 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE,
       window = shiny::dialogViewer("manipulateWidget"),
       browser = shiny::browserViewer()
     )
+
+    ui <- mwModuleInput("ui")
+    server <- function(input, output, session, ...) {
+      controller <- shiny::callModule(mwModule, "ui")
+    }
+
     shiny::runGadget(ui, server, viewer = .viewer)
-  } else if (isRuntimeShiny) {
+  } else if (.runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
+    ui <- mwModuleInput("ui")
+    server <- function(input, output, session, ...) {
+      controller <- shiny::callModule(mwModule, "ui")
+    }
     shiny::shinyApp(ui = ui, server = server, options = list(width = .width, height = .height))
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the initial
     # widget to not block the R execution.
-    mwReturn(initWidgets, .return, controls$env$ind, dims$nrow, dims$ncol)
+    controller
   }
 }

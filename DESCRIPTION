@@ -21,7 +21,6 @@ Imports:
     miniUI,
     htmltools,
     htmlwidgets,
-    lazyeval,
     knitr,
     methods,
     tools,
