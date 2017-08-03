@@ -24,7 +24,7 @@ function select(e) {
   if (widgets) {
 	  for (var i = 0; i < widgets.length; i++) {
 		  container = document.getElementById(ids[i]);
-		  if (widgets[i] && wudgets[i].resize) {
+		  if (widgets[i] && widgets[i].resize) {
 		  HTMLWidgets.widgets[0].resize(container, container.clientWidth, container.clientHeight, widgets[i]);
 		  }
 	  }
