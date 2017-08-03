@@ -94,4 +94,23 @@ describe("manipulateWidget", {
     expect_equal(c$charts[[1]]$widgets[[1]], 16)
 
   })
+
+  it ("modifies a sharedInput when it is not dynamic", {
+    c <- manipulateWidget(
+      x2 + y,
+      x = mwSlider(0, 10, 5),
+      x2 = mwSharedValue(1),
+      x3 = mwSharedValue(x + x2),
+      y = mwSlider(0, x2, 0)
+    )
+    expect_equal(c$getParams("y")$max, 1)
+    expect_equal(c$charts[[1]]$widgets[[1]], 1)
+    c$setValue("x2", 8)
+    expect_equal(c$getValue("x2"), 8)
+    expect_equal(c$getValue("x3"), 13)
+    expect_equal(c$getParams("y")$max, 8)
+    expect_equal(c$charts[[1]]$widgets[[1]], 8)
+    c$setValue("x3", 10) # Dynamic shared input. Should not have any effect
+    expect_equal(c$getValue("x3"), 13)
+  })
 })

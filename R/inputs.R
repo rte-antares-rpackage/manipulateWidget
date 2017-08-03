@@ -559,13 +559,17 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
 #'
 #' @export
 #' @family controls
-mwSharedValue <- function(expr) {
+mwSharedValue <- function(expr = NULL) {
   params <- list(expr = substitute(expr))
+  params$dynamic <- is.language(params$expr)
+  if (!params$dynamic) value <- params$expr
+  else value <- NULL
   Input(
-    type = "sharedValue", value = NULL, label = NULL, params = params,
+    type = "sharedValue", value = value, label = NULL, params = params,
     display = FALSE,
     validFunc = function(x, params) {
-      params$expr
+      if(params$dynamic) params$expr
+      else x
     }
   )
 }

@@ -4,7 +4,7 @@
 \alias{mwSharedValue}
 \title{Shared Value}
 \usage{
-mwSharedValue(expr)
+mwSharedValue(expr = NULL)
 }
 \arguments{
 \item{expr}{Expression used to compute the value of the input.}
