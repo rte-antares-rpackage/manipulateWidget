@@ -295,7 +295,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
       browser = shiny::browserViewer()
     )
 
-    ui <- mwModuleInput("ui")
+    ui <- mwModuleInput("ui", height = "100%")
     server <- function(input, output, session, ...) {
       controller <- shiny::callModule(mwModule, "ui")
     }
@@ -303,7 +303,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
     shiny::runGadget(ui, server, viewer = .viewer)
   } else if (.runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
-    ui <- mwModuleInput("ui")
+    ui <- mwModuleInput("ui", height = "100%")
     server <- function(input, output, session, ...) {
       controller <- shiny::callModule(mwModule, "ui")
     }
