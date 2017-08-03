@@ -11,7 +11,8 @@ Input <- setRefClass(
   "Input",
   fields = c("type", "name", "idFunc", "label", "value", "display", "params", "env",
              "validFunc", "htmlFunc", "htmlUpdateFunc",
-             "lastParams", "changedParams", "valueHasChanged", "deps"),
+             "lastParams", "changedParams", "valueHasChanged",
+             "revDeps", "displayRevDeps"),
 
   methods = list(
     init = function(name, env) {
@@ -20,7 +21,8 @@ Input <- setRefClass(
       env <<- env
       valueHasChanged <<- FALSE
       changedParams <<- list()
-      deps <<- character()
+      revDeps <<- character()
+      displayRevDeps <<- character()
       if (emptyField(label) || is.null(label)) label <<- name
       if (emptyField(idFunc)) {
         idFunc <<- function(oid, name) paste(oid, name, sep = "_")

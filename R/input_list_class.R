@@ -1,8 +1,14 @@
+extractVarsFromExpr <- function(expr) {
+  f <- function() {}
+  body(f) <- expr
+  codetools::findGlobals(f, merge = FALSE)$variables
+}
+
 # Private reference class used to update value and params of a set of inputs
 # when the value of an input changes.
 InputList <- setRefClass(
   "InputList",
-  fields = c("inputs", "session", "names", "chartIds"),
+  fields = c("inputs", "session", "names", "chartIds", "initialized"),
   methods = list(
     initialize = function(inputs, session = NULL) {
       "args:
@@ -14,17 +20,26 @@ InputList <- setRefClass(
       names <<- sapply(inputList, function(x) x$name)
       chartIds <<- sapply(inputList, function(x) get(".id", envir = x$env))
       session <<- session
+      initialized <<- FALSE
 
       # Set dependencies
       for (input in inputList) {
         inputId <- input$getID()
-        revdeps <- getRevDeps(input)
-        for (d in revdeps) {
-          inputs[[d]]$deps <<- c(.self$inputs[[d]]$deps, inputId)
+        deps <- getDeps(input)
+        for (d in deps$params) {
+          inputs[[d]]$revDeps <<- c(.self$inputs[[d]]$revDeps, inputId)
+        }
+        for (d in deps$display) {
+          inputs[[d]]$displayRevDeps <<- c(.self$inputs[[d]]$displayRevDeps, inputId)
         }
       }
 
+      init()
+    },
+
+    init = function() {
       update()
+      initialized <<- TRUE
     },
 
     isShared = function(name) {
@@ -33,19 +48,32 @@ InputList <- setRefClass(
       any(chartIds[idx] == 0)
     },
 
-    isVisible = function(name, chartId = 1) {
-      i <- getInput(name, chartId)
+    isVisible = function(name, chartId = 1, inputId = NULL) {
+      i <- getInput(name, chartId, inputId)
       eval(i$display, envir = i$env)
     },
 
-    getRevDeps = function(input) {
-      deps <- c()
-      for (p in input$params) {
-        f <- function() {}
-        body(f) <- p
-        deps <- union(deps, codetools::findGlobals(f, merge = FALSE)$variables)
+    updateHTMLVisibility = function(name, chartId = 1, inputId = NULL) {
+      if (!is.null(session)) {
+        input <- getInput(name, chartId, inputId)
+        shiny::updateCheckboxInput(
+          session,
+          paste0(input$getID(), "_visible"),
+          value = eval(input$display, envir = input$env)
+        )
       }
-      names(inputs)[names %in% deps]
+    },
+
+    getDeps = function(input) {
+      deps <- lapply(input$params, extractVarsFromExpr)
+      deps <- do.call(c, deps)
+
+      displayDeps <- extractVarsFromExpr(input$display)
+
+      list(
+        params = names(inputs)[names %in% deps],
+        display = names(inputs)[names %in% displayDeps]
+      )
     },
 
     getInput = function(name, chartId = 1, inputId = NULL) {
@@ -72,16 +100,19 @@ InputList <- setRefClass(
     setValue = function(name, value, chartId = 1, inputId = NULL) {
       input <- getInput(name, chartId, inputId)
       res <- input$setValue(value)
-      updateDeps(input)
+      updateRevDeps(input)
       res
     },
 
-    updateDeps = function(input) {
-      for (inputId in input$deps) {
-        depInput <- getInput(inputId = inputId)
-        if(!isTRUE(all.equal(depInput$value, depInput$updateValue()))) {
-          updateDeps(depInput)
+    updateRevDeps = function(input) {
+      for (inputId in input$revDeps) {
+        revDepInput <- getInput(inputId = inputId)
+        if(!identical(revDepInput$value, revDepInput$updateValue())) {
+          updateRevDeps(revDepInput)
         }
+      }
+      for (inputId in input$displayRevDeps) {
+        updateHTMLVisibility(inputId = inputId)
       }
       updateHTML()
     },
@@ -103,11 +134,6 @@ InputList <- setRefClass(
     updateHTML = function() {
       if (!is.null(session)) {
         for (input in inputs) {
-          shiny::updateCheckboxInput(
-            session,
-            paste0(input$getID(), "_visible"),
-            value = eval(input$display, envir = input$env)
-          )
           input$updateHTML(session)
         }
       }
