@@ -199,10 +199,10 @@ MWController <- setRefClass(
     },
 
     getModuleUI = function(gadget = TRUE, saveBtn = TRUE, addBorder = !gadget) {
-      function(id, width = "100%", height = "400px") {
+      function(id, okBtn = gadget, width = "100%", height = "400px") {
         ns <- shiny::NS(id)
         mwUI(ns, uiSpec, nrow, ncol, outputFunc,
-             okBtn = gadget, updateBtn = !autoUpdate, saveBtn = saveBtn,
+             okBtn = okBtn, updateBtn = !autoUpdate, saveBtn = saveBtn,
              areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
              width = width, height = height)
       }
@@ -214,7 +214,7 @@ MWController <- setRefClass(
         controller$setShinySession(output, session)
         controller$renderShinyOutputs()
 
-        message("Click on the 'OK' button to return to the R session.")
+        # message("Click on the 'OK' button to return to the R session.")
 
         lapply(names(controller$inputList$inputs), function(id) {
           observe(controller$setValueById(id, value = input[[id]]))
