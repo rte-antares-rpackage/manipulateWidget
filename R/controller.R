@@ -197,11 +197,12 @@ MWController <- setRefClass(
     },
 
     getModuleUI = function(gadget = TRUE, saveBtn = TRUE, addBorder = !gadget) {
-      function(id) {
+      function(id, width = "100%", height = "400px") {
         ns <- shiny::NS(id)
         mwUI(ns, uiSpec, nrow, ncol, outputFunc,
              okBtn = gadget, updateBtn = !autoUpdate, saveBtn = saveBtn,
-             areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder)
+             areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
+             width = width, height = height)
       }
     },
 

@@ -10,12 +10,16 @@
 #' @param okBtn Should the OK Button be added to the UI ?
 #' @param saveBtn Should the Save Button be added to the UI ?
 #' @param updateBtn Should the updateBtn be added to the UI ? Currently unused.
+#' @param width, height	Must be a valid CSS unit (like "100%", "400px", "auto") or a number,
+#' which will be coerced to a string and have "px" appended. Default to "100%" & "400px"
 #'
 #' @return shiny tags
 #'
 #' @noRd
 mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
-                 okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE, areaBtns = TRUE, border = FALSE) {
+                 okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
+                 areaBtns = TRUE, border = FALSE,
+                 width = "100%", height = "400px") {
 
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
@@ -32,6 +36,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
   container <- fillPage(
     tags$div(
       class = class,
+      style = paste("width:", width, ";height:", height, ";"),
       fillRow(
         flex = c(NA, NA, 1),
         .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns),
