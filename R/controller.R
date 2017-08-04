@@ -92,6 +92,7 @@ MWController <- setRefClass(
     },
 
     setShinySession = function(output, session) {
+      catIfDebug("Set shiny session")
       session <<- session
       shinyOutput <<- output
       inputList$session <<- session
@@ -151,7 +152,8 @@ MWController <- setRefClass(
 
     updateChart = function(chartId = 1) {
       catIfDebug("Update chart", chartId)
-      charts[[chartId]] <<- eval(expr, envir = envs[[chartId]])
+      e <- new.env(parent = envs[[chartId]]) # User can set values in expr without messing environments
+      charts[[chartId]] <<- eval(expr, envir = e)
       if (useCombineWidgets) {
         charts[[chartId]] <<- combineWidgets(charts[[chartId]])
       }
@@ -240,10 +242,18 @@ MWController <- setRefClass(
         controller$setShinySession(output, session)
         controller$renderShinyOutputs()
 
-        # message("Click on the 'OK' button to return to the R session.")
+        reactiveValueList <- list(...)
+        print(names(reactiveValueList))
+        observe({
+          for (n in names(reactiveValueList)) {
+            controller$setValue(n, reactiveValueList[[n]]())
+          }
+        })
 
         lapply(names(controller$inputList$inputs), function(id) {
-          observe(controller$setValueById(id, value = input[[id]]))
+          if (controller$inputList$inputs[[id]]$type != "sharedValue") {
+            observe(controller$setValueById(id, value = input[[id]]))
+          }
         })
 
         observeEvent(input$.update, controller$updateCharts())

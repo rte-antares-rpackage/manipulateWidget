@@ -8,3 +8,4 @@ README_files
 ^\.travis\.yml$
 ^codecov\.yml$
 newUI
+^inst/examples
