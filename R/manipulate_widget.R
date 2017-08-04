@@ -257,13 +257,13 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   controller <- MWController(.expr, inputs, autoUpdate = !.updateBtn,
                            nrow = dims$nrow, ncol = dims$ncol,
                            returnFunc = .return)
-  controller$init()
-
-  mwModuleInput <- controller$getModuleUI(gadget = !isRuntimeShiny, saveBtn = .saveBtn)
-  mwModule <- controller$getModuleServer()
 
   if (.runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget
+    controller$init()
+    mwModuleInput <- controller$getModuleUI(gadget = TRUE, saveBtn = .saveBtn)
+    mwModule <- controller$getModuleServer()
+
     .viewer <- switch(
       .viewer,
       pane = shiny::paneViewer(),
@@ -279,6 +279,10 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
     shiny::runGadget(ui, server, viewer = .viewer)
   } else if (.runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
+    controller$init()
+    mwModuleInput <- controller$getModuleUI(gadget = FALSE, saveBtn = .saveBtn)
+    mwModule <- controller$getModuleServer()
+
     ui <- mwModuleInput("ui", height = "100%")
     server <- function(input, output, session, ...) {
       controller <- shiny::callModule(mwModule, "ui")

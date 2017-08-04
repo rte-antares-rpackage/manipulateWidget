@@ -73,6 +73,7 @@ MWController <- setRefClass(
 
     init = function() {
       if (!initialized) {
+        initialized <<- TRUE
         inputList$init()
         updateCharts()
         if (is.null(renderFunc) || is.null(outputFunc) || is.null(useCombineWidgets)) {
@@ -112,6 +113,7 @@ MWController <- setRefClass(
       "Update the value of a variable for a given chart."
       oldValue <- getValue(name, chartId)
       newValue <- inputList$setValue(name, value, chartId)
+      if (!initialized) return()
       if (autoUpdate && !isTRUE(all.equal(oldValue, newValue))) {
         if (inputList$isShared(name)) updateCharts()
         else updateChart(chartId)
@@ -121,6 +123,7 @@ MWController <- setRefClass(
     setValueById = function(id, value) {
       oldValue <- getValueById(id)
       newValue <- inputList$setValue(inputId = id, value = value)
+      if (!initialized) return()
       if (autoUpdate && !isTRUE(all.equal(oldValue, newValue))) {
         if (grepl("^shared_", id)) updateCharts()
         else {
@@ -268,5 +271,6 @@ cloneEnv <- function(env, parentEnv = parent.env(env)) {
 #'
 #' @export
 knit_print.MWController <- function(x, ...) {
+  x$init()
   knitr::knit_print(x$returnCharts(), ...)
 }
