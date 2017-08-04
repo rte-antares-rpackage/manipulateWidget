@@ -42,6 +42,8 @@ describe("MWController", {
     controller1$setValue("a", "test")
     expect_equal(controller1$getValue("a"), "test")
     expect_equal(controller2$getValue("a"), "a")
+    expect_true(controller2$initialized)
+    expect_true(controller2$inputList$initialized)
   })
 
   it("accesses parameters of a given input", {

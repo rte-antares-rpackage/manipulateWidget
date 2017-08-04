@@ -27,10 +27,10 @@ InputList <- setRefClass(
         inputId <- input$getID()
         deps <- getDeps(input)
         for (d in deps$params) {
-          inputs[[d]]$revDeps <<- c(.self$inputs[[d]]$revDeps, inputId)
+          inputs[[d]]$revDeps <<- union(.self$inputs[[d]]$revDeps, inputId)
         }
         for (d in deps$display) {
-          inputs[[d]]$displayRevDeps <<- c(.self$inputs[[d]]$displayRevDeps, inputId)
+          inputs[[d]]$displayRevDeps <<- union(.self$inputs[[d]]$displayRevDeps, inputId)
         }
       }
     },
@@ -57,6 +57,7 @@ InputList <- setRefClass(
     updateHTMLVisibility = function(name, chartId = 1, inputId = NULL) {
       if (!is.null(session)) {
         input <- getInput(name, chartId, inputId)
+        catIfDebug("Update visibility of", input$getID())
         shiny::updateCheckboxInput(
           session,
           paste0(input$getID(), "_visible"),
@@ -107,7 +108,6 @@ InputList <- setRefClass(
 
     updateRevDeps = function(input) {
       if (!initialized) return()
-
       for (inputId in input$revDeps) {
         revDepInput <- getInput(inputId = inputId)
         if(!identical(revDepInput$value, revDepInput$updateValue())) {

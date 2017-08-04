@@ -72,6 +72,7 @@ MWController <- setRefClass(
     },
 
     init = function() {
+      catIfDebug("Controller initialization")
       if (!initialized) {
         initialized <<- TRUE
         inputList$init()
@@ -213,9 +214,13 @@ MWController <- setRefClass(
         ),
         autoUpdate
       )
-      res$renderFunc <- renderFunc
       res$charts <- charts
+      res$outputFunc <- outputFunc
+      res$renderFunc <- renderFunc
       res$useCombineWidgets <- useCombineWidgets
+      res$initialized <- initialized
+      res$inputList$initialized <- initialized
+
       res
     },
 
