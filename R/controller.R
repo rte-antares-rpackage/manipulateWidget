@@ -48,7 +48,7 @@ MWController <- setRefClass(
   "MWController",
   fields = c("inputList", "uiSpec", "envs", "session", "shinyOutput", "expr", "ncharts", "charts",
              "autoUpdate", "renderFunc", "outputFunc", "useCombineWidgets", "nrow", "ncol",
-             "returnFunc"),
+             "returnFunc", "initialized"),
   methods = list(
 
     initialize = function(expr, inputs, autoUpdate = TRUE, nrow = NULL,
@@ -59,6 +59,7 @@ MWController <- setRefClass(
       ncharts <<- inputs$ncharts
       envs <<- inputs$envs$ind
       autoUpdate <<- autoUpdate
+      outputFunc <<- NULL
       renderFunc <<- NULL
       session <<- NULL
       shinyOutput <<- NULL
@@ -67,8 +68,25 @@ MWController <- setRefClass(
       ncol <<- ncol
       returnFunc <<- returnFunc
       charts <<- list()
+      initialized <<- FALSE
+    },
 
-      inputList$init()
+    init = function() {
+      if (!initialized) {
+        inputList$init()
+        updateCharts()
+        if (is.null(renderFunc) || is.null(outputFunc) || is.null(useCombineWidgets)) {
+          outputAndRender <- getOutputAndRenderFunc(charts[[1]])
+          renderFunc <<- outputAndRender$renderFunc
+          outputFunc <<- outputAndRender$outputFunc
+          useCombineWidgets <<- outputAndRender$useCombineWidgets
+          if (useCombineWidgets) {
+            charts <<- lapply(charts, combineWidgets)
+          }
+        }
+      }
+
+      return(.self)
     },
 
     setShinySession = function(output, session) {

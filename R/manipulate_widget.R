@@ -257,31 +257,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   controller <- MWController(.expr, inputs, autoUpdate = !.updateBtn,
                            nrow = dims$nrow, ncol = dims$ncol,
                            returnFunc = .return)
-  controller$updateCharts()
-
-  # Get shiny output and render functions
-  if (is(controller$charts[[1]], "htmlwidget")) {
-    cl <- class(controller$charts[[1]])[1]
-    pkg <- attr(controller$charts[[1]], "package")
-
-    renderFunName <- ls(getNamespace(pkg), pattern = "^render")
-    renderFunction <- getFromNamespace(renderFunName, pkg)
-
-    outputFunName <- ls(getNamespace(pkg), pattern = "Output$")
-    outputFunction <- getFromNamespace(outputFunName, pkg)
-    useCombineWidgets <- FALSE
-  } else {
-    renderFunction <- renderCombineWidgets
-    outputFunction <- combineWidgetsOutput
-    useCombineWidgets <- TRUE
-  }
-
-  controller$renderFunc <- renderFunction
-  controller$outputFunc <- outputFunction
-  if (useCombineWidgets) {
-    controller$useCombineWidgets <- TRUE
-    controller$charts <- lapply(controller$charts, combineWidgets)
-  }
+  controller$init()
 
   mwModuleInput <- controller$getModuleUI(gadget = !isRuntimeShiny, saveBtn = .saveBtn)
   mwModule <- controller$getModuleServer()
