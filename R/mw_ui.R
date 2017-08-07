@@ -51,11 +51,12 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
 
 .uiInputs <- function(ns, inputs) {
    inputs <- c(list(inputs$inputs$shared), inputs$inputs$ind)
-   inputs <- unname(lapply(inputs, function(x) {
+   ids <- ns(c("mw-shared-inputs", paste0("mw-ind-inputs-", 1:(length(inputs) - 1))))
+   inputs <- mapply(function(x, id) {
      if (length(x) == 0) return(NULL)
      content <- lapply(x, function(i) i$getHTML(ns))
-     tags$div(class = "mw-inputs", shiny::tagList(content))
-   }))
+     tags$div(class = "mw-inputs", id = id, shiny::tagList(content))
+   }, x = inputs, id = ids, USE.NAMES = FALSE, SIMPLIFY = FALSE)
 
    inputs$class <- "mw-input-container"
    do.call(tags$div, inputs)
@@ -89,6 +90,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
   if (settingsBtn) {
     settingsBtn <- tags$div(
       class = "mw-btn mw-btn-settings",
+      onclick = sprintf("select(this, '%s')", ns("mw-shared-inputs")),
       tags$div(
         class = "bt1",
         icon("gears")
@@ -99,7 +101,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
   }
 
   if (areaBtns && ncharts > 1) {
-    container <- tagAppendChild(container, .uiChartBtns(ncharts, nrow, ncol))
+    container <- tagAppendChild(container, .uiChartBtns(ns, ncharts, nrow, ncol))
   }
 
   if (updateBtn) {
@@ -117,7 +119,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
 
   if (saveBtn) {
     bottom_px <- ifelse(okBtn, "bottom: 80px;", "bottom: 30px;")
-    saveBtnInput <- shiny::downloadButton(ns("save"), label = "", class = "mw-btn mw-btn-ok",
+    saveBtnInput <- shiny::downloadButton(ns("save"), label = "", class = "mw-btn mw-btn-save",
                                      style = bottom_px)
     container <- tagAppendChild(container, saveBtnInput)
   }
@@ -125,10 +127,12 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
   container
 }
 
-.uiChartBtns <- function(ncharts, nrow, ncol) {
+.uiChartBtns <- function(ns, ncharts, nrow, ncol) {
+  ids <- ns(paste0("mw-ind-inputs-", seq_len(ncharts)))
   btns <- lapply(seq_len(ncharts), function(i) {
     tags$div(
       class = "mw-btn mw-btn-area",
+      onclick = sprintf("select(this,'%s')", ids[i]),
       .uiChartIcon(i, nrow, ncol),
       tags$div(class="right-arrow")
     )

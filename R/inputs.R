@@ -89,7 +89,8 @@ mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
     type = "slider", value = value, label = label, params = params,
     display = substitute(.display),
     validFunc = function(x, params) {
-      pmin(pmax(params$min, x), params$max)
+      if (is.null(x) || is.na(x)) return(c(params$min, params$max))
+      pmin(pmax(params$min, x, na.rm = TRUE), params$max, na.rm = TRUE)
     },
     htmlFunc = htmlFuncFactory(function(...) {
       tags$div(style = "padding:0 5px;", shiny::sliderInput(...))

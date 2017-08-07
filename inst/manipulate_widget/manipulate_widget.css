@@ -53,7 +53,7 @@
   background-color: #2b7be2;
 }
 
-.bt1 {
+.bt1, .btn.bt1 {
   color: #4e9cff;
   text-align: center;
   vertical-align: bottom;
@@ -106,8 +106,8 @@
 }
 
 
-/* OK button */
-.mw-btn-ok {
+/* OK and save buttons button */
+.btn.mw-btn-ok, .btn.mw-btn-save {
   margin: 0 3px;
   width: 44px;
   height: 44px;
@@ -124,7 +124,7 @@
   padding:0;
 }
 
-.mw-btn-ok:hover, .mw-btn-ok:active, .mw-btn-ok:focus  {
+.btn.mw-btn-ok:hover, .btn.mw-btn-ok:active, .btn.mw-btn-ok:focus, .btn.mw-btn-save:hover, .btn.mw-btn-save:focus, .btn.mw-btn-save:active  {
   color: white;
   background-color: #0b946c;
 }
@@ -177,6 +177,14 @@ html, body {
 
 .with-border {
   padding: 30px 0;
+}
+
+.without-ok .mw-btn-ok {
+  display: none;
+}
+
+.without-save .mw-btn-save {
+  display: none;
 }
 
 .with-border > div {
