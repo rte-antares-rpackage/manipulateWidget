@@ -23,7 +23,7 @@ function select(el, id) {
   if (widgets) {
 	  for (var i = 0; i < widgets.length; i++) {
 		  container = document.getElementById(ids[i]);
-		  if (widgets[i] && widgets[i].resize) {
+		  if (widgets[i]) {
 		  HTMLWidgets.widgets[0].resize(container, container.clientWidth, container.clientHeight, widgets[i]);
 		  }
 	  }
