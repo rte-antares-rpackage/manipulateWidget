@@ -1,5 +1,20 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
+# manipulateWidget 0.8.0 (2017-08-08)
+
+## New features
+* UI has now a button to save the current chart in an HTML file (thanks to Benoit Thieurmel).`manipulateWidget`gains a new parameter ".saveBtn" to show or hide this button.
+* `manipulateWidget()` has a new parameter ".runApp". If it is false, then the function returns an object of class `MWController` that can be modified using command line instructions. This is useful to write tests for UIs created with `manipulateWidget()`.
+* `manipulateWidget` interfaces can now be included in shiny applications thanks to the two new functions `mwModule()` and `mwModuleUI()`.
+* A new virtual input called `mwSharedValue` has been introduced. It can be used to avoid repeating the same computations when inputs and output use a common intermediary value. It can also be used when
+`manipulateWidget()` is used in a shiny application to send data from the main application to the module.
+* `manipulateWidget()` now only updates the dependant inputs and outputs when user changes the value of an input. This can lead to important performance improvement in complicated applications.
+
+## Bugfixes
+* When a UI contained dynamic inputs, output was sometimes updated before inputs, which could lead to some errors.
+* Opening the same application in two browsers (or tabs) resulted in strange results. 
+
+
 # manipulateWidget 0.7.0 (2017-06-08)
 
 ## Breaking changes
