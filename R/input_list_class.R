@@ -126,8 +126,7 @@ InputList <- setRefClass(
       while(TRUE) {
         n <- n + 1
         valueHasChanged <- sapply(inputs, function(x) {
-          #if (x$type == "group") return(FALSE)
-          !isTRUE(all.equal(x$value, x$updateValue()))
+          !identical(x$value, x$updateValue())
         })
         if (all(!valueHasChanged) | n > 10) break
       }

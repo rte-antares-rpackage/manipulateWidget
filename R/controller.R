@@ -116,7 +116,7 @@ MWController <- setRefClass(
       oldValue <- getValue(name, chartId)
       newValue <- inputList$setValue(name, value, chartId)
       if (!initialized) return()
-      if (autoUpdate && !isTRUE(all.equal(oldValue, newValue))) {
+      if (autoUpdate && !identical(oldValue, newValue)) {
         if (inputList$isShared(name)) updateCharts()
         else updateChart(chartId)
       }
@@ -126,7 +126,7 @@ MWController <- setRefClass(
       oldValue <- getValueById(id)
       newValue <- inputList$setValue(inputId = id, value = value)
       if (!initialized) return()
-      if (autoUpdate && !isTRUE(all.equal(oldValue, newValue))) {
+      if (autoUpdate && !identical(oldValue, newValue)) {
         if (grepl("^shared_", id)) updateCharts()
         else {
           chartId <- get(".id", envir = inputList$inputs[[id]]$env)

@@ -49,7 +49,7 @@ Input <- setRefClass(
       catIfDebug("Update value of ", getID())
       oldValue <- value
       if (!emptyField(validFunc)) value <<- validFunc(value, getParams())
-      if (!isTRUE(all.equal(value, oldValue))) {
+      if (!identical(value, oldValue)) {
         valueHasChanged <<- TRUE
         assign(name, value, envir = env)
       }
@@ -63,7 +63,7 @@ Input <- setRefClass(
 
       for (n in names(lastParams)) {
         if (!is.null(oldParams[[n]]) &&
-            !isTRUE(all.equal(lastParams[[n]], oldParams[[n]]))) {
+            !identical(lastParams[[n]], oldParams[[n]])) {
           changedParams[[n]] <<- lastParams[[n]]
         }
       }
