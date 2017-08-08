@@ -1,3 +1,8 @@
+library(dygraphs)
+library(plotly)
+library(shiny)
+
+
 mydata <- data.frame(
   year = 2000+1:100,
   series1 = rnorm(100),
@@ -11,7 +16,7 @@ c <- manipulateWidget(
   series = mwSelect(c("series1", "series2", "series3")),
   title = mwText("Fictive time series"),
   .compare = c("title", "series"), .runApp = FALSE
-)$init()
+)
 
 dt <- data.frame (
   x = sort(runif(100)),
@@ -30,33 +35,23 @@ c2 <- manipulateWidget(
   combineWidgets(myPlot(type, lwd)),
   type = mwSelect(c("points", "lines"), "points"),
   lwd = mwSlider(1, 10, 1, .display = type == "lines"), .runApp = FALSE
-)$init()
-
-mwModuleInput <- c$getModuleUI(gadget = FALSE, saveBtn = TRUE)
-mwModule <- c$getModuleServer()
-
-mwModuleInput2 <- c2$getModuleUI(gadget = FALSE, saveBtn = TRUE)
-mwModule2 <- c2$getModuleServer()
-
-ui <- fillPage(
-  fillRow(
-    tags$div(mwModuleInput("pane1"), style = 'height:100%;'),
-    tags$div(mwModuleInput2("pane2"), style = 'height:100%;')
-  )
 )
 
-ui <- navbarPage("antaresViz",
-                 tabPanel("prodStack",
-                          tags$div(mwModuleInput("pane1"), style = 'height:800px;')
-                 ),
-                 tabPanel("exchangesStack",
-                          tags$div(mwModuleInput2("pane2"), style = 'height:800px;')
-                 ),
-                 tabPanel("Table")
+ui <- navbarPage(
+  "Test manipulateWidget",
+   tabPanel(
+     "Module 1",
+     mwModuleUI("mod1", height = "800px")
+   ),
+   tabPanel(
+     "Module 2",
+     mwModuleUI("mod2", height = "800px")
+   )
 )
+
 server <- function(input, output, session) {
-  callModule(mwModule, "pane1")
-  callModule(mwModule2, "pane2")
+  mwModule("mod1", c)
+  mwModule("mod2", c2)
 }
 
 shinyApp(ui, server)

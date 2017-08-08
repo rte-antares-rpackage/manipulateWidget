@@ -38,7 +38,7 @@
   border-color: transparent transparent transparent #2b7be2;
 }
 
-.active .right-arrow {
+.active>.right-arrow {
   display: block;
 }
 

@@ -1,11 +1,3 @@
-/*$( document ).ready(function() {
-    $(".mw-btn-settings,.mw-btn-area")
-	  .click(select)
-	  .each(function(i) {
-		$(this).data("index", i);
-	  });
-});
-*/
 function select(el, id) {
   el = $(el);
   var active = el.hasClass("active");
