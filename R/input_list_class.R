@@ -37,7 +37,7 @@ InputList <- setRefClass(
 
     init = function() {
       if (!initialized) {
-        update()
+        update(forceDeps = TRUE)
         initialized <<- TRUE
       }
       return(.self)
@@ -106,8 +106,8 @@ InputList <- setRefClass(
       res
     },
 
-    updateRevDeps = function(input) {
-      if (!initialized) return()
+    updateRevDeps = function(input, force = FALSE) {
+      if (!initialized && !force) return()
       for (inputId in input$revDeps) {
         revDepInput <- getInput(inputId = inputId)
         if(!identical(revDepInput$value, revDepInput$updateValue())) {
@@ -120,15 +120,10 @@ InputList <- setRefClass(
       updateHTML()
     },
 
-    update = function() {
+    update = function(forceDeps = FALSE) {
       "Update all inputs"
-      n <- 0
-      while(TRUE) {
-        n <- n + 1
-        valueHasChanged <- sapply(inputs, function(x) {
-          !identical(x$value, x$updateValue())
-        })
-        if (all(!valueHasChanged) | n > 10) break
+      for (input in inputs) {
+        if (!identical(input$value, input$updateValue())) updateRevDeps(input, force = forceDeps)
       }
       updateHTML()
     },
