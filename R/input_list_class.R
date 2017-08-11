@@ -101,8 +101,9 @@ InputList <- setRefClass(
 
     setValue = function(name, value, chartId = 1, inputId = NULL) {
       input <- getInput(name, chartId, inputId)
+      oldValue <- input$value
       res <- input$setValue(value)
-      updateRevDeps(input)
+      if (!identical(oldValue, res)) updateRevDeps(input)
       res
     },
 
