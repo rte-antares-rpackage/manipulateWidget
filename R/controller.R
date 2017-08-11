@@ -337,3 +337,20 @@ knit_print.MWController <- function(x, ...) {
   x$init()
   knitr::knit_print(x$returnCharts(), ...)
 }
+
+#' summary method for MWController object
+#'
+#' @param object MWController object
+#' @param ... Not use
+#'
+#' @export
+summary.MWController <- function(object, ...) {
+  cat("List of inputs : \n\n")
+  sapply(names(object$inputList$inputs), function(X){
+    cat(paste0("Input : ", X, "\n"))
+  })
+  cat(paste0("\nNumber of chart(s) : ", object$ncharts, "\n"))
+  cat(paste0("Number of row(s) : ", object$nrow, "\n"))
+  cat(paste0("Number of column(s) : ", object$ncol, "\n"))
+}
+
