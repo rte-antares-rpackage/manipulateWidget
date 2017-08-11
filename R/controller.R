@@ -173,6 +173,9 @@ MWController <- setRefClass(
     },
 
     show = function() {
+      if (!initialized) {
+        message("Nothing to display because controller has not been initialized. Use 'ctrl$init()' where 'ctrl' is the variable created with manipulateWidget()")
+      }
       print(returnCharts())
     },
 
