@@ -348,12 +348,32 @@ knit_print.MWController <- function(x, ...) {
 #'
 #' @export
 summary.MWController <- function(object, ...) {
-  cat("List of inputs : \n\n")
-  sapply(names(object$inputList$inputs), function(X){
-    cat(paste0("Input : ", X, "\n"))
+  cat("Initialized         :", object$initialized, "\n")
+  cat("Number of chart(s)  :", object$ncharts, "\n")
+  cat("Number of row(s)    :", object$nrow, "\n")
+  cat("Number of column(s) :", object$ncol, "\n")
+  cat("\nList of inputs : \n\n")
+  infos <- lapply(names(object$inputList$inputs), function(n){
+    input <- object$inputList$inputs[[n]]
+    if (is.atomic(input$value)) {
+      if (is.null(input$value)) value <- "NULL"
+      else if (length(input$value) == 0) value <- ""
+      else value <- paste(input$value, collapse = ", ")
+    } else {
+      value <- sprintf("%s object", class(input$value[1]))
+    }
+
+    chartId <- as.character(get(".id", envir = input$env))
+    if (chartId == "0") chartId <- "shared"
+
+    visible <- object$inputList$isVisible(inputId = n)
+
+    data.frame(inputId = n, type = input$type, variable = input$name,
+               chart = chartId, value = value, visible = visible,
+               stringsAsFactors = FALSE)
   })
-  cat(paste0("\nNumber of chart(s) : ", object$ncharts, "\n"))
-  cat(paste0("Number of row(s) : ", object$nrow, "\n"))
-  cat(paste0("Number of column(s) : ", object$ncol, "\n"))
+  infos$stringsAsFactors <- FALSE
+  infos <- do.call(rbind, infos)
+  print(infos)
 }
 
