@@ -79,3 +79,24 @@ describe("MWController", {
     expect_equal(controller$getValue("y"), 3)
   })
 })
+
+describe("summary.MWController", {
+  it("prints information about controller", {
+    controller <- manipulateWidget(
+      d$value,
+      a = mwSelect(c("a", "b", "c")),
+      b = mwSelect(c("a", "b", "c"), "b"),
+      c = mwSelect(c("a", "b", "c"), c("a", "b"), multiple = TRUE),
+      d = mwSharedValue(data.frame(value = 1)),
+      .runApp = FALSE
+    )
+    expect_output(summary(controller), "List of inputs")
+    # Indicates NULL values
+    expect_output(summary(controller), "NULL")
+    # paste values if multiple values
+    expect_output(summary(controller), "a, b")
+    # for complicated objects, indicates the class of object
+    controller$init()
+    expect_output(summary(controller), "data.frame")
+  })
+})

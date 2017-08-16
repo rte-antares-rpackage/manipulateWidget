@@ -88,7 +88,7 @@ MWController <- setRefClass(
         initialized <<- TRUE
       }
 
-      return(.self)
+      invisible(.self)
     },
 
     setShinySession = function(output, session) {
@@ -360,7 +360,7 @@ summary.MWController <- function(object, ...) {
       else if (length(input$value) == 0) value <- ""
       else value <- paste(input$value, collapse = ", ")
     } else {
-      value <- sprintf("%s object", class(input$value[1]))
+      value <- sprintf("<%s>", class(input$value[1]))
     }
 
     chartId <- as.character(get(".id", envir = input$env))
