@@ -232,6 +232,12 @@ MWController <- setRefClass(
         init()
         setShinySession(output, session)
         output$ui <- renderUI(getModuleUI()(ns, height = "100%"))
+        lapply(inputList$inputs, function(input) {
+          if (input$type == "select" && identical(input$lastParams$multiple, TRUE)) {
+            input$valueHasChanged <- TRUE
+            input$updateHTML(session)
+          }
+        })
         if (autoUpdate) renderShinyOutputs()
       }, error = function(e) {catIfDebug("Initialization error"); print(e)})
     },
