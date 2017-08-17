@@ -26,6 +26,17 @@ test_input(
   list(1, 5, NULL, 3:5),
   list(1, integer(0), integer(0), 3:4)
 )
+# Select where choices have distinct label and values
+test_input(
+  mwSelect(list(a = 1, b = 2)),
+  list(1, 2, 5, NULL),
+  list(1, 2, 1, 1)
+)
+test_input(
+  mwSelect(list(a = 1, b = 2), multiple = TRUE),
+  list(1, 2, 5, NULL, 1:3),
+  list(1, 2, integer(0), integer(0), 1:2)
+)
 
 # Checkbox
 test_input(
@@ -36,6 +47,11 @@ test_input(
 
 # Radio buttons
 test_input(mwRadio(1:4), list(1, 2, 5, NULL), list(1, 2, 1, 1))
+test_input(
+  mwRadio(list(a = 1, b = 2)),
+  list(1, 2, 5, NULL),
+  list(1, 2, 1, 1)
+)
 
 # Date picker
 test_input(
@@ -70,6 +86,11 @@ test_input(
   mwCheckboxGroup(1:4),
   list(1, 5, NULL, 3:5),
   list(1, integer(0), integer(0), 3:4)
+)
+test_input(
+  mwCheckboxGroup(list(a = 1, b = 2)),
+  list(1, 2, 5, NULL, 1:3),
+  list(1, 2, integer(0), integer(0), 1:2)
 )
 
 # Groups of input

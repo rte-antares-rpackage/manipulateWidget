@@ -274,10 +274,10 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
     type = "select", value = value, label = label, params = params,
     display = substitute(.display),
     validFunc = function(x, params) {
-      x <- intersect(x, params$choices)
+      x <- intersect(x, unlist(params$choices))
       if (params$multiple) return(x)
       else if (length(x) > 0) return(x[1])
-      else return(params$choices[1])
+      else return(params$choices[[1]])
     },
     htmlFunc = htmlFuncFactory(shiny::selectInput, "selected"),
     htmlUpdateFunc = changeValueParam(shiny::updateSelectInput, "selected")
@@ -363,7 +363,7 @@ mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
     display = substitute(.display),
     validFunc = function(x, params) {
       if (length(params$choices) == 0) return(NULL)
-      if (is.null(x) || !x %in% params$choices) return(params$choices[[1]])
+      if (is.null(x) || !x %in% unlist(params$choices)) return(params$choices[[1]])
       x
     },
     htmlFunc = htmlFuncFactory(shiny::radioButtons, valueArgName = "selected"),
@@ -510,7 +510,7 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
     type = "checkboxGroup", value = value, label = label, params = params,
     display = substitute(.display),
     validFunc = function(x, params) {
-      intersect(x, params$choices)
+      intersect(x, unlist(params$choices))
     },
     htmlFunc = htmlFuncFactory(shiny::checkboxGroupInput, "selected"),
     htmlUpdateFunc = changeValueParam(shiny::updateCheckboxGroupInput, "selected")
