@@ -152,14 +152,12 @@ MWController <- setRefClass(
 
     updateChart = function(chartId = 1) {
       catIfDebug("Update chart", chartId)
-      try({
-        e <- new.env(parent = envs[[chartId]]) # User can set values in expr without messing environments
-        charts[[chartId]] <<- eval(expr, envir = e)
-        if (useCombineWidgets) {
-          charts[[chartId]] <<- combineWidgets(charts[[chartId]])
-        }
-        renderShinyOutput(chartId)
-      })
+      e <- new.env(parent = envs[[chartId]]) # User can set values in expr without messing environments
+      charts[[chartId]] <<- eval(expr, envir = e)
+      if (useCombineWidgets) {
+        charts[[chartId]] <<- combineWidgets(charts[[chartId]])
+      }
+      renderShinyOutput(chartId)
     },
 
     returnCharts = function() {
@@ -232,7 +230,16 @@ MWController <- setRefClass(
         init()
         setShinySession(output, session)
         output$ui <- renderUI(getModuleUI()(ns, height = "100%"))
+
         lapply(inputList$inputs, function(input) {
+          # Update input visibility
+          catIfDebug("Update visibility of", input$getID())
+          shiny::updateCheckboxInput(
+            session,
+            paste0(input$getID(), "_visible"),
+            value = eval(input$display, envir = input$env)
+          )
+          # Hack to fix https://github.com/rstudio/shiny/issues/1490
           if (input$type == "select" && identical(input$lastParams$multiple, TRUE)) {
             input$valueHasChanged <- TRUE
             input$updateHTML(session)
