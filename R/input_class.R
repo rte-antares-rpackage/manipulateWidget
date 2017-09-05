@@ -133,9 +133,12 @@ Input <- setRefClass(
       gsub("[^a-zA-Z0-9]", "_", idFunc(get(".output", envir = env), name))
     },
 
-    setValue = function(newValue) {
+    setValue = function(newValue, reactive = FALSE) {
       "Modify value of the input. If newValue is invalid, it sets a valid value"
       catIfDebug("Set value of ", getID())
+      if(reactive & type == "sharedValue"){
+        params$dynamic <<- FALSE
+      }
       if (!emptyField(validFunc)) value <<- validFunc(evalValue(newValue, env), getParams())
       assign(name, value, envir = env)
       value

@@ -111,10 +111,10 @@ MWController <- setRefClass(
       inputList$getValue(inputId = id)
     },
 
-    setValue = function(name, value, chartId = 1) {
+    setValue = function(name, value, chartId = 1, reactive = FALSE) {
       "Update the value of a variable for a given chart."
       oldValue <- getValue(name, chartId)
-      newValue <- inputList$setValue(name, value, chartId)
+      newValue <- inputList$setValue(name, value, chartId, reactive = reactive)
       if (!initialized) return()
       if (autoUpdate && !identical(oldValue, newValue)) {
         if (inputList$isShared(name)) updateCharts()
@@ -257,7 +257,7 @@ MWController <- setRefClass(
 
         observe({
           for (n in names(reactiveValueList)) {
-            controller$setValue(n, reactiveValueList[[n]]())
+            controller$setValue(n, reactiveValueList[[n]](), reactive = TRUE)
           }
           controller$render(output, session)
         })
