@@ -1,3 +1,6 @@
+require(manipulateWidget)
+require(dygraphs)
+
 ui <- fillPage(
   fillRow(
     flex = c(NA, 1),
@@ -9,6 +12,7 @@ ui <- fillPage(
   )
 )
 
+range = 2001
 server <- function(input, output, session) {
   mydata <- data.frame(
     year = 2000+1:100,
@@ -21,7 +25,7 @@ server <- function(input, output, session) {
     {
       dygraph(mydata[range[1]:range[2] - 2000, c("year", series)], main = title)
     },
-    range = mwSlider(2001, 2100, c(2001, 2050)),
+    range = mwSlider(range, 2100, c(2010, 2050)),
     series = mwSharedValue(),
     title = mwSharedValue(), .runApp = FALSE,
     .compare = "range"
