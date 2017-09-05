@@ -18,7 +18,7 @@ controlValueAndParams <- function(value, params, name, env){
         assign(new_name, value_name, envir = env)
 
         # modify expr
-        char_call <- deparse(value)
+        char_call <- paste0(deparse(value), collapse = "\n")
 
         m <- gregexpr(paste0("((_.)[[:punct:]]|[[:space:]]|^){1}(",
                              name,
