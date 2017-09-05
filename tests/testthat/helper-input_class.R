@@ -7,7 +7,11 @@ test_input <- function(input, values = NULL, expectedValues = NULL, name = "myIn
       expect_initialized(input)
       expect_equal(input$env, env)
       expect_equal(input$label, name)
-      expect_equal(input$value, get(name, envir = env))
+      if(!"call" %in% class(input$value)){
+        expect_equal(input$value, get(name, envir = env))
+      } else {
+        expect_equal(evalValue(input$value, parent.frame()), get(name, envir = env))
+      }
       expect_is(input$params, "list")
     })
 

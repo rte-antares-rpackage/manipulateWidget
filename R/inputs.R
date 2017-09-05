@@ -84,7 +84,7 @@ mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
   params$min <- substitute(min)
   params$max <- substitute(max)
-
+  value <- substitute(value)
   Input(
     type = "slider", value = value, label = label, params = params,
     display = substitute(.display),
@@ -125,6 +125,7 @@ mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
 #' @family controls
 mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
+  value <- substitute(value)
   Input(
     type = "text", value = value, label = label, params = params,
     display = substitute(.display),
@@ -164,6 +165,7 @@ mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
 #' @family controls
 mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
+  value <- substitute(value)
   Input(
     type = "numeric", value = value, label = label, params = params,
     display = substitute(.display),
@@ -207,6 +209,7 @@ mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
 #' @family controls
 mwPassword <- function(value = "", label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
+  value <- substitute(value)
   Input(
     type = "password", value = value, label = label, params = params,
     display = substitute(.display),
@@ -269,7 +272,7 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
   params <- dotsToExpr()
   params$choices <- substitute(choices)
   params$multiple <- substitute(multiple)
-
+  value <- substitute(value)
   Input(
     type = "select", value = value, label = label, params = params,
     display = substitute(.display),
@@ -312,6 +315,7 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
 #' @family controls
 mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
+  value <- substitute(value)
   Input(
     type = "checkbox", value = value, label = label, params = params,
     display = substitute(.display),
@@ -358,6 +362,7 @@ mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
 mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
   params$choices <- substitute(choices)
+  value <- substitute(value)
   Input(
     type = "radio", value = value, label = label, params = params,
     display = substitute(.display),
@@ -397,6 +402,7 @@ mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
 #' @family controls
 mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
+  value <- substitute(value)
   Input(
     type = "date", value = value, label = label, params = params,
     display = substitute(.display),
@@ -439,7 +445,9 @@ mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
 #' @family controls
 mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...,
                         .display = TRUE) {
+
   params <- dotsToExpr()
+  value <- substitute(value)
   Input(
     type = "dateRange", value = value, label = label, params = params,
     display = substitute(.display),
@@ -447,9 +455,18 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
       if (length(x) == 0) x <- c(Sys.Date(), Sys.Date())
       else if (length(x) == 1) x <-  c(x, Sys.Date())
       x <- as.Date(x)
-      if (!is.null(params$min)) params$min <- as.Date(params$min)
-      if (!is.null(params$max)) params$max <- as.Date(params$max)
-
+      if (!is.null(params$min)) {
+        params$min <- as.Date(params$min)
+        if(x[1] == Sys.Date()){
+          x[1] <- params$min
+        }
+      }
+      if (!is.null(params$max)) {
+        params$max <- as.Date(params$max)
+        if(x[2] == Sys.Date()){
+          x[2] <- params$max
+        }
+      }
       x <- sapply(x, function(d) min(max(d, params$min), params$max))
       as.Date(x, origin = "1970-01-01")
     },
@@ -505,7 +522,7 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
 mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
   params$choices <- substitute(choices)
-
+  value <- substitute(value)
   Input(
     type = "checkboxGroup", value = value, label = label, params = params,
     display = substitute(.display),

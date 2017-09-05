@@ -373,7 +373,14 @@ summary.MWController <- function(object, ...) {
       else if (length(input$value) == 0) value <- ""
       else value <- paste(input$value, collapse = ", ")
     } else {
-      value <- sprintf("<%s>", class(input$value[1]))
+      if(is.call(input$value) | is.name(input$value)){
+        value <- evalValue(input$value, parent.frame())
+        if (is.null(value)) value <- sprintf("<%s>", class(input$value[1]))
+        else if (length(value) == 0) value <- ""
+        else value <- paste(value, collapse = ", ")
+      } else {
+        value <- sprintf("<%s>", class(input$value[1]))
+      }
     }
 
     chartId <- as.character(get(".id", envir = input$env))
