@@ -586,8 +586,12 @@ mwSharedValue <- function(expr = NULL) {
     type = "sharedValue", value = value, label = NULL, params = params,
     display = FALSE,
     validFunc = function(x, params) {
-      if(params$dynamic) params$expr
-      else x
+      if(is.null(x)){
+        if(params$dynamic) params$expr
+        else x
+      } else {
+        x
+      }
     }
   )
 }
