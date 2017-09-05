@@ -27,11 +27,17 @@ server <- function(input, output, session) {
     },
     range = mwSlider(range, 2100, c(2010, 2050)),
     series = mwSharedValue(),
-    title = mwSharedValue(), .runApp = FALSE,
+    title = mwSharedValue(
+      {"init"}
+    ), .runApp = FALSE,
     .compare = "range"
   )
+
+  titre <- reactive({
+    input$title
+  })
   #
-  mwModule("ui", c, title = reactive(input$title), series = reactive(input$series))
+  mwModule("ui", c, title = titre, series = reactive(input$series))
 }
 
 shinyApp(ui, server)
