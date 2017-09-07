@@ -57,7 +57,7 @@ MWController <- setRefClass(
       inputList <<- inputs$inputList
       uiSpec <<- inputs
       ncharts <<- inputs$ncharts
-      envs <<- inputs$envs$ind
+      envs <<- inputs$envs
       autoUpdate <<- autoUpdate
       outputFunc <<- NULL
       renderFunc <<- NULL
@@ -96,10 +96,13 @@ MWController <- setRefClass(
       session <<- session
       shinyOutput <<- output
       inputList$session <<- session
-      for (env in envs) {
+      for (env in envs$ind) {
         assign(".initial", FALSE, envir = env)
         assign(".session", session, envir = env)
       }
+      # also on shared env
+      assign(".initial", FALSE, envir = envs$shared)
+      assign(".session", session, envir = envs$shared)
     },
 
     getValue = function(name, chartId = 1) {
@@ -152,7 +155,7 @@ MWController <- setRefClass(
 
     updateChart = function(chartId = 1) {
       catIfDebug("Update chart", chartId)
-      e <- new.env(parent = envs[[chartId]]) # User can set values in expr without messing environments
+      e <- new.env(parent = envs$ind[[chartId]]) # User can set values in expr without messing environments
       charts[[chartId]] <<- eval(expr, envir = e)
       if (useCombineWidgets) {
         charts[[chartId]] <<- combineWidgets(charts[[chartId]])
@@ -167,7 +170,7 @@ MWController <- setRefClass(
       } else {
         finalWidget <- combineWidgets(list = charts, nrow = nrow, ncol = ncol)
       }
-      returnFunc(finalWidget, envs)
+      returnFunc(finalWidget, envs$ind)
     },
 
     show = function() {
@@ -186,7 +189,7 @@ MWController <- setRefClass(
       if (!is.null(renderFunc) & !is.null(shinyOutput) &
           is(charts[[chartId]], "htmlwidget")) {
         catIfDebug("Render shiny output")
-        outputId <- get(".output", envir = envs[[chartId]])
+        outputId <- get(".output", envir = envs$ind[[chartId]])
         shinyOutput[[outputId]] <<- renderFunc(charts[[chartId]])
       }
     },
