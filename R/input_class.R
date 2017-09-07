@@ -203,6 +203,9 @@ Input <- setRefClass(
         catIfDebug("Update HTML of ", getID(), "\n")
         htmlParams <- changedParams
         if (valueHasChanged) htmlParams$value <- value
+        else if(length(changedParams) > 0){
+          htmlParams$value <- validFunc(value, getParams())
+        }
         htmlParams$session <- session
         htmlParams$inputId <- getID()
         do.call(htmlUpdateFunc, htmlParams)
