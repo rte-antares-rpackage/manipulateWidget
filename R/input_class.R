@@ -151,9 +151,13 @@ Input <- setRefClass(
 
       if (!emptyField(validFunc)){
         if(is.call(value_expr) | is.name(value_expr)){
-          value <<- validFunc(evalValue(value_expr, env), getParams())
+          tmp_value <- evalValue(value_expr, env)
+          if(is.null(tmp_value) & !is.call(oldValue) & !is.name(oldValue)) tmp_value <- oldValue
+          value <<- validFunc(tmp_value, getParams())
         } else {
-          value <<- validFunc(evalValue(value, env), getParams())
+          tmp_value <- evalValue(value, env)
+          if(is.null(tmp_value) & !is.call(oldValue) & !is.name(oldValue)) tmp_value <- oldValue
+          value <<- validFunc(tmp_value, getParams())
         }
       }
       if (!identical(value, oldValue)) {
