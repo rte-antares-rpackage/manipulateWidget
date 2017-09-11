@@ -7,7 +7,7 @@
 #' @return a htmlwidget
 #' @noRd
 onDone <- function(controller, stopApp = TRUE) {
-  for (env in controller$envs) {
+  for (env in controller$envs$ind) {
     assign(".initial", TRUE, envir = env)
     assign(".session", NULL, envir = env)
   }
