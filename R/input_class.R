@@ -82,12 +82,16 @@ emptyField <- function(x) inherits(x, "uninitializedField")
 
 evalParams <- function(params, env) {
   lapply(params, function(x) {
-    tryCatch(eval(x, envir = env), silent = TRUE, error = function(e) {NULL})
+    tryCatch(eval(x, envir = env), silent = TRUE, error = function(e) {
+      if(mwDebugMode()) message(e$message)
+      NULL})
   })
 }
 
 evalValue <- function(value, env) {
-  tryCatch(eval(value, envir = env), silent = TRUE, error = function(e) {NULL})
+  tryCatch(eval(value, envir = env), silent = TRUE, error = function(e) {
+    if(mwDebugMode()) message(e$message);
+    NULL})
 }
 
 
