@@ -1,6 +1,6 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
-# manipulateWidget 0.8.0 (2017-08-08)
+# manipulateWidget 0.8.0 (2017-10-25)
 
 ## New features
 * UI has now a button to save the current chart in an HTML file (thanks to Benoit Thieurmel).`manipulateWidget`gains a new parameter ".saveBtn" to show or hide this button.
