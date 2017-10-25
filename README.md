@@ -2,6 +2,8 @@ Add more interactivity to interactive charts
 ================
 
 [![CRAN Status Badge](http://www.r-pkg.org/badges/version/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget) [![CRAN Downloads Badge](https://cranlogs.r-pkg.org/badges/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget) [![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/manipulateWidget.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/manipulateWidget) [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/6y3tdofl0nk7oc4g/branch/master?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/manipulatewidget/branch/master)
+[![codecov](https://codecov.io/gh/rte-antares-rpackage/manipulateWidget/branch/master/graph/badge.svg)](https://codecov.io/gh/rte-antares-rpackage/manipulateWidget)
+
 
 `manipulateWidget` lets you create in just a few lines of R code a nice user interface to modify the data or the graphical parameters of one or multiple interactive charts. It is useful to quickly explore visually some data or for package developers to generate user interfaces easy to maintain.
 
