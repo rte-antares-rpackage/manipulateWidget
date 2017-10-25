@@ -17,7 +17,7 @@ test_input(mwNumeric(0), list(5, -20, 20, NULL, "a"), list(5, -20, 20, NULL, NUL
 test_input(mwNumeric(0, min = 0, max = 10), c(5, -20, 20), c(5, 0, 10))
 
 # Password
-test_input(mwText(), list("1", 1, NULL), list("1", "1", ""))
+test_input(mwPassword(), list("1", 1, NULL), list("1", "1", ""))
 
 # Select
 test_input(mwSelect(1:4), list(1, 2, 5, NULL), list(1, 2, 1, 1))
