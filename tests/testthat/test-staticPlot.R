@@ -15,5 +15,11 @@ describe("Static plot & image", {
 
     expect_is(c, "combineWidgets")
     expect_length(c$widgets, 2)
+
+    # check saveWidget and so preRenderCombinedWidgets
+    tmp_html <- tempfile(fileext = ".html")
+    htmlwidgets::saveWidget(c, tmp_html)
+    expect_true(file.exists(tmp_html))
+
   })
 })
