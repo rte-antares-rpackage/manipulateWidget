@@ -33,8 +33,10 @@ server <- function(input, output, session) {
     {
       dygraph(data[range[1]:range[2] - 2000, c("year", series)], main = title)
     },
-    range = mwSlider(min = 2001, max = 2001 + (nrow(data)-1), c(2001, 2001 + (nrow(data)-1))),
-    series = mwSelect(choices = colnames(data)[-1], value = colnames(data)[3]),
+    range = mwSlider(min = 2010,
+                     max = 2001 + (nrow(data)-1), c(2001, 2001 + (nrow(data)-1))),
+    series = mwSelect(choices = colnames(data)[-1],
+                      value = {colnames(data)[3]}, .display = TRUE),
     title = mwSharedValue(),
     data = mwSharedValue(), .runApp = FALSE,
     .compare = "range"

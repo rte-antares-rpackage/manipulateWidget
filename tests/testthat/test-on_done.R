@@ -21,7 +21,7 @@ describe("onDone", {
   })
 
   it ("returns a combined widget if comparison", {
-    with_mock(
+    suppressWarnings({with_mock(
       `shiny::stopApp` = function(x) {
         print("Stop gadget")
         x
@@ -39,7 +39,7 @@ describe("onDone", {
           expect_equal(res$widgets[[i]]$widgets[[1]], paste("value1", compare$x2[[i]]))
         }
       }
-    )
+    )})
   })
 
 })

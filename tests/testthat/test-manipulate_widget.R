@@ -6,7 +6,7 @@ describe("manipulateWidget", {
       paste(a, b),
       a = mwSelect(c("a", "b", "c")),
       b = mwText("test"),
-      .compare = "a"
+      .compare = "a", .runApp = FALSE
     )
     expect_true(!c$initialized)
   })
@@ -16,7 +16,7 @@ describe("manipulateWidget", {
       paste(a, b),
       a = mwSelect(c("a", "b", "c")),
       b = mwText("test"),
-      .compare = "a"
+      .compare = "a", .runApp = FALSE
     )
     c$init()
     expect_equal(c$ncharts, 2)
@@ -29,7 +29,7 @@ describe("manipulateWidget", {
       paste(a, b),
       a = mwSelect(c("a", "b", "c")),
       b = mwText("test"),
-      .compare = list(a = NULL)
+      .compare = list(a = NULL), .runApp = FALSE
     )
     c$init()
     expect_equal(c$ncharts, 2)
@@ -42,7 +42,7 @@ describe("manipulateWidget", {
       paste(a, b),
       a = mwSelect(c("a", "b", "c")),
       b = mwText("test"),
-      .compare = list(a = list("a", "b"))
+      .compare = list(a = list("a", "b")), .runApp = FALSE
     )
     c$init()
     expect_equal(c$ncharts, 2)
@@ -58,7 +58,7 @@ describe("manipulateWidget", {
       a = mwSelect(c("a", "b", "c")),
       b = mwText("test"),
       .compare = list(a = list("a", "b", "c")),
-      .compareOpts = compareOptions(ncharts = 3)
+      .compareOpts = compareOptions(ncharts = 3), .runApp = FALSE
     )
     c$init()
     expect_equal(c$ncharts, 3)
@@ -74,7 +74,7 @@ describe("manipulateWidget", {
     c <- manipulateWidget(
       x + y,
       x = mwSlider(0, 10, 5),
-      y = mwSlider(0, x, 4)
+      y = mwSlider(0, x, 4), .runApp = FALSE
     )
     c$init()
     expect_equal(c$getParams("y")$max, 5)
@@ -87,7 +87,7 @@ describe("manipulateWidget", {
     c <- manipulateWidget(
       x + y,
       x = mwSlider(0, 10, 0),
-      y = mwSlider(0, 10, 0, .display = x < 5)
+      y = mwSlider(0, 10, 0, .display = x < 5), .runApp = FALSE
     )
     c$init()
     expect_true(c$isVisible("y"))
@@ -100,7 +100,7 @@ describe("manipulateWidget", {
       x2 + y,
       x = mwSlider(0, 10, 5),
       x2 = mwSharedValue(x * 2),
-      y = mwSlider(0, x2, 0)
+      y = mwSlider(0, x2, 0), .runApp = FALSE
     )
     c$init()
     expect_equal(c$getParams("y")$max, 10)
@@ -118,7 +118,7 @@ describe("manipulateWidget", {
       x = mwSlider(0, 10, 5),
       x2 = mwSharedValue(1),
       x3 = mwSharedValue(x + x2),
-      y = mwSlider(0, x2, 0)
+      y = mwSlider(0, x2, 0), .runApp = FALSE
     )
     c$init()
     expect_equal(c$getParams("y")$max, 1)

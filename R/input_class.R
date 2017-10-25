@@ -11,7 +11,7 @@ controlValueAndParams <- function(value, params, name, env){
         assign(new_name, value_name, envir = env)
         # modify expr
         value <- eval(parse(text = paste0("substitute(", new_name, ")")))
-      # case of value / params of type call
+        # case of value / params of type call
       } else if(is.call(value)){
         # change name to new_name and assign current value
         new_name <- paste0(".tmp_mw_", name)
@@ -84,14 +84,16 @@ evalParams <- function(params, env) {
   lapply(params, function(x) {
     tryCatch(eval(x, envir = env), silent = TRUE, error = function(e) {
       if(mwDebugMode()) message(e$message)
-      NULL})
+      NULL
+    })
   })
 }
 
 evalValue <- function(value, env) {
   tryCatch(eval(value, envir = env), silent = TRUE, error = function(e) {
     if(mwDebugMode()) message(e$message);
-    NULL})
+    NULL
+  })
 }
 
 
