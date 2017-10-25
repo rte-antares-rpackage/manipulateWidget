@@ -37,7 +37,7 @@ updated when a value changes}
 
 \item{\code{returnCharts()}}{Return all charts.}
 
-\item{\code{setValue(name, value, chartId = 1)}}{Update the value of a variable for a given chart.}
+\item{\code{setValue(name, value, chartId = 1, reactive = FALSE)}}{Update the value of a variable for a given chart.}
 
 \item{\code{updateCharts()}}{Update all charts.}
 }}
