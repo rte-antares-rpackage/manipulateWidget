@@ -41,7 +41,7 @@
 #' @field nrow Number of rows.
 #' @field ncol Number of columns.
 #' @field autoUpdate Boolean indicating if charts should be automatically
-#'   updated when a value changes
+#'   updated when a value changes. list with \code{value} and \code{initBtn} (not autoUpdate, if want first charts on init)
 #'
 #' @export
 MWController <- setRefClass(
@@ -51,7 +51,7 @@ MWController <- setRefClass(
              "returnFunc", "initialized"),
   methods = list(
 
-    initialize = function(expr, inputs, autoUpdate = TRUE, nrow = NULL,
+    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE), nrow = NULL,
                           ncol = NULL, returnFunc = function(widget, envs) {widget}) {
       expr <<- expr
       inputList <<- inputs$inputList
@@ -119,7 +119,7 @@ MWController <- setRefClass(
       oldValue <- getValue(name, chartId)
       newValue <- inputList$setValue(name, value, chartId, reactive = reactive)
       if (!initialized) return()
-      if (autoUpdate && !identical(oldValue, newValue)) {
+      if (autoUpdate$value && !identical(oldValue, newValue)) {
         if (inputList$isShared(name)) updateCharts()
         else updateChart(chartId)
       }
@@ -129,7 +129,7 @@ MWController <- setRefClass(
       oldValue <- getValueById(id)
       newValue <- inputList$setValue(inputId = id, value = value)
       if (!initialized) return()
-      if (autoUpdate && !identical(oldValue, newValue)) {
+      if (autoUpdate$value && !identical(oldValue, newValue)) {
         if (grepl("^shared_", id)) updateCharts()
         else {
           chartId <- get(".id", envir = inputList$inputs[[id]]$env)
@@ -220,7 +220,7 @@ MWController <- setRefClass(
       function(ns, okBtn = gadget, width = "100%", height = "400px") {
         #ns <- shiny::NS(id)
         mwUI(ns, uiSpec, nrow, ncol, outputFunc,
-             okBtn = okBtn, updateBtn = !autoUpdate, saveBtn = saveBtn,
+             okBtn = okBtn, updateBtn = !autoUpdate$value, saveBtn = saveBtn,
              areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
              width = width, height = height)
       }
@@ -248,7 +248,7 @@ MWController <- setRefClass(
             input$updateHTML(session)
           }
         })
-        if (autoUpdate) renderShinyOutputs()
+        if (autoUpdate$value) renderShinyOutputs()
       }, error = function(e) {catIfDebug("Initialization error"); print(e)})
     },
 
@@ -283,7 +283,7 @@ MWController <- setRefClass(
           }
         })
 
-        observeEvent(input$.update, controller$updateCharts())
+        observeEvent(input$.update, controller$updateCharts(), ignoreNULL = !autoUpdate$initBtn)
         observeEvent(input$done, onDone(controller))
 
         output$save <- shiny::downloadHandler(

@@ -26,6 +26,7 @@
 #'   \code{TRUE}, then the graphic is updated only when the user clicks on the
 #'   update button.
 #' @param .saveBtn Should an save button be added to the controls ?
+#' @param .updateBtnInit In case of update button. Do you want to render graphics on init ?
 #' @param .viewer Controls where the gadget should be displayed. \code{"pane"}
 #'   corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 #'   \code{"browser"} to an external web browser.
@@ -221,6 +222,7 @@
 #' @export
 #'
 manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
+                             .updateBtnInit = FALSE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareOpts = compareOptions(),
@@ -254,7 +256,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   inputs <- initInputs(list(...), env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
-  controller <- MWController(.expr, inputs, autoUpdate = !.updateBtn,
+  controller <- MWController(.expr, inputs, autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit),
                            nrow = dims$nrow, ncol = dims$ncol,
                            returnFunc = .return)
 

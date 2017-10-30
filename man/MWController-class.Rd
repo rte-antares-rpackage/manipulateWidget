@@ -21,7 +21,7 @@ desire to create automatic tests for applications created with
 \item{\code{ncol}}{Number of columns.}
 
 \item{\code{autoUpdate}}{Boolean indicating if charts should be automatically
-updated when a value changes}
+updated when a value changes. list with \code{value} and \code{initBtn} (not autoUpdate, if want first charts on init)}
 }}
 
 \section{Methods}{
