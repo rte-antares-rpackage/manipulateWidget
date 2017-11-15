@@ -2,13 +2,15 @@ Package: manipulateWidget
 Type: Package
 Title: Add Even More Interactivity to Interactive Charts
 Version: 0.8.0
-Date: 2017-10-26
+Date: 2017-11-15
 Authors@R: c(
-    person("Francois", "Guillem", email = "francois.guillem@rte-france.com", role = c("aut", "cre")),
+    person("Jalal-Edine", "ZAWAM", email = "jalal-edine.zawam@rte-france.com", role = c("aut", "cre")),
+    person("Francois", "Guillem", email = "francois.guillem@rte-france.com", role = c("aut")),
     person("RTE", role = "cph"),
     person("JJ", "Allaire", role = "ctb"),
 	  person("Marion", "Praz", email="mnpraz@gmail.com", role = "ctb", comment = "New user interface"),
-	  person("Benoit", "Thieurmel", role = "ctb", email = "benoit.thieurmel@datastorm.fr")
+	  person("Benoit", "Thieurmel", role = "ctb", email = "benoit.thieurmel@datastorm.fr"),
+	  person(given = "Titouan", family = "Robert", email = "titouan.robert@datastorm.fr", role = "ctb")
     )
 Description: Like package 'manipulate' does for static graphics, this package
     helps to easily add controls like sliders, pickers, checkboxes, etc. that 

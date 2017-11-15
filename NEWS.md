@@ -1,9 +1,9 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
-# manipulateWidget 0.8.0 (2017-10-25)
+# manipulateWidget 0.8.0 (2017-11-15)
 
 ## New features
-* `manipulateWidget()` has a new parameter `.updateBtnInit`. In case of update button `.updateBtn`, you can decideto render graphics on init or not.
+* `manipulateWidget()` has a new parameter `.updateBtnInit`. In case of update button `.updateBtn`, you can decide to render graphics on init or not.
 * UI has now a button to save the current chart in an HTML file (thanks to Benoit Thieurmel).`manipulateWidget`gains a new parameter ".saveBtn" to show or hide this button.
 * `manipulateWidget()` has a new parameter ".runApp". If it is false, then the function returns an object of class `MWController` that can be modified using command line instructions. This is useful to write tests for UIs created with `manipulateWidget()`.
 * `manipulateWidget` interfaces can now be included in shiny applications thanks to the two new functions `mwModule()` and `mwModuleUI()`.
