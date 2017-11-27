@@ -36,7 +36,7 @@ server <- function(input, output, session) {
   titre <- reactive({
     input$title
   })
-  #
+
   mwModule("ui", c, title = titre, series = reactive(input$series))
 }
 
