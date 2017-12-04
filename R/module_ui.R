@@ -67,9 +67,12 @@ mwModule <- function(id, controller, ...) {
 #'   units.
 #' @param width Width of the module UI.
 #' @param height Height of the module UI.
+#' @param header	Tag or list of tags to display as a common header above all tabPanels.
+#' @param footer	Tag or list of tags to display as a common footer below all tabPanels
 #' @rdname mwModule
 #' @export
-mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin = 0, width = "100%", height = 400) {
+mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin = 0, width = "100%", height = 400,
+                       header = NULL, footer = NULL) {
   ns <- shiny::NS(id)
   for (i in seq_along(margin)) {
     margin[i] <- shiny::validateCssUnit(margin[i])
@@ -83,7 +86,9 @@ mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin 
   if(!saveBtn) class <- c(class, "without-save")
   class <- paste(class, collapse = " ")
 
-  res <- shiny::tagList(
+  res <- shiny::fluidRow(
+    shiny::column(12,
+    header,
     shiny::uiOutput(ns("ui"), container = function(...) {
       tags$div(style=sprintf("width:%s;height:%s;padding:%s",
                              shiny::validateCssUnit(width),
@@ -91,7 +96,9 @@ mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin 
                              margin),
                class = class,
                ...)
-    })
+    }),
+    footer
+  )
   )
 
   htmldep <- htmltools::htmlDependency(
