@@ -4,7 +4,7 @@
 
 ## New features
 * `mwModule()` now return `controller` value, with possibility to use new `clear()` method
-* add `header` and `footer` arguments to `mwModuleUI()`
+* add `header`, `footer` and `fluidRow` arguments to `mwModuleUI()`
 
 # manipulateWidget 0.8.0 (2017-10-25)
 

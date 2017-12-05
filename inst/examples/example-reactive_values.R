@@ -8,7 +8,7 @@ ui <- fillPage(
       textInput("title", label = "Title", value = "glop"),
       selectInput("series", "series", choices = c("series1", "series2", "series3"))
     ),
-    mwModuleUI("ui", height = "100%")
+    mwModuleUI("ui", height = "400px")
   )
 )
 
