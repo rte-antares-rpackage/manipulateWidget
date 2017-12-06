@@ -8,7 +8,7 @@ ui <- fillPage(
       textInput("title", label = "Title", value = "glop"),
       selectInput("series", "series", choices = c("series1", "series2", "series3"))
     ),
-    mwModuleUI("ui", height = "100%")
+    mwModuleUI("ui", height = "400px")
   )
 )
 
@@ -36,7 +36,7 @@ server <- function(input, output, session) {
   titre <- reactive({
     input$title
   })
-  #
+
   mwModule("ui", c, title = titre, series = reactive(input$series))
 }
 

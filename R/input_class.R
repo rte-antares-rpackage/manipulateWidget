@@ -147,6 +147,7 @@ Input <- setRefClass(
       }
       if (!emptyField(validFunc)) value <<- validFunc(evalValue(newValue, env), getParams())
       assign(name, value, envir = env)
+      valueHasChanged <<- FALSE
       value
     },
 

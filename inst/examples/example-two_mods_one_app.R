@@ -39,14 +39,14 @@ c2 <- manipulateWidget(
 
 ui <- navbarPage(
   "Test manipulateWidget",
-   tabPanel(
-     "Module 1",
-     mwModuleUI("mod1", height = "800px")
-   ),
-   tabPanel(
-     "Module 2",
-     mwModuleUI("mod2", height = "800px")
-   )
+  tabPanel(
+    "Module 1",
+    mwModuleUI("mod1", height = "800px")
+  ),
+  tabPanel(
+    "Module 2",
+    mwModuleUI("mod2", height = "800px")
+  )
 )
 
 server <- function(input, output, session) {

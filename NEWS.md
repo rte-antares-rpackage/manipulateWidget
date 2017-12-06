@@ -1,6 +1,6 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
-# manipulateWidget 0.8.0 (2017-11-15)
+# manipulateWidget 0.8.0 (2017-11-27)
 
 ## New features
 * `manipulateWidget()` has a new parameter `.updateBtnInit`. In case of update button `.updateBtn`, you can decide to render graphics on init or not.
@@ -10,6 +10,8 @@
 * A new virtual input called `mwSharedValue` has been introduced. It can be used to avoid repeating the same computations when inputs and output use a common intermediary value. It can also be used when
 `manipulateWidget()` is used in a shiny application to send data from the main application to the module.
 * `manipulateWidget()` now only updates the dependant inputs and outputs when user changes the value of an input. This can lead to important performance improvement in complicated applications.
+* `mwModule()` now return `controller` value, with possibility to use new `clear()` method
+* add `header`, `footer` and `fluidRow` arguments to `mwModuleUI()`
 
 ## Bugfixes
 * When a UI contained dynamic inputs, output was sometimes updated before inputs, which could lead to some errors.

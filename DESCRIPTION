@@ -2,7 +2,7 @@ Package: manipulateWidget
 Type: Package
 Title: Add Even More Interactivity to Interactive Charts
 Version: 0.8.0
-Date: 2017-11-15
+Date: 2017-11-27
 Authors@R: c(
     person("Jalal-Edine", "ZAWAM", email = "jalal-edine.zawam@rte-france.com", role = c("aut", "cre")),
     person("Francois", "Guillem", email = "francois.guillem@rte-france.com", role = c("aut")),

@@ -455,6 +455,7 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
       if (length(x) == 0) x <- c(Sys.Date(), Sys.Date())
       else if (length(x) == 1) x <-  c(x, Sys.Date())
       x <- as.Date(x)
+      x[is.na(x)] <- Sys.Date()
       if (!is.null(params$min)) {
         params$min <- as.Date(params$min)
         if(x[1] == Sys.Date()){

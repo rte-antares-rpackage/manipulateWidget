@@ -8,7 +8,8 @@
 mwModule(id, controller, ...)
 
 mwModuleUI(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin = 0,
-  width = "100\%", height = 400)
+  width = "100\%", height = 400, header = NULL, footer = NULL,
+  fluidRow = FALSE)
 }
 \arguments{
 \item{id}{A unique string that identifies the module}
@@ -32,6 +33,12 @@ units.}
 \item{width}{Width of the module UI.}
 
 \item{height}{Height of the module UI.}
+
+\item{header}{Tag or list of tags to display as a common header above all tabPanels.}
+
+\item{footer}{Tag or list of tags to display as a common footer below all tabPanels}
+
+\item{fluidRow}{Include module in a fluidRow ? Can be usefull in a shiny app. Defaut to FALSE}
 }
 \value{
 \code{mwModuleUI} returns the required HTML elements for the module. mwModule is only

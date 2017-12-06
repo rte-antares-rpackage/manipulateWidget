@@ -91,6 +91,10 @@ MWController <- setRefClass(
       invisible(.self)
     },
 
+    clear = function(){
+      rm(list = ls(envir = .self, all.names = TRUE), envir = .self, inherits = TRUE)
+    },
+
     setShinySession = function(output, session) {
       catIfDebug("Set shiny session")
       session <<- session
@@ -155,12 +159,15 @@ MWController <- setRefClass(
 
     updateChart = function(chartId = 1) {
       catIfDebug("Update chart", chartId)
-      e <- new.env(parent = envs$ind[[chartId]]) # User can set values in expr without messing environments
-      charts[[chartId]] <<- eval(expr, envir = e)
-      if (useCombineWidgets) {
-        charts[[chartId]] <<- combineWidgets(charts[[chartId]])
+      if(!is.null(envs)){
+        e <- new.env(parent = envs$ind[[chartId]]) # User can set values in expr without messing environments
+        charts[[chartId]] <<- eval(expr, envir = e)
+        if (useCombineWidgets) {
+          charts[[chartId]] <<- combineWidgets(charts[[chartId]])
+        }
+        renderShinyOutput(chartId)
       }
-      renderShinyOutput(chartId)
+
     },
 
     returnCharts = function() {
@@ -254,6 +261,7 @@ MWController <- setRefClass(
 
     getModuleServer = function() {
       function(input, output, session, ...) {
+
         controller <- .self$clone()
 
         reactiveValueList <- list(...)
@@ -295,6 +303,8 @@ MWController <- setRefClass(
                                     file = con, selfcontained = TRUE)
           }
         )
+
+        return(controller)
       }
     }
   )
