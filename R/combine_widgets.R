@@ -165,7 +165,11 @@ combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = N
     else if (is.list(x))
       do.call(c, lapply(x, getDeps))
   }
-  deps <- getDeps(widgets)
+  deps <- c(getDeps(widgets),
+            getDeps(header),
+            getDeps(footer),
+            getDeps(leftCol),
+            getDeps(rightCol))
 
   res$dependencies <- deps
 
