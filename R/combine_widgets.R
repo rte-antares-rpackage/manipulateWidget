@@ -129,6 +129,7 @@
 #' }
 #'
 #' @export
+#' @importFrom htmltools tagGetAttribute
 combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = NULL,
                            rowsize = 1, colsize = 1, byrow = TRUE,
                            titleCSS = "",
