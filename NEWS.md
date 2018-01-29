@@ -1,5 +1,10 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
+# manipulateWidget 0.8.1 (2018-01-29)
+
+## Bugfixes
+* Loss of scrollbar using `shiny` with `fluidPage` and `manipulateWidget`
+
 # manipulateWidget 0.8.0 (2017-11-27)
 
 ## New features

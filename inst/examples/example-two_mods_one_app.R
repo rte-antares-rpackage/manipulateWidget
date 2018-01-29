@@ -41,7 +41,7 @@ ui <- navbarPage(
   "Test manipulateWidget",
   tabPanel(
     "Module 1",
-    mwModuleUI("mod1", height = "800px")
+    mwModuleUI("mod1", height = "1800px")
   ),
   tabPanel(
     "Module 2",
