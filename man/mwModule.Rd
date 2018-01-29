@@ -5,11 +5,10 @@
 \alias{mwModuleUI}
 \title{Add a manipulateWidget to a shiny application}
 \usage{
-mwModule(id, controller, ...)
+mwModule(id, controller, fillPage = FALSE, ...)
 
 mwModuleUI(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin = 0,
-  width = "100\%", height = 400, header = NULL, footer = NULL,
-  fluidRow = FALSE)
+  width = "100\%", height = 400, header = NULL, footer = NULL)
 }
 \arguments{
 \item{id}{A unique string that identifies the module}
@@ -17,6 +16,8 @@ mwModuleUI(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin = 0,
 \item{controller}{Object of class \code{\link{MWController}} returned by
 \code{\link{manipulateWidget}} when parameter \code{.runApp} is
 \code{FALSE}.}
+
+\item{fillPage}{: \code{logical}. Render in a fillPage or not ? Defaut to FALSE}
 
 \item{...}{named arguments containing reactive values. They can be used to send data from
 the main shiny application to the module.}
@@ -37,8 +38,6 @@ units.}
 \item{header}{Tag or list of tags to display as a common header above all tabPanels.}
 
 \item{footer}{Tag or list of tags to display as a common footer below all tabPanels}
-
-\item{fluidRow}{Include module in a fluidRow ? Can be usefull in a shiny app. Defaut to FALSE}
 }
 \value{
 \code{mwModuleUI} returns the required HTML elements for the module. mwModule is only
