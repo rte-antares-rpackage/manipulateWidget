@@ -272,7 +272,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
     ui <- mwModuleUI("ui", border = FALSE, okBtn = TRUE, saveBtn = .saveBtn,
                      width = "100%", height = "100%")
     server <- function(input, output, session) {
-      mwModule("ui", controller)
+      mwModule("ui", controller, fillPage = TRUE)
     }
 
     shiny::runGadget(ui, server, viewer = .viewer)
@@ -280,7 +280,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
     ui <- mwModuleUI("ui", margin = c("20px", 0), width = "100%", height = "100%")
     server <- function(input, output, session) {
-      mwModule("ui", controller)
+      mwModule("ui", controller, fillPage = TRUE)
     }
     shiny::shinyApp(ui = ui, server = server, options = list(width = .width, height = .height))
   } else {

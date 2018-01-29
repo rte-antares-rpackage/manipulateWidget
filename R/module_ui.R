@@ -9,6 +9,7 @@
 #' @param controller Object of class \code{\link{MWController}} returned by
 #'   \code{\link{manipulateWidget}} when parameter \code{.runApp} is
 #'   \code{FALSE}.
+#' @param fillPage : \code{logical}. Render in a fillPage or not ? Defaut to FALSE
 #' @param ... named arguments containing reactive values. They can be used to send data from
 #'   the main shiny application to the module.
 #'
@@ -55,8 +56,8 @@
 #' }
 #'
 #' @export
-mwModule <- function(id, controller, ...) {
-  shiny::callModule(controller$getModuleServer(), id, ...)
+mwModule <- function(id, controller, fillPage = FALSE, ...) {
+  shiny::callModule(controller$getModuleServer(), id, fillPage = fillPage, ...)
 }
 
 
@@ -69,13 +70,11 @@ mwModule <- function(id, controller, ...) {
 #' @param height Height of the module UI.
 #' @param header	Tag or list of tags to display as a common header above all tabPanels.
 #' @param footer	Tag or list of tags to display as a common footer below all tabPanels
-#' @param fluidRow	Include module in a fluidRow ? Can be usefull in a shiny app. Defaut to FALSE
 #'
 #' @rdname mwModule
 #' @export
 mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin = 0,
-                       width = "100%", height = 400, header = NULL, footer = NULL,
-                       fluidRow = FALSE) {
+                       width = "100%", height = 400, header = NULL, footer = NULL) {
 
   ns <- shiny::NS(id)
   for (i in seq_along(margin)) {
@@ -90,36 +89,18 @@ mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin 
   if(!saveBtn) class <- c(class, "without-save")
   class <- paste(class, collapse = " ")
 
-  if(fluidRow){
-    res <- shiny::fluidRow(
-      shiny::column(12,
-                    header,
-                    shiny::uiOutput(ns("ui"), container = function(...) {
-                      tags$div(style=sprintf("width:%s;height:%s;padding:%s",
-                                             shiny::validateCssUnit(width),
-                                             shiny::validateCssUnit(height),
-                                             margin),
-                               class = class,
-                               ...)
-                    }),
-                    footer
-      )
-    )
-  } else {
-    res <- shiny::tagList(
-      header,
-      shiny::uiOutput(ns("ui"), container = function(...) {
-        tags$div(style=sprintf("width:%s;height:%s;padding:%s",
-                               shiny::validateCssUnit(width),
-                               shiny::validateCssUnit(height),
-                               margin),
-                 class = class,
-                 ...)
-      }),
-      footer
-    )
-  }
-
+  res <- shiny::tagList(
+    header,
+    shiny::uiOutput(ns("ui"), container = function(...) {
+      tags$div(style=sprintf("width:%s;height:%s;padding:%s",
+                             shiny::validateCssUnit(width),
+                             shiny::validateCssUnit(height),
+                             margin),
+               class = class,
+               ...)
+    }),
+    footer
+  )
 
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
