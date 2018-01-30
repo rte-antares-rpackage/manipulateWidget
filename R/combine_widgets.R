@@ -129,6 +129,7 @@
 #' }
 #'
 #' @export
+#' @importFrom htmltools tagGetAttribute
 combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = NULL,
                            rowsize = 1, colsize = 1, byrow = TRUE,
                            titleCSS = "",
@@ -261,19 +262,29 @@ preRenderCombinedWidgets <- function(x) {
     })
   }
 
+  # Get the HTML class for each widget, plus "cw-widget"
+  elementClass <- sapply(widgets[1:ncells], function(w) {
+    result <- NULL
+    if (inherits(w, "htmlwidget"))
+      result <- class(w)[1]
+    else if (inherits(w, "shiny.tag"))
+      result <- tagGetAttribute(w, "class")
+    paste(result, "cw-widget")
+  })
 
   # Construct the html of the combined widget
   dirClass <- ifelse(x$params$byrow, "cw-by-row", "cw-by-col")
 
   widgetEL <- mapply(
-    function(id, size) {
+    function(id, size, class) {
       sprintf('<div class="cw-col" style="flex:%s;-webkit-flex:%s">
-              <div id="%s" class="cw-widget" style="width:100%%;height:100%%"></div>
+              <div id="%s" class="%s" style="width:100%%;height:100%%"></div>
               </div>',
-              size, size, id)
+              size, size, id, class)
     },
     id = elementId,
-    size = rep(colsize, length.out = ncells)
+    size = rep(colsize, length.out = ncells),
+    class = elementClass
   )
 
   rowsEl <- lapply(1:nrow, function(i) {
