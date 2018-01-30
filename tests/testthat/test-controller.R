@@ -61,7 +61,7 @@ describe("MWController", {
     server <- controller$getModuleServer()
     expect_is(ui, "function")
     expect_is(server, "function")
-    expect_equal(names(formals(server)), c("input", "output", "session", "..."))
+    expect_true(all(c("input", "output", "session", "...") %in% names(formals(server))))
   })
 
   it("does not update values or create charts until it is initialized", {
