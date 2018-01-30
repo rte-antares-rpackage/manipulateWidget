@@ -160,7 +160,8 @@ combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = N
 
   getDeps <- function(x) {
     if (!is.null(attr(x, "package")))
-      append(getDependency(class(x)[1], attr(x, "package")), x$dependencies)
+      append(tryCatch(getDependency(class(x)[1], attr(x, "package")),
+                      error = function(e) NULL), x$dependencies)
     else if (!is.null(attr(x, "html_dependencies")))
       attr(x, "html_dependencies")
     else if (is.list(x))

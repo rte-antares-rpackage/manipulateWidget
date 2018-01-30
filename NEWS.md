@@ -4,6 +4,8 @@
 
 ## Bugfixes
 * Loss of scrollbar using `shiny` with `fluidPage` and `manipulateWidget`
+* Fix Handle shiny tag objects with HTML dependencies
+* Preserve the class of widgets that are passed to combineWidgets
 
 # manipulateWidget 0.8.0 (2017-11-27)
 
