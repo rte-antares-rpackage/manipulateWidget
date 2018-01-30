@@ -2,6 +2,8 @@
 
 # manipulateWidget 0.8.1 (2018-01-29)
 
+## New features
+* Can add a label to `mwGroup`
 ## Bugfixes
 * Loss of scrollbar using `shiny` with `fluidPage` and `manipulateWidget`
 * Fix Handle shiny tag objects with HTML dependencies

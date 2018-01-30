@@ -345,6 +345,7 @@ replaceInputs <- function(inputs, newInputs, envs) {
     else if (el$type == "group") {
       params <- replaceInputs(el$value, newInputs, envs)
       params$.display <- el$display
+      params$label <- el$label
       newGroup <- do.call(mwGroup, params)
       env <- envs[[1 + get(".id", envir = el$env)]]
       newGroup$init(el$name, env)

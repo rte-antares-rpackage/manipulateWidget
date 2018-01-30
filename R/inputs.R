@@ -621,14 +621,14 @@ mwSharedValue <- function(expr = NULL) {
 #'
 #' @export
 #' @family controls
-mwGroup <- function(..., .display = TRUE) {
+mwGroup <- function(..., label = NULL, .display = TRUE) {
   inputs <- list(...)
   if (is.null(names(inputs))) stop("All arguments need to be named.")
   for (i in inputs) if (!inherits(i, "Input")) stop("All arguments need to be Input objects.")
 
   Input(
     type = "group", value = list(...), params = list(),
-    display = substitute(.display),
+    label = label, display = substitute(.display),
     htmlFunc = function(id, label, value, params, ns) {
       htmlElements <- lapply(value, function(x) x$getHTML(ns))
 
