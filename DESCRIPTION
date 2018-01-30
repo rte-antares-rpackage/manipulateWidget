@@ -10,7 +10,8 @@ Authors@R: c(
     person("JJ", "Allaire", role = "ctb"),
 	  person("Marion", "Praz", email="mnpraz@gmail.com", role = "ctb", comment = "New user interface"),
 	  person("Benoit", "Thieurmel", role = "ctb", email = "benoit.thieurmel@datastorm.fr"),
-	  person(given = "Titouan", family = "Robert", email = "titouan.robert@datastorm.fr", role = "ctb")
+	  person(given = "Titouan", family = "Robert", email = "titouan.robert@datastorm.fr", role = "ctb"),
+	  person("Duncan", "Murdoch", email = "murdoch.duncan@gmail.com", role = "ctb")
     )
 Description: Like package 'manipulate' does for static graphics, this package
     helps to easily add controls like sliders, pickers, checkboxes, etc. that 

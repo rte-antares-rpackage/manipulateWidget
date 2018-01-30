@@ -152,12 +152,24 @@ combineWidgets <- function(..., list = NULL, nrow = NULL, ncol = NULL, title = N
     preRenderHook = preRenderCombinedWidgets
   )
 
-  # Add dependencies of embedded widgets
-  deps <- lapply(widgets, function(x) {
-    if (is.null(attr(x, "package"))) return(NULL)
-    append(getDependency(class(x)[1], attr(x, "package")), x$dependencies)
-  })
-  deps <- do.call(c, deps)
+  # Add dependencies of embedded widgets or shiny tags
+  # This works through the widgets recursively, in case
+  # we were passed a shiny.tag.list or other list of
+  # non-widgets.
+
+  getDeps <- function(x) {
+    if (!is.null(attr(x, "package")))
+      append(getDependency(class(x)[1], attr(x, "package")), x$dependencies)
+    else if (!is.null(attr(x, "html_dependencies")))
+      attr(x, "html_dependencies")
+    else if (is.list(x))
+      do.call(c, lapply(x, getDeps))
+  }
+  deps <- c(getDeps(widgets),
+            getDeps(header),
+            getDeps(footer),
+            getDeps(leftCol),
+            getDeps(rightCol))
 
   res$dependencies <- deps
 
