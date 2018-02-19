@@ -287,6 +287,63 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
   )
 }
 
+#' Add a Select list input to a manipulateWidget gadget
+#'
+#' @param choices
+#'   Vector or list of choices. If it is named, then the names rather than the
+#'   values are displayed to the user.
+#' @param value
+#'   Initial value of the input. If not specified, the first choice is used.
+#' @param ...
+#'   Other arguments passed to function\code{\link[shiny]{selectInput}}.
+#' @param multiple
+#'   Is selection of multiple items allowed?
+#' @inheritParams mwSlider
+#'
+#' @return
+#' A function that will generate the input control.
+#'
+#' @examples
+#' if (require(plotly)) {
+#'   mydata <- data.frame(x = 1:100, y = rnorm(100))
+#'
+#'   # Select multiple values
+#'   manipulateWidget(
+#'     {
+#'       if (length(species) == 0) mydata <- iris
+#'       else mydata <- iris[iris$Species %in% species,]
+#'
+#'       plot_ly(mydata, x = ~Sepal.Length, y = ~Sepal.Width,
+#'               color = ~droplevels(Species), type = "scatter", mode = "markers")
+#'     },
+#'     species = mwSelectize(c("Select one or two species : " = "", levels(iris$Species)),
+#'         multiple = TRUE, options = list(maxItems = 2))
+#'   )
+#' }
+#'
+#' @export
+#' @family controls
+mwSelectize <- function(choices = value, value = NULL, label = NULL, ...,
+                     multiple = FALSE, options = NULL, .display = TRUE) {
+  params <- dotsToExpr()
+  params$choices <- substitute(choices)
+  params$multiple <- substitute(multiple)
+  params$options <- substitute(options)
+  value <- substitute(value)
+  Input(
+    type = "select", value = value, label = label, params = params,
+    display = substitute(.display),
+    validFunc = function(x, params) {
+      x <- intersect(x, unlist(params$choices))
+      if (params$multiple) return(x)
+      else if (length(x) > 0) return(x[1])
+      else return(params$choices[[1]])
+    },
+    htmlFunc = htmlFuncFactory(shiny::selectizeInput, "selected"),
+    htmlUpdateFunc = changeValueParam(shiny::updateSelectizeInput, "selected")
+  )
+}
+
 #' Add a checkbox to a manipulateWidget gadget
 #'
 #' @param value

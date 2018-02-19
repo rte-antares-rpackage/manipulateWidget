@@ -42,6 +42,7 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwDateRange}}, \code{\link{mwDate}},
   \code{\link{mwGroup}}, \code{\link{mwNumeric}},
   \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelect}}, \code{\link{mwSharedValue}},
-  \code{\link{mwSlider}}, \code{\link{mwText}}
+  \code{\link{mwSelectize}}, \code{\link{mwSelect}},
+  \code{\link{mwSharedValue}}, \code{\link{mwSlider}},
+  \code{\link{mwText}}
 }

@@ -4,7 +4,7 @@
 \alias{mwGroup}
 \title{Group inputs in a collapsible box}
 \usage{
-mwGroup(..., .display = TRUE)
+mwGroup(..., label = NULL, .display = TRUE)
 }
 \arguments{
 \item{...}{inputs that will be grouped in the box}
@@ -40,6 +40,7 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
   \code{\link{mwDate}}, \code{\link{mwNumeric}},
   \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelect}}, \code{\link{mwSharedValue}},
-  \code{\link{mwSlider}}, \code{\link{mwText}}
+  \code{\link{mwSelectize}}, \code{\link{mwSelect}},
+  \code{\link{mwSharedValue}}, \code{\link{mwSlider}},
+  \code{\link{mwText}}
 }

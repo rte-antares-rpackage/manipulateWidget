@@ -4,6 +4,8 @@
 
 ## New features
 * Can add a label to `mwGroup`
+* new ``mwSelectize`` input
+
 ## Bugfixes
 * Loss of scrollbar using `shiny` with `fluidPage` and `manipulateWidget`
 * Fix Handle shiny tag objects with HTML dependencies
