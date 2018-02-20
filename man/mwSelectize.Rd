@@ -20,6 +20,8 @@ variable is used.}
 
 \item{multiple}{Is selection of multiple items allowed?}
 
+\item{options}{A list of options. See the documentation of selectize.js for possible options}
+
 \item{.display}{expression that evaluates to TRUE or FALSE, indicating when
 the input control should be shown/hidden.}
 }

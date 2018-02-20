@@ -298,6 +298,8 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
 #'   Other arguments passed to function\code{\link[shiny]{selectInput}}.
 #' @param multiple
 #'   Is selection of multiple items allowed?
+#' @param options
+#'   A list of options. See the documentation of selectize.js for possible options
 #' @inheritParams mwSlider
 #'
 #' @return
