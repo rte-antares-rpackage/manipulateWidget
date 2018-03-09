@@ -5,6 +5,7 @@
 ## New features
 * Can add a label to `mwGroup`
 * new ``mwSelectize`` input
+* add ``.showCompare``
 
 ## Bugfixes
 * Loss of scrollbar using `shiny` with `fluidPage` and `manipulateWidget`

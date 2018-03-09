@@ -51,7 +51,7 @@ MWController <- setRefClass(
              "returnFunc", "initialized"),
   methods = list(
 
-    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE), nrow = NULL,
+    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE), nrow = NULL,
                           ncol = NULL, returnFunc = function(widget, envs) {widget}) {
       expr <<- expr
       inputList <<- inputs$inputList
@@ -229,7 +229,8 @@ MWController <- setRefClass(
         mwUI(ns, uiSpec, nrow, ncol, outputFunc,
              okBtn = okBtn, updateBtn = !autoUpdate$value, saveBtn = saveBtn,
              areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
-             width = width, height = height, fillPage = fillPage)
+             width = width, height = height, fillPage = fillPage,
+             showCompare = autoUpdate$showCompare)
       }
     },
 

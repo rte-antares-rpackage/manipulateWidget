@@ -40,6 +40,7 @@
 #'   initialized with the default value for the two charts.
 #' @param .compareOpts List of options created \code{\link{compareOptions}}.
 #'   These options indicate the number of charts to create and their disposition.
+#' @param .showCompare \code{logical}. In case of \code{.compare}. Show windows selection on menu ?
 #' @param .return A function that can be used to modify the output of
 #'   \code{manipulateWidget}. It must take two parameters: the first one is the
 #'   final widget, the second one is a list of environments containing the input
@@ -226,6 +227,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareOpts = compareOptions(),
+                             .showCompare = TRUE,
                              .return = function(widget, envs) {widget},
                              .width = NULL, .height = NULL, .runApp = TRUE) {
 
@@ -238,7 +240,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   .compareOpts <- do.call(compareOptions, .compareOpts)
 
   if (is.null(.compare)) {
-      .compareOpts$ncharts <- 1
+    .compareOpts$ncharts <- 1
   } else {
     if (is.character(.compare)) {
       .compare <- sapply(.compare, function(x) NULL,
@@ -256,9 +258,10 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   inputs <- initInputs(list(...), env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
-  controller <- MWController(.expr, inputs, autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit),
-                           nrow = dims$nrow, ncol = dims$ncol,
-                           returnFunc = .return)
+  controller <- MWController(.expr, inputs,
+                             autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit, showCompare = .showCompare),
+                             nrow = dims$nrow, ncol = dims$ncol,
+                             returnFunc = .return)
 
   if (.runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget

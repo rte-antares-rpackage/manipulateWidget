@@ -6,7 +6,7 @@
 \usage{
 manipulateWidget(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   .updateBtnInit = FALSE, .viewer = c("pane", "window", "browser"),
-  .compare = NULL, .compareOpts = compareOptions(),
+  .compare = NULL, .compareOpts = compareOptions(), .showCompare = TRUE,
   .return = function(widget, envs) {     widget }, .width = NULL,
   .height = NULL, .runApp = TRUE)
 }
@@ -46,6 +46,8 @@ initialized with the default value for the two charts.}
 
 \item{.compareOpts}{List of options created \code{\link{compareOptions}}.
 These options indicate the number of charts to create and their disposition.}
+
+\item{.showCompare}{\code{logical}. In case of \code{.compare}. Show windows selection on menu ?}
 
 \item{.return}{A function that can be used to modify the output of
 \code{manipulateWidget}. It must take two parameters: the first one is the
