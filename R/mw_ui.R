@@ -52,7 +52,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
         fillRow(
           flex = c(NA, NA, 1),
           width = width, height = height,
-          .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns),
+          .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns, showCompare),
           .uiInputs(ns, inputs),
           .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
         )
