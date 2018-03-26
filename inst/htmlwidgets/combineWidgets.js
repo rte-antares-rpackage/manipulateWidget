@@ -53,6 +53,13 @@ HTMLWidgets.widget({
           }
         }
 
+        // Crosstalk inputs need special handling:  see
+        // https://github.com/ramnathv/htmlwidgets/issues/300
+
+        if (x.hasCrosstalkInputs && crosstalk && crosstalk.bind) {
+          crosstalk.bind();
+        }
+
         // Sometimes widgets are rendered before the size of all html element has
         // been computed. Adding a small delay fixes this problem.
         setTimeout(resizeAll, 5);
