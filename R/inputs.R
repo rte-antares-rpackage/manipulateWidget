@@ -660,7 +660,7 @@ mwSharedValue <- function(expr = NULL) {
 #' @param ... inputs that will be grouped in the box
 #' @param .display expression that evaluates to TRUE or FALSE, indicating when
 #'   the group should be shown/hidden.
-#'
+#' @param label label of the group inputs
 #' @return Input of type "group".
 #'
 #' @examples

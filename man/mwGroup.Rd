@@ -9,6 +9,8 @@ mwGroup(..., label = NULL, .display = TRUE)
 \arguments{
 \item{...}{inputs that will be grouped in the box}
 
+\item{label}{label of the group inputs}
+
 \item{.display}{expression that evaluates to TRUE or FALSE, indicating when
 the group should be shown/hidden.}
 }
