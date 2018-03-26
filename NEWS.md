@@ -1,6 +1,6 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
-# manipulateWidget 0.8.1 (2018-01-29)
+# manipulateWidget 0.9.0 (2018-01-29)
 
 ## New features
 * Can add a label to `mwGroup`
