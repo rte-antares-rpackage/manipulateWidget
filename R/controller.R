@@ -51,7 +51,8 @@ MWController <- setRefClass(
              "returnFunc", "initialized"),
   methods = list(
 
-    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE), nrow = NULL,
+    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE, saveBtn = TRUE),
+                          nrow = NULL,
                           ncol = NULL, returnFunc = function(widget, envs) {widget}) {
       expr <<- expr
       inputList <<- inputs$inputList
@@ -227,7 +228,7 @@ MWController <- setRefClass(
       function(ns, okBtn = gadget, width = "100%", height = "400px", fillPage = TRUE) {
         #ns <- shiny::NS(id)
         mwUI(ns, uiSpec, nrow, ncol, outputFunc,
-             okBtn = okBtn, updateBtn = !autoUpdate$value, saveBtn = saveBtn,
+             okBtn = okBtn, updateBtn = !autoUpdate$value, saveBtn = autoUpdate$saveBtn,
              areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
              width = width, height = height, fillPage = fillPage,
              showCompare = autoUpdate$showCompare)

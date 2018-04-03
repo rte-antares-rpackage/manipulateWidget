@@ -259,7 +259,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
   controller <- MWController(.expr, inputs,
-                             autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit, showCompare = .showCompare),
+                             autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit, showCompare = .showCompare, saveBtn = .saveBtn),
                              nrow = dims$nrow, ncol = dims$ncol,
                              returnFunc = .return)
 

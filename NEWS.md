@@ -1,5 +1,10 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
+# manipulateWidget 0.9.1 (2018-04-03)
+
+## Bugfixes
+* Passing `.saveBtn` using module
+
 # manipulateWidget 0.9.0 (2018-01-29)
 
 ## New features
