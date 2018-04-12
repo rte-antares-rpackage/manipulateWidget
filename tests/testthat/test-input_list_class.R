@@ -99,5 +99,38 @@ describe("InputList", {
       inputList$setValue(inputId = "output_1_x", value = 8)
       expect_equal(inputList$inputs$output_1_y$value, 8)
     })
+
+    it ("can add an input", {
+      e <- initEnv(parent.frame(), 1)
+      inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
+      inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
+      inputList <- InputList(inputs[2])$init()
+      inputList$addInput(inputs[[1]])
+      expect_equal(inputList$inputs$output_1_y$value, 5)
+
+      inputList$setValue(inputId = "output_1_x", value = 7)
+      expect_equal(inputList$inputs$output_1_y$value, 7)
+
+      values <- inputList$getValues(1)
+      expect_is(values, "list")
+      expect_named(values, c("x", "y"), ignore.order = TRUE)
+      for (n in c("x", "y")) {
+        expect_equal(values[[n]], inputList$getValue(n, 1))
+      }
+    })
+
+    it ("can remove an input", {
+      e <- initEnv(parent.frame(), 1)
+      inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
+      inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
+      inputList <- InputList(inputs)$init()
+      inputList$removeInput("y", 1)
+      expect_null(inputList$inputs$output_1_y)
+      expect_length(inputList$inputs$output_1_x$revDeps, 0)
+      expect_silent(inputList$setValue(inputId = "output_1_x", value = 7))
+
+      values <- inputList$getValues(1)
+      expect_equal(values, list(x = 7))
+    })
   })
 })

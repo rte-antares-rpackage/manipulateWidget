@@ -23,7 +23,18 @@ InputList <- setRefClass(
       initialized <<- FALSE
 
       # Set dependencies
-      for (input in inputList) {
+      setDeps()
+    },
+
+    setDeps = function() {
+      # Reset all deps
+      for (input in inputs) {
+        inputId <- input$getID()
+        inputs[[inputId]]$revDeps <<- character(0)
+        inputs[[inputId]]$displayRevDeps <<- character(0)
+      }
+
+      for (input in inputs) {
         inputId <- input$getID()
         deps <- getDeps(input)
         for (d in deps$params) {
@@ -80,12 +91,40 @@ InputList <- setRefClass(
 
     getInput = function(name, chartId = 1, inputId = NULL) {
       if (!is.null(inputId)) {
-        if (!inputId %in% names(inputs)) stop("cannot find input with id", inputId)
+        if (!inputId %in% names(inputs)) stop("cannot find input with id ", inputId)
         return(inputs[[inputId]])
       }
       idx <- which(names == name & chartIds %in% c(0, chartId))
-      if (length(idx) == 0) stop("cannot find input with name", name)
+      if (length(idx) == 0) stop("cannot find input with name ", name)
       inputs[[idx]]
+    },
+
+    addInput = function(input) {
+      inputs[[input$getID()]] <<- input
+      names <<- append(names, input$name)
+      chartIds <<- append(chartIds, get(".id", envir = input$env))
+
+      # Reset dependencies
+      setDeps()
+      if (initialized) update(forceDeps = TRUE)
+    },
+
+    removeInput = function(name, chartId = 0, inputId = NULL) {
+      if (!is.null(inputId)) {
+        if (!inputId %in% names(inputs)) stop("cannot find input with id ", inputId)
+        idx <- which(names(inputs) == inputId)
+      } else {
+        idx <- which(names == name & chartIds == chartId)
+      }
+
+      if (length(idx) == 0) stop("cannot find input with name ", name)
+      inputs[[idx]] <<- NULL
+      names <<- names[-idx]
+      chartIds <<- chartIds[-idx]
+
+      setDeps()
+
+      TRUE
     },
 
     getValue = function(name, chartId = 1, inputId = NULL) {
