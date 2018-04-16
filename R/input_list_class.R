@@ -99,10 +99,12 @@ InputList <- setRefClass(
       inputs[[idx]]
     },
 
-    addInput = function(input) {
-      inputs[[input$getID()]] <<- input
-      names <<- append(names, input$name)
-      chartIds <<- append(chartIds, get(".id", envir = input$env))
+    addInputs = function(x) {
+      for (input in x) {
+        inputs[[input$getID()]] <<- input
+        names <<- append(names, input$name)
+        chartIds <<- append(chartIds, get(".id", envir = input$env))
+      }
 
       # Reset dependencies
       setDeps()

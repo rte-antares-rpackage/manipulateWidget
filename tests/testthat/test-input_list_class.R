@@ -104,8 +104,8 @@ describe("InputList", {
       e <- initEnv(parent.frame(), 1)
       inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
       inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
-      inputList <- InputList(inputs[2])$init()
-      inputList$addInput(inputs[[1]])
+      inputList <- InputList(inputs[1])$init()
+      inputList$addInputs(inputs[2])
       expect_equal(inputList$inputs$output_1_y$value, 5)
 
       inputList$setValue(inputId = "output_1_x", value = 7)
