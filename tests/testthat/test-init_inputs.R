@@ -8,8 +8,8 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   inputList <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
   inputList <- flattenInputs(inputList)
 
-  expect_is(res, "list")
-  expect_named(res, c("envs", "inputs", "inputList", "ncharts"))
+  expect_is(res, "Model")
+  expect_named(res$getRefClass()$fields(), c("envs", "inputs", "inputList", "ncharts"))
   expect_is(res$envs, "list")
   expect_named(res$envs, c("shared", "ind"))
   expect_is(res$envs$ind, "list")
@@ -26,7 +26,10 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   expect_length(res$inputList$inputs, expectedLength)
 
   sharedInputs <- setdiff(names(inputList), names(compare))
-  expected_names <- paste0("shared_", sharedInputs)
+
+  if (length(sharedInputs) == 0) expected_names <- c()
+  else expected_names <- paste0("shared_", sharedInputs)
+
   if (length(compare) > 0) {
     for (i in seq_len(ncharts)) {
       expected_names <- append(
@@ -68,5 +71,46 @@ describe("initInputs", {
   it("throws errors if inputs are not inputs or not named", {
     expect_error(initInputs(list(mwText())), "All arguments need to be named.")
     expect_error(initInputs(list(a = 1)), "All arguments need to be Input objects.")
+  })
+})
+
+describe("Model Class", {
+  it ("shares an input", {
+
+  })
+
+  it ("unshares an input", {
+    model <- test_structure(list(a = mwText(), b = mwText("test")), ncharts = 2,
+                            compare = list(a = NULL))
+
+    model$unshareInput("b")
+    expect_length(model$inputs$shared, 0)
+
+    for (i in 1:2) {
+      expect_length(model$inputs$ind[[i]], 2)
+      expect_named(model$inputs$ind[[i]], c("a", "b"))
+    }
+
+    expect_null(model$envs$shared$b)
+    for (i in 1:2) {
+      expect_equal(model$envs$ind[[i]]$b, "test")
+    }
+
+    model$inputList$setValue("b", "test2", chartId = 1)
+    expect_equal(model$envs$ind[[1]]$b, "test2")
+    expect_equal(model$envs$ind[[2]]$b, "test")
+
+  })
+
+  it ("ads a chart", {
+
+  })
+
+  it ("ads many charts", {
+
+  })
+
+  it ("removes many charts", {
+
   })
 })
