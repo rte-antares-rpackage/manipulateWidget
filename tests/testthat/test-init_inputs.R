@@ -76,7 +76,24 @@ describe("initInputs", {
 
 describe("Model Class", {
   it ("shares an input", {
+    model <- test_structure(list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0)),
+                            ncharts = 2, compare = list(x = list(5, 0), y = NULL))
 
+    model$inputList$init()
+    model$shareInput("x")
+
+    expect_length(model$inputs$shared, 1)
+    expect_named(model$inputs$shared, "x")
+
+    for (i in 1:2) {
+      expect_length(model$inputs$ind[[i]], 1)
+      expect_named(model$inputs$ind[[i]], c("y"))
+    }
+
+    expect_equal(model$envs$shared$x, 5)
+    for (i in 1:2) {
+      expect_null(model$envs$ind[[i]]$x)
+    }
   })
 
   it ("unshares an input", {

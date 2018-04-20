@@ -71,7 +71,21 @@ Model <- setRefClass(
     },
 
     shareInput = function(name) {
+      value <- get(name, envir = envs$ind[[1]])
+      newInput <- inputs$ind[[1]][[name]]$copy()
 
+      assign(name, value, envir = envs$shared)
+      newInput$env <- envs$shared
+      newInput <- list(newInput)
+      names(newInput) <- name
+      inputs$shared <<- append(inputs$shared, newInput)
+      inputList$addInputs(newInput)
+
+      for (i in seq_len(ncharts)) {
+        rm(list = name, envir = envs$ind[[i]])
+        inputs$ind[[i]][[name]] <<- NULL
+        inputList$removeInput(name, chartId = i)
+      }
     },
 
     unshareInput = function(name) {
