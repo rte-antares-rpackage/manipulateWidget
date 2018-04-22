@@ -108,15 +108,46 @@ Model <- setRefClass(
     },
 
     addChart = function() {
+      ncharts <<- ncharts + 1
+      # Copy environment of last chart
+      envs$ind <<- append(envs$ind, cloneEnv(envs$ind[[ncharts - 1]], envs$shared))
+      assign(".id", ncharts, envir = envs$ind[[ncharts]])
+      assign(".output", paste0("output_", ncharts), envir = envs$ind[[ncharts]])
 
+      # Copy inputs
+      newInputs <- lapply(inputs$ind[[ncharts - 1]], function(input) {
+        newInput <- input$copy()
+        newInput$env <- envs$ind[[ncharts]]
+        newInput
+      })
+
+      names(newInputs) <- names(inputs$ind[[ncharts - 1]])
+      inputs$ind[[ncharts]] <<- newInputs
+
+      inputList$addInputs(newInputs)
     },
 
     removeChart = function() {
+      if (ncharts == 1) stop("Need at least one chart.")
 
+      for (n in names(inputs$ind[[ncharts]])) {
+        inputList$removeInput(n, chartId = ncharts)
+      }
+      envs$ind[[ncharts]] <<- NULL
+      inputs$ind[[ncharts]] <<- NULL
+
+      ncharts <<- ncharts - 1
     },
 
     setChartNumber = function(n) {
-
+      if (n < 1) stop("Need at least one chart.")
+      while (n != ncharts) {
+        if (n > ncharts) {
+          addChart()
+        } else {
+          removeChart()
+        }
+      }
     }
   )
 )

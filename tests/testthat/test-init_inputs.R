@@ -120,14 +120,62 @@ describe("Model Class", {
   })
 
   it ("ads a chart", {
+    model <- test_structure(list(a = mwText("test"), b = mwText()), ncharts = 1,
+                           compare = list(a = NULL))
+    model$addChart()
 
+    expect_equal(model$ncharts, 2)
+    expect_length(model$envs$ind, 2)
+    expect_length(model$inputs$ind, 2)
+
+    for (i in 1:2) {
+      expect_equal(model$envs$ind[[i]]$a, "test")
+      expect_null(model$envs$ind[[i]]$b)
+    }
+
+    model$inputList$setValue("a", "test2", chartId = 1)
+    expect_equal(model$envs$ind[[1]]$a, "test2")
+    expect_equal(model$envs$ind[[2]]$a, "test")
+
+    model$inputList$setValue("b", "test3", chartId = 0)
+    expect_equal(get("b", envir = model$envs$ind[[1]]), "test3")
+    expect_equal(get("b", envir = model$envs$ind[[2]]), "test3")
+  })
+
+  it ("removes a chart", {
+    model <- test_structure(list(a = mwText("test"), b = mwText()), ncharts = 2,
+                            compare = list(a = NULL))
+    model$removeChart()
+
+    expect_equal(model$ncharts, 1)
+    expect_length(model$envs$ind, 1)
+    expect_length(model$inputs$ind, 1)
+    expect_length(model$inputList$inputs, 2)
+    expect_named(model$inputList$inputs, c("shared_b", "output_1_a"), ignore.order = TRUE)
+  })
+
+  it ("does not remove last chart", {
+    model <- test_structure(list(a = mwText("test"), b = mwText()), ncharts = 1,
+                            compare = list(a = NULL))
+
+    expect_error(model$removeChart(), "at least one chart")
   })
 
   it ("ads many charts", {
-
+    model <- test_structure(list(a = mwText("test"), b = mwText()), ncharts = 2,
+                            compare = list(a = NULL))
+    model$setChartNumber(4)
+    expect_equal(model$ncharts, 4)
+    expect_length(model$envs$ind, 4)
+    expect_length(model$inputs$ind, 4)
   })
 
   it ("removes many charts", {
-
+    model <- test_structure(list(a = mwText("test"), b = mwText()), ncharts = 4,
+                            compare = list(a = NULL))
+    model$setChartNumber(2)
+    expect_equal(model$ncharts, 2)
+    expect_length(model$envs$ind, 2)
+    expect_length(model$inputs$ind, 2)
   })
 })
