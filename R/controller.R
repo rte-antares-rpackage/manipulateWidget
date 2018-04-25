@@ -48,7 +48,7 @@ MWController <- setRefClass(
   "MWController",
   fields = c("inputList", "uiSpec", "envs", "session", "shinyOutput", "expr", "ncharts", "charts",
              "autoUpdate", "renderFunc", "outputFunc", "useCombineWidgets", "nrow", "ncol",
-             "returnFunc", "initialized"),
+             "returnFunc", "initialized", "listeners"),
   methods = list(
 
     initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE,
@@ -70,6 +70,7 @@ MWController <- setRefClass(
       returnFunc <<- returnFunc
       charts <<- list()
       initialized <<- FALSE
+      listeners <<- character()
     },
 
     init = function() {
@@ -277,7 +278,10 @@ MWController <- setRefClass(
           controller$render(output, session, fillPage = fillPage)
         })
 
-        lapply(names(controller$inputList$inputs), function(id) {
+        addListener <- function(id) {
+          print(id)
+          if (!is.character(id)) return()
+          if (id %in% controller$listeners) return()
           if (controller$inputList$inputs[[id]]$type != "sharedValue") {
             # When shiny starts, this code is executed but input[[id]] is not defined yet.
             # The code is designed to skip this first useless update.
@@ -292,11 +296,28 @@ MWController <- setRefClass(
                 controller$render(output, session)
               }
             })
+            controller$listeners <- append(controller$listeners, id)
           }
-        })
+        }
+
+        lapply(names(controller$inputList$inputs), addListener)
 
         observeEvent(input$.update, controller$updateCharts(), ignoreNULL = !autoUpdate$initBtn)
         observeEvent(input$done, onDone(controller))
+        observeEvent(input$.compare_vars, ignoreNULL = FALSE, ignoreInit = TRUE,  {
+          for (n in input$.compare_vars) {
+            newInputs <- controller$uiSpec$unshareInput(n)
+            for (inputId in newInputs) addListener(inputId)
+          }
+          for (n in setdiff(sort(unique(controller$inputList$names)), input$.compare_vars)) {
+            newInput <- controller$uiSpec$shareInput(n)
+            for (inputId in newInput) addListener(inputId)
+          }
+          inputList$update(forceDeps = TRUE)
+          controller$updateCharts()
+          ns <- session$ns
+          output$ui <- renderUI(controller$getModuleUI()(ns, height = "100%", fillPage = fillPage))
+        })
 
         output$save <- shiny::downloadHandler(
           filename = function() {
@@ -347,12 +368,13 @@ cloneUISpec <- function(uiSpec, session) {
 
   newSpec <- replaceInputs(uiSpec$inputs, newInputs, c(list(newSharedEnv), newEnvs))
 
-  list(
-    envs = list(shared = newSharedEnv, ind = newEnvs),
-    inputs = newSpec,
-    inputList = InputList(newInputs, session),
-    ncharts = uiSpec$ncharts
-  )
+  res <- Model()
+  res$envs <- list(shared = newSharedEnv, ind = newEnvs)
+  res$inputs <- newSpec
+  res$inputList <- InputList(newInputs, session)
+  res$ncharts <- uiSpec$ncharts
+
+  res
 }
 
 replaceInputs <- function(inputs, newInputs, envs) {

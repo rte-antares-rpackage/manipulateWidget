@@ -65,6 +65,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL, okBtn = TRUE,
   }
 
   showSettings <- inputs$ncharts == 1 || length(inputs$inputs$shared) > 0
+
   if (border) class <- "mw-container with-border"
   else class <- "mw-container"
 
@@ -98,11 +99,23 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL, okBtn = TRUE,
 }
 
 .uiInputs <- function(ns, inputs) {
+  variables <- sort(unique(inputs$inputList$names))
+  shared <- sort(unique(inputs$inputList$names[inputs$inputList$chartIds == 0]))
   inputs <- c(list(inputs$inputs$shared), inputs$inputs$ind)
   ids <- ns(c("mw-shared-inputs", paste0("mw-ind-inputs-", 1:(length(inputs) - 1))))
   inputs <- mapply(function(x, id) {
-    if (length(x) == 0) return(NULL)
+    if (length(x) == 0 & id != ids[1]) return(NULL)
     content <- lapply(x, function(i) i$getHTML(ns))
+    if (id == ids[1]) {
+      content <- append(
+        content,
+        list(selectInput(
+          ns(".compare_vars"), "Variables", variables, multiple = TRUE,
+          selected = setdiff(variables, shared)
+        ))
+      )
+    }
+
     tags$div(class = "mw-inputs", id = id, shiny::tagList(content))
   }, x = inputs, id = ids, USE.NAMES = FALSE, SIMPLIFY = FALSE)
 
