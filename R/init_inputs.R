@@ -35,14 +35,18 @@ initEnv <- function(parentEnv, id) {
 #' - ncharts: number of charts
 #' @noRd
 initInputs <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1) {
-  Model(inputs = inputs, env = env, compare = compare, ncharts = ncharts)
+  res <- Model()
+  res$init(inputs = inputs, env = env, compare = compare, ncharts = ncharts)
+  res
 }
 
 Model <- setRefClass(
   "Model",
   fields = c("envs", "inputs", "inputList", "ncharts"),
   methods = list(
-    initialize = function(inputs, env = parent.frame(), compare = NULL, ncharts = 1) {
+    initialize = function() {},
+
+    init = function(inputs, env = parent.frame(), compare = NULL, ncharts = 1) {
       if (is.null(names(inputs))) stop("All arguments need to be named.")
       for (i in inputs) if (!inherits(i, "Input")) stop("All arguments need to be Input objects.")
 
@@ -71,6 +75,9 @@ Model <- setRefClass(
     },
 
     shareInput = function(name) {
+      if (name %in% names(inputs$shared)) {
+        return(character())
+      }
       value <- get(name, envir = envs$ind[[1]])
       newInput <- inputs$ind[[1]][[name]]$copy()
 
@@ -86,11 +93,16 @@ Model <- setRefClass(
         inputs$ind[[i]][[name]] <<- NULL
         inputList$removeInput(name, chartId = i)
       }
+
+      newInput[[1]]$getID()
     },
 
     unshareInput = function(name) {
+      if (name %in% names(inputs$ind[[1]])) return(character())
       value <- get(name, envir = envs$shared)
       oldInput <- inputs$shared[[name]]
+
+      newInputIds <- character()
 
       for (i in seq_len(ncharts)) {
         assign(name, value, envir = envs$ind[[i]])
@@ -100,11 +112,14 @@ Model <- setRefClass(
         names(newInput) <- name
         inputs$ind[[i]] <<- append(inputs$ind[[i]], newInput)
         inputList$addInputs(newInput)
+        newInputIds <- append(newInputIds, newInput[[1]]$getID())
       }
 
       rm(list = name, envir = envs$shared)
       inputs$shared[[name]] <<- NULL
       inputList$removeInput(name, chartId = 0)
+
+      newInputIds
     },
 
     addChart = function() {

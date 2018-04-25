@@ -80,7 +80,8 @@ describe("Model Class", {
                             ncharts = 2, compare = list(x = list(5, 0), y = NULL))
 
     model$inputList$init()
-    model$shareInput("x")
+    newInput <- model$shareInput("x")
+    expect_equal(newInput, "shared_x")
 
     expect_length(model$inputs$shared, 1)
     expect_named(model$inputs$shared, "x")
@@ -100,7 +101,8 @@ describe("Model Class", {
     model <- test_structure(list(a = mwText(), b = mwText("test")), ncharts = 2,
                             compare = list(a = NULL))
 
-    model$unshareInput("b")
+    newInputs <- model$unshareInput("b")
+    expect_equal(newInputs, c("output_1_b", "output_2_b"))
     expect_length(model$inputs$shared, 0)
 
     for (i in 1:2) {
