@@ -30,6 +30,38 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
     style = "manipulate_widget.css"
   )
 
+  if(exportBtn){
+    fileSaver_dep <- htmltools::htmlDependency(
+      name = "FileSaver",
+      version = "1.1.20151003",
+      src = c(file=system.file("lib/export/FileSaver", package="manipulateWidget")),
+      script = "FileSaver.min.js"
+    )
+
+    Blob_dep <- htmltools::htmlDependency(
+      name = "Blob",
+      version = "1.0",
+      src = c(file=system.file("lib/export/Blob", package="manipulateWidget")),
+      script = "Blob.js"
+    )
+
+    canvastoBlob_dep <- htmltools::htmlDependency(
+      name = "canvas-toBlob",
+      version = "1.0",
+      src = c(file=system.file("lib/export/canvas-toBlob", package="manipulateWidget")),
+      script = "canvas-toBlob.js"
+    )
+
+    html2canvas_dep <- htmltools::htmlDependency(
+      name = "html2canvas",
+      version = "0.5.0",
+      src = c(file=system.file("lib/export/html2canvas", package="manipulateWidget")),
+      script = "html2canvas.js"
+    )
+
+    htmldep <- list(htmldep, fileSaver_dep, Blob_dep, canvastoBlob_dep, html2canvas_dep)
+  }
+
   showSettings <- inputs$ncharts == 1 || length(inputs$inputs$shared) > 0
   if (border) class <- "mw-container with-border"
   else class <- "mw-container"
@@ -91,6 +123,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
   })
 
   tags$div(
+    class = ns("mw-chart-area"),
     style = "height:100%;width:100%",
     shiny::tagList(outputEls)
   )
@@ -148,8 +181,9 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
       bottom_px <-  "bottom: 30px;font-size: 8px;"
     }
 
-    exportBtnInput <- shiny::downloadButton(ns("export"), label = "PNG", class = "mw-btn mw-btn-export",
-                                            style = bottom_px)
+    exportBtnInput <- shiny::actionButton(ns("export"), icon = icon("download"), label = "PNG",
+                                          class = "mw-btn mw-btn-export", style = bottom_px,
+                                          onclick = sprintf("saveAsPNG('%s')", ns("mw-chart-area")))
     container <- tagAppendChild(container, exportBtnInput)
   }
 

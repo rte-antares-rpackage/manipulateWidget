@@ -82,7 +82,6 @@
 #' @importFrom methods is new setRefClass
 #' @importFrom utils getFromNamespace
 #' @importFrom stats runif
-#' @import webshot
 NULL
 #
 globalVariables(c("mod", "multiple", "name", "type"))

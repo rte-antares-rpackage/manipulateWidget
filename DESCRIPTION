@@ -30,8 +30,7 @@ Imports:
     tools,
     base64enc,
     grDevices,
-    codetools, 
-    webshot
+    codetools
 Suggests:
     dygraphs,
     leaflet,
