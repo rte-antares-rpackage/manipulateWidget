@@ -27,6 +27,7 @@ function saveAsPNG(id){
   if(chart_area[0]){
     html2canvas(chart_area[0], {
       background :'#FFFFFF',
+      useCORS : true,
       onrendered: function(canvas) {
         canvas.toBlobHD(function(blob) {
           saveAs(blob, "mw-export");
