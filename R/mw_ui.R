@@ -8,7 +8,8 @@
 #' @param outputFun Function that generates the html elements that will contain
 #'   a given widget
 #' @param okBtn Should the OK Button be added to the UI ?
-#' @param saveBtn Should the Save Button be added to the UI ?
+#' @param saveBtn Should the UI contain the save button ? For saving output as html
+#' @param exportBtn Should an export button be added to the controls ? For saving output as png
 #' @param updateBtn Should the updateBtn be added to the UI ? Currently unused.
 #' @param width, height	Must be a valid CSS unit (like "100%", "400px", "auto") or a number,
 #' which will be coerced to a string and have "px" appended. Default to "100%" & "400px"
@@ -17,7 +18,7 @@
 #'
 #' @noRd
 mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
-                 okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
+                 okBtn = TRUE, saveBtn = TRUE, exportBtn = TRUE, updateBtn = FALSE,
                  areaBtns = TRUE, border = FALSE, width = "100%", height = "400px",
                  fillPage = TRUE, showCompare = TRUE) {
 
@@ -40,7 +41,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
         style = paste("width:", width, ";height:", height, ";"),
         fillRow(
           flex = c(NA, NA, 1),
-          .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns, showCompare),
+          .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, exportBtn, updateBtn, areaBtns, showCompare),
           .uiInputs(ns, inputs),
           .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
         )
@@ -48,31 +49,31 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
     )
   } else {
     container <- tags$div(
-        class = class,
-        fillRow(
-          flex = c(NA, NA, 1),
-          width = width, height = height,
-          .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, updateBtn, areaBtns, showCompare),
-          .uiInputs(ns, inputs),
-          .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
-        )
+      class = class,
+      fillRow(
+        flex = c(NA, NA, 1),
+        width = width, height = height,
+        .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, exportBtn, updateBtn, areaBtns, showCompare),
+        .uiInputs(ns, inputs),
+        .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
       )
+    )
   }
 
   htmltools::attachDependencies(container, htmldep, TRUE)
 }
 
 .uiInputs <- function(ns, inputs) {
-   inputs <- c(list(inputs$inputs$shared), inputs$inputs$ind)
-   ids <- ns(c("mw-shared-inputs", paste0("mw-ind-inputs-", 1:(length(inputs) - 1))))
-   inputs <- mapply(function(x, id) {
-     if (length(x) == 0) return(NULL)
-     content <- lapply(x, function(i) i$getHTML(ns))
-     tags$div(class = "mw-inputs", id = id, shiny::tagList(content))
-   }, x = inputs, id = ids, USE.NAMES = FALSE, SIMPLIFY = FALSE)
+  inputs <- c(list(inputs$inputs$shared), inputs$inputs$ind)
+  ids <- ns(c("mw-shared-inputs", paste0("mw-ind-inputs-", 1:(length(inputs) - 1))))
+  inputs <- mapply(function(x, id) {
+    if (length(x) == 0) return(NULL)
+    content <- lapply(x, function(i) i$getHTML(ns))
+    tags$div(class = "mw-inputs", id = id, shiny::tagList(content))
+  }, x = inputs, id = ids, USE.NAMES = FALSE, SIMPLIFY = FALSE)
 
-   inputs$class <- "mw-input-container"
-   do.call(tags$div, inputs)
+  inputs$class <- "mw-input-container"
+  do.call(tags$div, inputs)
 }
 
 .uiChartarea <- function(ns, ncharts, nrow, ncol, outputFun) {
@@ -95,7 +96,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
   )
 }
 
-.uiMenu <- function(ns, ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn, updateBtn, areaBtns, showCompare = TRUE) {
+.uiMenu <- function(ns, ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn, exportBtn, updateBtn, areaBtns, showCompare = TRUE) {
   container <- tags$div(
     class="mw-menu"
   )
@@ -131,10 +132,25 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
   }
 
   if (saveBtn) {
-    bottom_px <- ifelse(okBtn, "bottom: 80px;", "bottom: 30px;")
-    saveBtnInput <- shiny::downloadButton(ns("save"), label = "", class = "mw-btn mw-btn-save",
+    bottom_px <- ifelse(okBtn, "bottom: 80px;font-size: 8px;", "bottom: 30px;font-size: 8px;")
+
+    saveBtnInput <- shiny::downloadButton(ns("save"), label = "HTML", class = "mw-btn mw-btn-save",
                                      style = bottom_px)
     container <- tagAppendChild(container, saveBtnInput)
+  }
+
+  if (exportBtn) {
+    if(xor(okBtn, saveBtn)){
+      bottom_px <-  "bottom: 80px;font-size: 8px;"
+    } else if(okBtn && saveBtn){
+      bottom_px <-  "bottom: 130px;font-size: 8px;"
+    } else {
+      bottom_px <-  "bottom: 30px;font-size: 8px;"
+    }
+
+    exportBtnInput <- shiny::downloadButton(ns("export"), label = "PNG", class = "mw-btn mw-btn-export",
+                                            style = bottom_px)
+    container <- tagAppendChild(container, exportBtnInput)
   }
 
   container
