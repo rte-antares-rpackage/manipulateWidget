@@ -29,7 +29,7 @@ server <- function(input, output, session) {
     series = mwSharedValue(),
     title = mwSharedValue(
       {"init"}
-    ), .runApp = FALSE,
+    ), .runApp = FALSE, .showCompare = FALSE,
     .compare = "range"
   )
 
