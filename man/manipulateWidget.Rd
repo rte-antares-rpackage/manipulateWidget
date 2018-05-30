@@ -5,10 +5,11 @@
 \title{Add Controls to Interactive Plots}
 \usage{
 manipulateWidget(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
-  .exportBtn = TRUE, .updateBtnInit = FALSE, .viewer = c("pane", "window",
-  "browser"), .compare = NULL, .compareOpts = compareOptions(),
-  .showCompare = TRUE, .return = function(widget, envs) {     widget },
-  .width = NULL, .height = NULL, .runApp = TRUE)
+  .exportBtn = TRUE, .exportType = c("html2canvas", "webshot"),
+  .updateBtnInit = FALSE, .viewer = c("pane", "window", "browser"),
+  .compare = NULL, .compareOpts = compareOptions(), .showCompare = TRUE,
+  .return = function(widget, envs) {     widget }, .width = NULL,
+  .height = NULL, .runApp = TRUE)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -27,9 +28,11 @@ named "txt" and "nb".}
 \code{TRUE}, then the graphic is updated only when the user clicks on the
 update button.}
 
-\item{.saveBtn}{Should an save button be added to the controls ? For saving output as html}
+\item{.saveBtn}{Should an save button be added to the controls ? For saving output as html. Does not work in RStudio Viewer}
 
-\item{.exportBtn}{Should an export button be added to the controls ? For saving output as png}
+\item{.exportBtn}{Should an export button be added to the controls ? For saving output as png. Does not work in RStudio Viewer}
+
+\item{.exportType}{\code{.exportBtn}, using \code{html2canvas} (default) and keeping current zoom, ... or using \code{webshot}}
 
 \item{.updateBtnInit}{In case of update button. Do you want to render graphics on init ?}
 
