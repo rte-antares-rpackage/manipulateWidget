@@ -61,9 +61,10 @@ mwModule <- function(id, controller, fillPage = FALSE, ...) {
 }
 
 
-#' @param border Should a border be added to the module?
-#' @param okBtn Should the UI contain the OK button?
-#' @param saveBtn Should the UI contain the save button?
+#' @param border Should a border be added to the module ?
+#' @param okBtn Should the UI contain the OK button ?
+#' @param saveBtn Should the UI contain the save button ? For saving output as html
+#' @param exportBtn Should an export button be added to the controls ? For saving output as png
 #' @param margin Margin to apply around the module UI. Should be one two or four valid css
 #'   units.
 #' @param width Width of the module UI.
@@ -73,8 +74,8 @@ mwModule <- function(id, controller, fillPage = FALSE, ...) {
 #'
 #' @rdname mwModule
 #' @export
-mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin = 0,
-                       width = "100%", height = 400, header = NULL, footer = NULL) {
+mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, exportBtn = TRUE,
+                       margin = 0, width = "100%", height = 400, header = NULL, footer = NULL) {
 
   ns <- shiny::NS(id)
   for (i in seq_along(margin)) {
@@ -87,6 +88,7 @@ mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, margin 
   if (border) class <- c(class, "with-border")
   if(!okBtn) class <- c(class, "without-ok")
   if(!saveBtn) class <- c(class, "without-save")
+  if(!exportBtn) class <- c(class, "without-export")
   class <- paste(class, collapse = " ")
 
   res <- shiny::tagList(

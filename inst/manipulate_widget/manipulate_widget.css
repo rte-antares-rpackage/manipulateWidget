@@ -107,7 +107,7 @@
 
 
 /* OK and save buttons button */
-.btn.mw-btn-ok, .btn.mw-btn-save {
+.btn.mw-btn-ok, .btn.mw-btn-save, .btn.mw-btn-export {
   margin: 0 3px;
   width: 44px;
   height: 44px;
@@ -124,7 +124,7 @@
   padding:0;
 }
 
-.btn.mw-btn-ok:hover, .btn.mw-btn-ok:active, .btn.mw-btn-ok:focus, .btn.mw-btn-save:hover, .btn.mw-btn-save:focus, .btn.mw-btn-save:active  {
+.btn.mw-btn-ok:hover, .btn.mw-btn-ok:active, .btn.mw-btn-ok:focus, .btn.mw-btn-save:hover, .btn.mw-btn-save:focus, .btn.mw-btn-save:active, .btn.mw-btn-export:hover, .btn.mw-btn-export:focus, .btn.mw-btn-export:active  {
   color: white;
   background-color: #0b946c;
 }
@@ -184,6 +184,10 @@ html, body {
 }
 
 .without-save .mw-btn-save {
+  display: none;
+}
+
+.without-export .mw-btn-export {
   display: none;
 }
 

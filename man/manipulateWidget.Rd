@@ -5,10 +5,10 @@
 \title{Add Controls to Interactive Plots}
 \usage{
 manipulateWidget(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
-  .updateBtnInit = FALSE, .viewer = c("pane", "window", "browser"),
-  .compare = NULL, .compareOpts = compareOptions(), .showCompare = TRUE,
-  .return = function(widget, envs) {     widget }, .width = NULL,
-  .height = NULL, .runApp = TRUE)
+  .exportBtn = TRUE, .updateBtnInit = FALSE, .viewer = c("pane", "window",
+  "browser"), .compare = NULL, .compareOpts = compareOptions(),
+  .showCompare = TRUE, .return = function(widget, envs) {     widget },
+  .width = NULL, .height = NULL, .runApp = TRUE)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -27,7 +27,9 @@ named "txt" and "nb".}
 \code{TRUE}, then the graphic is updated only when the user clicks on the
 update button.}
 
-\item{.saveBtn}{Should an save button be added to the controls ?}
+\item{.saveBtn}{Should an save button be added to the controls ? For saving output as html}
+
+\item{.exportBtn}{Should an export button be added to the controls ? For saving output as png}
 
 \item{.updateBtnInit}{In case of update button. Do you want to render graphics on init ?}
 

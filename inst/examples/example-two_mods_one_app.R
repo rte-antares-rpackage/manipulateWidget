@@ -16,7 +16,7 @@ c <- manipulateWidget(
   series = mwSelect(c("series1", "series2", "series3")),
   title = mwText("Fictive time series"),
   .compare = c("title", "series"), .runApp = FALSE,
-  .saveBtn = FALSE
+  .saveBtn = TRUE, .exportBtn = TRUE
 )
 
 dt <- data.frame (
