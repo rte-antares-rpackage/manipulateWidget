@@ -8,8 +8,9 @@
 #' @param outputFun Function that generates the html elements that will contain
 #'   a given widget
 #' @param okBtn Should the OK Button be added to the UI ?
-#' @param saveBtn Should the UI contain the save button ? For saving output as html
-#' @param exportBtn Should an export button be added to the controls ? For saving output as png
+#' @param saveBtn Should an save button be added to the controls ? For saving output as html. Does not work in RStudio Viewer
+#' @param exportBtn Should an export button be added to the controls ? For saving output as png. Does not work in RStudio Viewer
+#' @param exportType \code{.exportBtn}, using \code{html2canvas} (default) and keeping current zoom, ... or using \code{webshot}
 #' @param updateBtn Should the updateBtn be added to the UI ? Currently unused.
 #' @param width, height	Must be a valid CSS unit (like "100%", "400px", "auto") or a number,
 #' which will be coerced to a string and have "px" appended. Default to "100%" & "400px"
@@ -17,11 +18,12 @@
 #' @return shiny tags
 #'
 #' @noRd
-mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
-                 okBtn = TRUE, saveBtn = TRUE, exportBtn = TRUE, updateBtn = FALSE,
+mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL, okBtn = TRUE,
+                 saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas", updateBtn = FALSE,
                  areaBtns = TRUE, border = FALSE, width = "100%", height = "400px",
                  fillPage = TRUE, showCompare = TRUE) {
 
+  print(exportType)
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
     "0.7.0",
@@ -30,7 +32,8 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
     style = "manipulate_widget.css"
   )
 
-  if(exportBtn){
+  if(exportBtn & exportType %in% "html2canvas"){
+
     fileSaver_dep <- htmltools::htmlDependency(
       name = "FileSaver",
       version = "1.1.20151003",
@@ -73,7 +76,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
         style = paste("width:", width, ";height:", height, ";"),
         fillRow(
           flex = c(NA, NA, 1),
-          .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, exportBtn, updateBtn, areaBtns, showCompare),
+          .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, exportBtn, exportType, updateBtn, areaBtns, showCompare),
           .uiInputs(ns, inputs),
           .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
         )
@@ -85,7 +88,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
       fillRow(
         flex = c(NA, NA, 1),
         width = width, height = height,
-        .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, exportBtn, updateBtn, areaBtns, showCompare),
+        .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, exportBtn, exportType, updateBtn, areaBtns, showCompare),
         .uiInputs(ns, inputs),
         .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
       )
@@ -129,7 +132,8 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
   )
 }
 
-.uiMenu <- function(ns, ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn, exportBtn, updateBtn, areaBtns, showCompare = TRUE) {
+.uiMenu <- function(ns, ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn,
+                    exportBtn, exportType, updateBtn, areaBtns, showCompare = TRUE) {
   container <- tags$div(
     class="mw-menu"
   )
@@ -181,9 +185,15 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL,
       bottom_px <-  "bottom: 30px;font-size: 8px;"
     }
 
-    exportBtnInput <- shiny::actionButton(ns("export"), icon = icon("download"), label = "PNG",
-                                          class = "mw-btn mw-btn-export", style = bottom_px,
-                                          onclick = sprintf("saveAsPNG('%s')", ns("mw-chart-area")))
+    if(exportType %in% "html2canvas"){
+      exportBtnInput <- shiny::actionButton(ns("export"), icon = icon("download"), label = "PNG",
+                                            class = "mw-btn mw-btn-export", style = bottom_px,
+                                            onclick = sprintf("saveAsPNG('%s')", ns("mw-chart-area")))
+    } else {
+      exportBtnInput <- shiny::downloadButton(ns("export"), label = "PNG", class = "mw-btn mw-btn-export",
+                                            style = bottom_px)
+    }
+
     container <- tagAppendChild(container, exportBtnInput)
   }
 

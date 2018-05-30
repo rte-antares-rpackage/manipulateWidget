@@ -51,9 +51,9 @@ MWController <- setRefClass(
              "returnFunc", "initialized"),
   methods = list(
 
-    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE, saveBtn = TRUE, exportBtn = TRUE),
-                          nrow = NULL,
-                          ncol = NULL, returnFunc = function(widget, envs) {widget}) {
+    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE,
+                                                          saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas"),
+                          nrow = NULL, ncol = NULL, returnFunc = function(widget, envs) {widget}) {
       expr <<- expr
       inputList <<- inputs$inputList
       uiSpec <<- inputs
@@ -224,12 +224,12 @@ MWController <- setRefClass(
       res
     },
 
-    getModuleUI = function(gadget = TRUE, saveBtn = TRUE, exportBtn = TRUE, addBorder = !gadget) {
+    getModuleUI = function(gadget = TRUE, saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas", addBorder = !gadget) {
       function(ns, okBtn = gadget, width = "100%", height = "400px", fillPage = TRUE) {
         #ns <- shiny::NS(id)
         mwUI(ns, uiSpec, nrow, ncol, outputFunc,
-             okBtn = okBtn, updateBtn = !autoUpdate$value,
-             saveBtn = autoUpdate$saveBtn, exportBtn = autoUpdate$exportBtn,
+             okBtn = okBtn, updateBtn = !autoUpdate$value, saveBtn = autoUpdate$saveBtn,
+             exportBtn = autoUpdate$exportBtn, exportType = autoUpdate$exportType,
              areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
              width = width, height = height, fillPage = fillPage,
              showCompare = autoUpdate$showCompare)
@@ -309,7 +309,7 @@ MWController <- setRefClass(
 
         output$export <- shiny::downloadHandler(
           filename = function() {
-            paste('mpWidget-', Sys.Date(), '.png', sep='')
+            'mp-export.png'
           },
           content = function(con) {
             tmp_html <- tempfile(fileext=".html")
