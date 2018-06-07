@@ -7,6 +7,7 @@
 
 ## Bugfixes
 * Passing `.saveBtn` using module
+* Fix reset widget after saving in .html
 
 # manipulateWidget 0.9.0 (2018-01-29)
 
