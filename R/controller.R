@@ -303,7 +303,7 @@ MWController <- setRefClass(
             paste('mpWidget-', Sys.Date(), '.html', sep='')
           },
           content = function(con) {
-            htmlwidgets::saveWidget(widget = onDone(controller, stopApp = FALSE),
+            htmlwidgets::saveWidget(widget = onDone(controller$clone(), stopApp = FALSE),
                                     file = con, selfcontained = TRUE)
           }
         )
@@ -314,7 +314,7 @@ MWController <- setRefClass(
           },
           content = function(con) {
             tmp_html <- tempfile(fileext=".html")
-            htmlwidgets::saveWidget(widget = onDone(controller, stopApp = FALSE),
+            htmlwidgets::saveWidget(widget = onDone(controller$clone(), stopApp = FALSE),
                                     file = tmp_html, selfcontained = TRUE)
             webshot::webshot(url = tmp_html, file = con)
           }
