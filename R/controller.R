@@ -52,7 +52,7 @@ MWController <- setRefClass(
   methods = list(
 
     initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE,
-                                                          saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas"),
+                                                          saveBtn = TRUE, exportBtn = FALSE, exportType = "html2canvas"),
                           nrow = NULL, ncol = NULL, returnFunc = function(widget, envs) {widget}) {
       expr <<- expr
       inputList <<- inputs$inputList
@@ -224,12 +224,13 @@ MWController <- setRefClass(
       res
     },
 
-    getModuleUI = function(gadget = TRUE, saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas", addBorder = !gadget) {
+    getModuleUI = function(gadget = TRUE, saveBtn = TRUE, exportBtn = FALSE, exportType = "html2canvas", addBorder = !gadget) {
       function(ns, okBtn = gadget, width = "100%", height = "400px", fillPage = TRUE) {
-        #ns <- shiny::NS(id)
+        #ns <- shiny::NS
         mwUI(ns, uiSpec, nrow, ncol, outputFunc,
-             okBtn = okBtn, updateBtn = !autoUpdate$value, saveBtn = autoUpdate$saveBtn,
+             okBtn = okBtn, saveBtn = autoUpdate$saveBtn,
              exportBtn = autoUpdate$exportBtn, exportType = autoUpdate$exportType,
+             updateBtn = !autoUpdate$value,
              areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
              width = width, height = height, fillPage = fillPage,
              showCompare = autoUpdate$showCompare)

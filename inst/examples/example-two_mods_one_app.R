@@ -15,8 +15,7 @@ c <- manipulateWidget(
   range = mwSlider(2001, 2100, c(2001, 2100)),
   series = mwSelect(c("series1", "series2", "series3")),
   title = mwText("Fictive time series"),
-  .compare = c("title", "series"), .runApp = FALSE,
-  .saveBtn = TRUE, .exportBtn = TRUE
+  .compare = c("title", "series"), .runApp = FALSE
 )
 
 dt <- data.frame (
@@ -34,7 +33,8 @@ myPlot <- function(type, lwd) {
 
 c2 <- manipulateWidget(
   combineWidgets(myPlot(type, lwd)),
-  type = mwSelect(c("points", "lines"), "points"),
+  type = mwSelect(c("points", "lines"), "points"), .saveBtn = TRUE,
+  .exportBtn = TRUE,
   lwd = mwSlider(1, 10, 1, .display = type == "lines"), .runApp = FALSE
 )
 

@@ -23,7 +23,6 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL, okBtn = TRUE,
                  areaBtns = TRUE, border = FALSE, width = "100%", height = "400px",
                  fillPage = TRUE, showCompare = TRUE) {
 
-  print(exportType)
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
     "0.7.0",
