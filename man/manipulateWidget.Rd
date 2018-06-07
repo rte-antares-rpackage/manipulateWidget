@@ -5,7 +5,7 @@
 \title{Add Controls to Interactive Plots}
 \usage{
 manipulateWidget(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
-  .exportBtn = TRUE, .exportType = c("html2canvas", "webshot"),
+  .exportBtn = FALSE, .exportType = c("html2canvas", "webshot"),
   .updateBtnInit = FALSE, .viewer = c("pane", "window", "browser"),
   .compare = NULL, .compareOpts = compareOptions(), .showCompare = TRUE,
   .return = function(widget, envs) {     widget }, .width = NULL,
