@@ -1,6 +1,5 @@
 gridModuleUI <- function(id) {
   ns <- NS(id)
-
   uiOutput(ns("cells"), container = function(...) {div(style = "height:100%;width:100%;position:absolute;", ...)})
 }
 
