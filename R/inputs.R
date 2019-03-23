@@ -32,7 +32,7 @@ changeValueParam <- function(func, valueArgName) {
       params[[valueArgName]] <- params$value
       params$value <- NULL
     }
-    do.call(shiny::updateSelectInput, params)
+    do.call(func, params)
   }
 }
 
