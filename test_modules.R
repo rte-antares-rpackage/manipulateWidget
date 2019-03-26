@@ -1,3 +1,6 @@
+library(shiny)
+library(plotly)
+
 htmldep <- htmltools::htmlDependency(
   "manipulateWidget",
   "0.7.0",
