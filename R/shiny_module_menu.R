@@ -39,29 +39,45 @@ menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = TRUE) {
 
 menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, ns) {
   ns <- session$ns
-  listeners <- character()
 
   chartId <- shiny::reactiveVal(-1)
+
+  listeners <- character()
+
+  # Eventually add listeners
+  observe({
+    ids <- ns(paste0("mw-ind-inputs-", seq_len(ncharts())))
+
+    lapply(seq_along(ids), function(i) {
+      if (! ids[[i]] %in% listeners) {
+        observeEvent(input[[ids[i]]], {
+          if (chartId() == i) chartId(-1)
+          else chartId(i)
+        })
+      }
+    })
+
+    listeners <<- union(listeners, ids)
+  })
+
+  # If user removes current chart, update chartId
+  observeEvent(ncharts(), {
+    if (chartId() > ncharts() | (chartId() == 1 & ncharts() == 1)) {
+      chartId(-1)
+    }
+  })
 
   output$chart_btns <- renderUI({
     if (ncharts() < 2) ""
     else {
       ids <- ns(paste0("mw-ind-inputs-", seq_len(ncharts())))
 
-      # Eventually add listener
-      for (i in seq_along(ids)) {
-        if (!ids[i] %in% listeners) {
-          observe(input[[ids[i]]], {
-            if (chartId() == i) chartId(-1)
-            else chartId(i)
-          })
-        }
-      }
-      listeners <- union(listeners, ids)
-
       btns <- lapply(seq_len(ncharts()), function(i) {
+        if (i == chartId()) active_class <- " active"
+        else active_class <- ""
+
         tags$div(
-          class = "mw-btn mw-btn-area",
+          class = paste0("mw-btn mw-btn-area", active_class),
           style = "padding: 0px",
           onclick = sprintf("select(this,'%s')", ids[i]),
           shiny::actionButton(
