@@ -11,8 +11,9 @@ htmldep <- htmltools::htmlDependency(
 
 ui <- fillPage(
   fillRow(
-    flex = c(NA, NA, 1),
+    flex = c(NA, NA,NA, 1),
     fillCol(width = 50, menuModuleUI("menu", updateBtn = FALSE)),
+    inputAreaModuleUI("inputarea"),
     fillCol(
       width = 100,
       sliderInput("ncells", "ncells", 1, 12, 1),
@@ -25,8 +26,6 @@ ui <- fillPage(
 ui <- htmltools::attachDependencies(ui, htmldep, TRUE)
 
 server <- function(input, output, session) {
-  print(class(input))
-
   content <- reactive({
     lapply(seq_len(input$ncells), function(i) {
       tags$div(
@@ -45,6 +44,8 @@ server <- function(input, output, session) {
 
 
   chartId <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol)
+
+  callModule(manipulateWidget:::inputAreaModuleServer, "inputarea", chartId)
 
   observe({
     output$chartid <- renderText(chartId())
