@@ -2,13 +2,16 @@ function select(el, id) {
   el = $(el);
   var active = el.hasClass("active");
   $(".mw-btn-settings,.mw-btn-area").removeClass("active");
-  $(".mw-inputs").css("display", "none");
   if (!active) {
 	  el.addClass("active");
-	  $("#" + id).css("display", "block");
   }
 
   // Resize all widgets
+  setTimeout(resizeAllWidgets, 50)
+}
+
+function resizeAllWidgets() {
+  console.log("glop glop");
   var widgets = HTMLWidgets.findAll(document, ".mw-chart>.html-widget");
   var ids = $.map($(".mw-chart>.html-widget"), function(x, i) {return x.id});
   var container;
@@ -36,5 +39,3 @@ function saveAsPNG(id){
     });
   }
 }
-
-

@@ -3,8 +3,7 @@ gridModuleUI <- function(id) {
   uiOutput(ns("cells"), container = function(...) {div(style = "height:100%;width:100%;position:absolute;", ...)})
 }
 
-gridModuleServer <- function(input, output, session, content, nrow, ncol, ...) {
-  dim <- reactive(.getRowAndCols(length(content()), nrow, ncol))
+gridModuleServer <- function(input, output, session, content, dim, ...) {
 
   observe({
     outputEls <- lapply(seq_len(dim()$nrow * dim()$ncol), function(i) {

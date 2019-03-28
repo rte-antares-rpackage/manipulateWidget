@@ -11,14 +11,9 @@ htmldep <- htmltools::htmlDependency(
 
 ui <- fillPage(
   fillRow(
-    flex = c(NA, NA,NA, 1),
+    flex = c(NA,NA, 1),
     fillCol(width = 50, menuModuleUI("menu", updateBtn = FALSE)),
     inputAreaModuleUI("inputarea"),
-    fillCol(
-      width = 100,
-      sliderInput("ncells", "ncells", 1, 12, 1),
-      textOutput("chartid")
-    ),
     fillCol(gridModuleUI("grid"))
   )
 )
@@ -26,30 +21,20 @@ ui <- fillPage(
 ui <- htmltools::attachDependencies(ui, htmldep, TRUE)
 
 server <- function(input, output, session) {
-  content <- reactive({
-    lapply(seq_len(input$ncells), function(i) {
-      tags$div(
-        style="width:100%;height:100%;",
-        plotlyOutput(paste0("output_", i), width = "100%", height = "100%")
-      )
-    })
-  })
-
-
-  dim <- callModule(manipulateWidget:::gridModuleServer, "grid", content = content, NULL, NULL)
+  dim <- callModule(manipulateWidget:::inputAreaModuleServer, "inputarea", chartId)
 
   ncharts <- reactive(dim()$n)
   nrow <- reactive(dim()$nrow)
   ncol <- reactive(dim()$ncol)
 
-
-  chartId <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol)
-
-  callModule(manipulateWidget:::inputAreaModuleServer, "inputarea", chartId)
-
-  observe({
-    output$chartid <- renderText(chartId())
+  content <- reactive({
+    lapply(seq_len(ncharts()), function(i) {
+      plotlyOutput(paste0("output_", i), width = "100%", height = "100%")
+    })
   })
+
+  callModule(manipulateWidget:::gridModuleServer, "grid", content = content, dim = dim)
+  chartId <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol)
 
   observe({
     lapply(seq_len(dim()$n), function(i) {

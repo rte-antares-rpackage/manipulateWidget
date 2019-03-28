@@ -203,7 +203,6 @@ html, body {
 .mw-inputs {
   width: 200px;
   height:100%;
-  display:none;
   border-right:solid 1px #4e9cff;
   padding:10px;
   overflow: auto;
