@@ -1,20 +1,21 @@
 inputAreaModuleUI <- function(id) {
   ns <- NS(id)
   shiny::conditionalPanel(
-    sprintf("input['%s']", ns("visible")),
+    sprintf("input['%s'] != -1", ns("chartid")),
     class = "mw-input-container",
     tags$div(style = "display:none;",
-      shiny::checkboxInput(ns("visible"), label = "visible")
+      shiny::textInput(ns("chartid"), label = "chartid")
     ),
     tags$div(
       class ="mw-inputs",
       style = "display:block;",
       shiny::uiOutput(ns("inputarea")),
       shiny::conditionalPanel(
-        sprintf("input['%s']", ns("visible")),
+        sprintf("input['%s'] == '0'", ns("chartid")),
         checkboxInput(ns("compare"), "Compare"),
         shiny::conditionalPanel(
           sprintf("input['%s']", ns("compare")),
+          shiny::selectInput(ns("variables"), "Variables", choices = c(), multiple = TRUE),
           shiny::numericInput(ns("nbCharts"), "Number of charts",
                               value = 2, min = 2, max = 12),
           shiny::selectInput(ns("ncols"), "Number of columns", c("auto", 1:4))
@@ -29,7 +30,7 @@ inputAreaModuleServer <- function(input, output, session, chartId) {
 
   visible <- reactive(input$visible())
 
-  nbCharts <- reactive({print(input$compare);if (is.null(input$compare) || !input$compare) 1 else input$nbCharts})
+  nbCharts <- reactive({if (is.null(input$compare) || !input$compare) 1 else input$nbCharts})
 
   dim <- reactive({
     if (nbCharts() == 1) {
@@ -43,15 +44,13 @@ inputAreaModuleServer <- function(input, output, session, chartId) {
   })
 
   observeEvent(chartId(), {
+    shiny::updateTextInput(session, "chartid", value = chartId())
     if (chartId() == -1) {
-      updateCheckboxInput(session, "visible", value = FALSE)
       content <- ""
     } else if (chartId() == 0) {
-      updateCheckboxInput(session, "visible", value = TRUE)
       content <- ""
     } else {
-      updateCheckboxInput(session, "visible", value = TRUE)
-      content <- paste("inPuts for chart", chartId())
+      content <- paste("Params for chart", chartId())
     }
 
     output$inputarea <- shiny::renderUI(content)

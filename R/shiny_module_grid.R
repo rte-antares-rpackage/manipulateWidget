@@ -8,7 +8,7 @@ gridModuleServer <- function(input, output, session, content, dim, ...) {
   observe({
     outputEls <- lapply(seq_len(dim()$nrow * dim()$ncol), function(i) {
       if (i > length(content())) return(tags$div())
-      style <- sprintf("float:left;width:%s%%;height:%s%%;border:solid 1px black;",
+      style <- sprintf("float:left;width:%s%%;height:%s%%;",
                        floor(100 / dim()$ncol), floor(100 / dim()$nrow))
       tags$div(class="mw-chart", content()[[i]], style = style)
     })
