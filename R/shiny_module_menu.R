@@ -42,6 +42,15 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, ns) {
 
   chartId <- shiny::reactiveVal(-1)
 
+  state <- reactive({
+    list(
+      chartId = chartId(),
+      done = input$done,
+      update = input$.update,
+      save = input$save
+    )
+  })
+
   listeners <- character()
 
   # Eventually add listeners
@@ -99,5 +108,5 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, ns) {
     else chartId(0)
   })
 
-  return(chartId)
+  return(state)
 }

@@ -19,9 +19,9 @@ htmldep <- htmltools::htmlDependency(
 ui <- fillPage(
   fillRow(
     flex = c(NA,NA, 1),
-    fillCol(width = 50, menuModuleUI("menu", updateBtn = FALSE)),
-    inputAreaModuleUI("inputarea"),
-    fillCol(gridModuleUI("grid"))
+    fillCol(width = 50, manipulateWidget:::menuModuleUI("menu", updateBtn = FALSE)),
+    manipulateWidget:::inputAreaModuleUI("inputarea"),
+    fillCol(manipulateWidget:::gridModuleUI("grid"))
   )
 )
 
@@ -41,7 +41,9 @@ server <- function(input, output, session) {
   })
 
   callModule(manipulateWidget:::gridModuleServer, "grid", content = content, dim = dim)
-  chartId <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol)
+  menuState <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol)
+
+  chartId <- reactive(menuState()$chartId)
 
   observeEvent(dim(), {
     ctrl$setChartNumber(dim()$n, dim()$nrow, dim()$ncol)
@@ -53,6 +55,10 @@ server <- function(input, output, session) {
           )
       })
     })
+  })
+
+  observeEvent(menuState()$done, {
+    manipulateWidget:::onDone(ctrl)
   })
 }
 
