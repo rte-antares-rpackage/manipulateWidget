@@ -1,6 +1,13 @@
 library(shiny)
 library(plotly)
 
+ctrl <- manipulateWidget(
+  plot_ly() %>% add_lines(1:10, rnorm(10)),
+  a = mwSelect(1:5), .runApp = FALSE
+)
+
+ctrl$init()
+
 htmldep <- htmltools::htmlDependency(
   "manipulateWidget",
   "0.7.0",
@@ -29,19 +36,18 @@ server <- function(input, output, session) {
 
   content <- reactive({
     lapply(seq_len(ncharts()), function(i) {
-      plotlyOutput(paste0("output_", i), width = "100%", height = "100%")
+      ctrl$outputFunc(paste0("output_", i), width = "100%", height = "100%")
     })
   })
 
   callModule(manipulateWidget:::gridModuleServer, "grid", content = content, dim = dim)
   chartId <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol)
 
-  observe({
+  observeEvent(dim(), {
+    ctrl$setChartNumber(dim()$n, dim()$nrow, dim()$ncol)
     lapply(seq_len(dim()$n), function(i) {
-      output[[paste0("output_", i)]] <- renderPlotly({
-        mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
-        plot_ly(mydata)%>%
-          add_lines(~year, ~value) %>%
+      output[[paste0("output_", i)]] <- ctrl$renderFunc({
+        ctrl$charts[[i]] %>%
           htmlwidgets::onRender(
             "function(el, x) {this.width = undefined; this.height = undefined}"
           )
