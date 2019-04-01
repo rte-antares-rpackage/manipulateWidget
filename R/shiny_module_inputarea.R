@@ -49,8 +49,12 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     if (chartId == -1) {
       content <- ""
     } else {
-      if (chartId == 0) inputs <- ctrl$uiSpec$inputs$shared
-      else inputs <- ctrl$uiSpec$inputs$ind[[chartId]]
+      if (chartId == 0) {
+        inputs <- ctrl$uiSpec$inputs$shared
+        if (nbCharts() == 1 && length(ctrl$uiSpec$inputs$ind[[1]]) > 0) {
+          inputs <- c(inputs, ctrl$uiSpec$inputs$ind[[1]])
+        }
+      } else inputs <- ctrl$uiSpec$inputs$ind[[chartId]]
 
       content <- shiny::tagList(lapply(inputs, function(x) {
         if (!x$getID() %in% listeners) {
@@ -69,6 +73,13 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
 
   observeEvent(chartId(), {
     updateInputs(chartId())
+  })
+
+  # In case users cancels comparison mode, share all inputs
+  observeEvent(nbCharts(), {
+    if (nbCharts() == 1) {
+      updateSelectInput(session, ".compareVars", selected = list())
+    }
   })
 
   observeEvent(input$.compareVars, ignoreNULL = FALSE, ignoreInit = TRUE,  {
