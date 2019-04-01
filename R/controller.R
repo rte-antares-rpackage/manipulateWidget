@@ -204,13 +204,17 @@ MWController <- setRefClass(
     },
 
     setChartNumber = function(n, nrow = NULL, ncol = NULL) {
-      uiSpec$setChartNumber(n)
-      ncharts <<- n
-      envs <<- uiSpec$envs
-      inputList <<- uiSpec$inputList
+      if (n != ncharts) {
+        uiSpec$setChartNumber(n)
+        envs <<- uiSpec$envs
+        inputList <<- uiSpec$inputList
+        if (n > ncharts) {
+          for (i in (ncharts + 1):n) updateChart(i)
+        }
+        ncharts <<- n
+      }
       nrow <<- nrow
       ncol <<- ncol
-      updateCharts()
     },
 
     renderShinyOutputs = function() {

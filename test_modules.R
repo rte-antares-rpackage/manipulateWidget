@@ -1,11 +1,13 @@
 library(shiny)
 library(plotly)
 library(dygraphs)
+
+manipulateWidget::mwDebug()
+
 mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
 ctrl <- manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
                  range = mwSlider(2001, 2100, c(2001, 2100)),
                  title = mwText("Fictive time series"), .runApp = FALSE)
-
 ctrl$init()
 
 htmldep <- htmltools::htmlDependency(
