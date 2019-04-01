@@ -1,23 +1,21 @@
-menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = TRUE) {
+menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
+                         exportBtn = TRUE, exportType = "html2canvas") {
   ns <- NS(id)
-  container <- tags$div(
-    class="mw-menu",
-    # Main Settings button
-    tags$div(
-      style = "padding:0;",
-      class = "mw-btn mw-btn-settings",
-      onclick = sprintf("select(this, '%s')", ns("mw-shared-inputs")),
-      shiny::actionButton(ns(".settings"), "", icon = shiny::icon("gears"), class = "bt1",
-                          style="padding:0;width:50px;height:50px;outline:0;border-radius:0;"),
-      tags$div(class="right-arrow")
-    ),
-    uiOutput(ns("chart_btns"))
-  )
 
-  if (okBtn) {
-    okBtnInput <- shiny::actionButton(ns("done"), "OK", class = "mw-btn mw-btn-ok")
-    container <- tagAppendChild(container, okBtnInput)
-  }
+  container <-
+    tags$div(
+      class="mw-menu",
+      # Main Settings button
+      tags$div(
+        style = "padding:0;",
+        class = "mw-btn mw-btn-settings",
+        onclick = sprintf("select(this, '%s')", ns("mw-shared-inputs")),
+        shiny::actionButton(ns(".settings"), "", icon = shiny::icon("gears"), class = "bt1",
+                            style="padding:0;width:50px;height:50px;outline:0;border-radius:0;"),
+        tags$div(class="right-arrow")
+      ),
+      uiOutput(ns("chart_btns"))
+    )
 
   if (updateBtn) {
     updateBtn <- tags$div(
@@ -27,14 +25,31 @@ menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = TRUE) {
     container <- tagAppendChild(container, updateBtn)
   }
 
+  actionButtons <- tags$div(class = "action-buttons-container")
+
   if (saveBtn) {
-    bottom_px <- ifelse(okBtn, "bottom: 80px;", "bottom: 30px;")
-    saveBtnInput <- shiny::downloadButton(ns("save"), label = "", class = "mw-btn mw-btn-save",
-                                          style = bottom_px)
-    container <- tagAppendChild(container, saveBtnInput)
+    saveBtnInput <- shiny::downloadButton(ns("save"), label = "", class = "mw-btn mw-btn-save")
+    actionButtons <- tagAppendChild(actionButtons, saveBtnInput)
   }
 
-  container
+  if (exportBtn) {
+    if(exportType %in% "html2canvas"){
+      exportBtnInput <- shiny::actionButton(ns("export"), icon = icon("camera"), label = "",
+                                            class = "mw-btn mw-btn-export",
+                                            onclick = sprintf("saveAsPNG('%s')", "mw-chart-area"))
+    } else {
+      exportBtnInput <- shiny::downloadButton(ns("export"), label = "PNG", class = "mw-btn mw-btn-export")
+    }
+
+    actionButtons <- tagAppendChild(actionButtons, exportBtnInput)
+  }
+
+  if (okBtn) {
+    okBtnInput <- shiny::actionButton(ns("done"), "OK", class = "mw-btn mw-btn-ok")
+    actionButtons <- tagAppendChild(actionButtons, okBtnInput)
+  }
+
+  tagAppendChild(container, actionButtons)
 }
 
 menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, ns) {
@@ -109,4 +124,22 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, ns) {
   })
 
   return(state)
+}
+
+
+.uiChartIcon <- function(i, nrow, ncol) {
+  WIDTH <- 42
+  HEIGHT <- 28
+  PAD <- 2
+  i <- i - 1
+
+  w <- (WIDTH - 2 * PAD) / ncol
+  h <- (HEIGHT - 2 * PAD) / nrow
+
+  chartIconStyle <- sprintf("width:%spx;height:%spx;left:%spx;top:%spx;",
+                            w, h, w * (i%%ncol) + PAD, h * (i %/% ncol) + PAD)
+  tags$div(
+    class = "mw-icon-areachart",
+    tags$div(class="mw-icon-chart", style=chartIconStyle)
+  )
 }

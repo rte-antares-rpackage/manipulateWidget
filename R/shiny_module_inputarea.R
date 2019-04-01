@@ -15,7 +15,7 @@ inputAreaModuleUI <- function(id) {
         checkboxInput(ns("compare"), "Compare"),
         shiny::conditionalPanel(
           sprintf("input['%s']", ns("compare")),
-          shiny::selectInput(ns("variables"), "Variables", choices = c(), multiple = TRUE),
+          shiny::selectInput(ns(".compareVars"), "Variables", choices = c("range", "title"), multiple = TRUE),
           shiny::numericInput(ns("nbCharts"), "Number of charts",
                               value = 2, min = 2, max = 12),
           shiny::selectInput(ns("ncols"), "Number of columns", c("auto", 1:4))
@@ -44,13 +44,13 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
            list(updateContent = updateContent()))
   })
 
-  observeEvent(chartId(), {
-    shiny::updateTextInput(session, "chartid", value = chartId())
-    if (chartId() == -1) {
+  updateInputs <- function(chartId) {
+    updateTextInput(session, "chartid", value = chartId)
+    if (chartId == -1) {
       content <- ""
     } else {
-      if (chartId() == 0) inputs <- ctrl$uiSpec$inputs$shared
-      else inputs <- ctrl$uiSpec$inputs$ind[[chartId()]]
+      if (chartId == 0) inputs <- ctrl$uiSpec$inputs$shared
+      else inputs <- ctrl$uiSpec$inputs$ind[[chartId]]
 
       content <- shiny::tagList(lapply(inputs, function(x) {
         if (!x$getID() %in% listeners) {
@@ -65,6 +65,23 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     }
 
     output$inputarea <- shiny::renderUI(content)
+  }
+
+  observeEvent(chartId(), {
+    updateInputs(chartId())
+  })
+
+  observeEvent(input$.compareVars, ignoreNULL = FALSE, ignoreInit = TRUE,  {
+    for (n in input$.compareVars) {
+      ctrl$uiSpec$unshareInput(n)
+    }
+    for (n in setdiff(sort(unique(ctrl$inputList$names)), input$.compareVars)) {
+      ctrl$uiSpec$shareInput(n)
+    }
+    ctrl$inputList$update(forceDeps = TRUE)
+    ctrl$updateCharts()
+    updateInputs(chartId())
+    updateContent(updateContent() + 1)
   })
 
   return(dim)
