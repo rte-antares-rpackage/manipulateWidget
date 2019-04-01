@@ -25,11 +25,11 @@ inputAreaModuleUI <- function(id) {
   )
 }
 
-inputAreaModuleServer <- function(input, output, session, chartId) {
+inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
   ns <- session$ns
-
+  listeners <- c()
   visible <- reactive(input$visible())
-
+  updateContent <- reactiveVal(0)
   nbCharts <- reactive({if (is.null(input$compare) || !input$compare) 1 else input$nbCharts})
 
   dim <- reactive({
@@ -40,17 +40,28 @@ inputAreaModuleServer <- function(input, output, session, chartId) {
     } else {
       ncol <- as.numeric(input$ncols)
     }
-    .getRowAndCols(nbCharts(), ncol = ncol)
+    append(.getRowAndCols(nbCharts(), ncol = ncol),
+           list(updateContent = updateContent()))
   })
 
   observeEvent(chartId(), {
     shiny::updateTextInput(session, "chartid", value = chartId())
     if (chartId() == -1) {
       content <- ""
-    } else if (chartId() == 0) {
-      content <- ""
     } else {
-      content <- paste("Params for chart", chartId())
+      if (chartId() == 0) inputs <- ctrl$uiSpec$inputs$shared
+      else inputs <- ctrl$uiSpec$inputs$ind[[chartId()]]
+
+      content <- shiny::tagList(lapply(inputs, function(x) {
+        if (!x$getID() %in% listeners) {
+          observeEvent(input[[x$getID()]], {
+            ctrl$setValueById(x$getID(), input[[x$getID()]])
+            updateContent(updateContent() + 1)
+          })
+          listeners <<- append(x$getID(), listeners)
+        }
+        x$getHTML(ns)
+      }))
     }
 
     output$inputarea <- shiny::renderUI(content)

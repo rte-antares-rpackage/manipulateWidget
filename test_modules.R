@@ -1,10 +1,10 @@
 library(shiny)
 library(plotly)
-
-ctrl <- manipulateWidget(
-  plot_ly() %>% add_lines(1:10, rnorm(10)),
-  a = mwSelect(1:5), .runApp = FALSE
-)
+library(dygraphs)
+mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
+ctrl <- manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
+                 range = mwSlider(2001, 2100, c(2001, 2100)),
+                 title = mwText("Fictive time series"), .runApp = FALSE)
 
 ctrl$init()
 
@@ -28,7 +28,7 @@ ui <- fillPage(
 ui <- htmltools::attachDependencies(ui, htmldep, TRUE)
 
 server <- function(input, output, session) {
-  dim <- callModule(manipulateWidget:::inputAreaModuleServer, "inputarea", chartId)
+  dim <- callModule(manipulateWidget:::inputAreaModuleServer, "inputarea", chartId, ctrl)
 
   ncharts <- reactive(dim()$n)
   nrow <- reactive(dim()$nrow)
