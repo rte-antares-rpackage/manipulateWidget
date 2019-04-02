@@ -52,7 +52,7 @@
   background-color: #2b7be2;
 }
 
-.bt1, .btn.bt1 {
+.bt1, .btn.bt1, .mw-btn-settings .bt1:focus {
   color: #4e9cff;
   text-align: center;
   vertical-align: bottom;
@@ -61,7 +61,7 @@
   background-color: white;
   border: solid 1px #4e9cff;
 }
-.mw-btn-settings:hover .bt1 {
+.mw-btn-settings:hover .bt1, .mw-btn-settings .bt1:active, .mw-btn-settings .bt1:hover  {
   color:#fff;
   border:solid 1px #2b7be2;
   background-color: #2b7be2;
@@ -77,6 +77,8 @@
   background-color: #2b7be2;
   border: solid 1px #2b7be2;
 }
+
+
 
 /* Buttons used to display inputs for a specific area */
 .mw-btn-area {
