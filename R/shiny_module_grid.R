@@ -1,7 +1,7 @@
 gridModuleUI <- function(id) {
   ns <- NS(id)
   uiOutput(ns("cells"), container = function(...) {
-    div(
+    tags$div(
       class = "mw-chartarea",
       ...
     )

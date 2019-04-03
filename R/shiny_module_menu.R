@@ -2,8 +2,7 @@ menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
                          exportBtn = TRUE, exportType = "html2canvas") {
   ns <- NS(id)
 
-  container <-
-    tags$div(
+  container <- tags$div(
       class="mw-menu",
       # Main Settings button
       tags$div(

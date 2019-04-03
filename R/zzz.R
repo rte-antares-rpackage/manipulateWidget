@@ -76,7 +76,7 @@
 #' @rdname manipulateWidget-package
 #' @docType package
 #' @importFrom shiny tags observe observeEvent reactive isolate icon tagAppendChild
-#' @importFrom shiny tagAppendChildren fillPage fillRow
+#' @importFrom shiny tagAppendChildren fillPage fillRow NS uiOutput checkboxInput
 #' @importFrom miniUI miniContentPanel miniPage miniTabPanel miniTabstripPanel gadgetTitleBar
 #' @importFrom htmlwidgets getDependency
 #' @importFrom methods is new setRefClass

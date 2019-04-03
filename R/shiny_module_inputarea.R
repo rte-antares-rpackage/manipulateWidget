@@ -15,7 +15,7 @@ inputAreaModuleUI <- function(id) {
         checkboxInput(ns("compare"), "Compare"),
         shiny::conditionalPanel(
           sprintf("input['%s']", ns("compare")),
-          shiny::selectInput(ns(".compareVars"), "Variables", choices = c("range", "title"), multiple = TRUE),
+          shiny::selectInput(ns(".compareVars"), "Variables", choices = c(), multiple = TRUE),
           shiny::numericInput(ns("nbCharts"), "Number of charts",
                               value = 2, min = 2, max = 12),
           shiny::selectInput(ns("ncols"), "Number of columns", c("auto", 1:4))
@@ -36,6 +36,8 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
   # Controller initialization
   ctrl$init()
   ctrl$setShinySession(output, session)
+
+  observe(shiny::updateSelectInput(session, ".compareVars", choices = unique(ctrl$inputList$names)))
 
   dim <- reactive({
     if (nbCharts() == 1) {
