@@ -1,8 +1,7 @@
-mwModuleServer <- function(input, output, session, ctrl) {
+mwModuleServer <- function(input, output, session, ctrl, ...) {
   ns <- session$ns
 
   ctrl <- ctrl$clone()
-  ctrl$init()
 
   dim <- callModule(manipulateWidget:::inputAreaModuleServer, "inputarea", chartId, ctrl)
 
@@ -22,7 +21,6 @@ mwModuleServer <- function(input, output, session, ctrl) {
   chartId <- reactive(menuState()$chartId)
 
   observeEvent(dim(), {
-    print(dim())
     ctrl$setChartNumber(dim()$n, dim()$nrow, dim()$ncol)
     lapply(seq_len(dim()$n), function(i) {
       output[[paste0("output_", i)]] <- ctrl$renderFunc({

@@ -2,12 +2,33 @@ library(shiny)
 library(plotly)
 library(dygraphs)
 
-manipulateWidget::mwUndebug()
+manipulateWidget::mwDebug()
 
-mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
-ctrl <- manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
-                 range = mwSlider(2001, 2100, c(2001, 2100)),
-                 title = mwText("Fictive time series"), .runApp = FALSE)
+# mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
+# ctrl <- manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
+#                  range = mwSlider(2001, 2100, c(2001, 2100)),
+#                  title = mwText("Fictive time series"), .runApp = FALSE)
+
+dt <- data.frame (
+  x = sort(runif(100)),
+  y = rnorm(100)
+)
+
+myPlot <- function(type, lwd) {
+  if (type == "points") {
+    plot_ly(dt, x= ~x, y = ~y, type = "scatter", mode = "markers")
+  } else {
+    plot_ly(dt, x= ~x, y = ~y, type = "scatter", mode = "lines", line = list(width = lwd))
+  }
+}
+
+ctrl <- manipulateWidget(
+  myPlot(type, lwd),
+  type = mwSelect(c("points", "lines"), "points"),
+  lwd = mwSlider(1, 10, 1, .display = type == "lines"),
+.runApp = FALSE
+)
+
 
 ui <- fillPage(
   manipulateWidget:::mwUI("mw", updateBtn = FALSE, fillPage = FALSE, height = "100%")

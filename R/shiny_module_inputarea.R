@@ -27,10 +27,15 @@ inputAreaModuleUI <- function(id) {
 
 inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
   ns <- session$ns
+
   listeners <- c()
   visible <- reactive(input$visible())
   updateContent <- reactiveVal(0)
   nbCharts <- reactive({if (is.null(input$compare) || !input$compare) 1 else input$nbCharts})
+
+  # Controller initialization
+  ctrl$init()
+  ctrl$setShinySession(output, session)
 
   dim <- reactive({
     if (nbCharts() == 1) {
@@ -69,6 +74,22 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     }
 
     output$inputarea <- shiny::renderUI(content)
+
+    # Update visibility of inputs
+    lapply(ctrl$inputList$inputs, function(input) {
+      # Update input visibility
+      catIfDebug("Update visibility of", input$getID())
+      shiny::updateCheckboxInput(
+        session,
+        paste0(input$getID(), "_visible"),
+        value = eval(input$display, envir = input$env)
+      )
+      # Hack to fix https://github.com/rstudio/shiny/issues/1490
+      if (input$type == "select" && identical(input$lastParams$multiple, TRUE)) {
+        input$valueHasChanged <- TRUE
+        input$updateHTML(session)
+      }
+    })
   }
 
   observeEvent(chartId(), {

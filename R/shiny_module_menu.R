@@ -36,7 +36,7 @@ menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
     if(exportType %in% "html2canvas"){
       exportBtnInput <- shiny::actionButton(ns("export"), icon = icon("camera"), label = "",
                                             class = "mw-btn mw-btn-export",
-                                            onclick = sprintf("saveAsPNG('%s')", "mw-chart-area"))
+                                            onclick = sprintf("saveAsPNG('%s')", "mw-chartarea"))
     } else {
       exportBtnInput <- shiny::downloadButton(ns("export"), label = "PNG", class = "mw-btn mw-btn-export")
     }
