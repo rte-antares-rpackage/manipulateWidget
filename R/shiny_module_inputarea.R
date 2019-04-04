@@ -51,6 +51,19 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
            list(updateContent = updateContent()))
   })
 
+  addListener <- function(i) {
+    id <- i$getID()
+    if (!is.character(id)) return()
+    if (id %in% listeners) return()
+    if (ctrl$inputList$inputs[[id]]$type != "sharedValue") {
+      observeEvent(input[[id]], {
+        ctrl$setValueById(id, value = input[[id]])
+        updateContent(updateContent() + 1)
+      })
+      listeners <<- append(listeners, id)
+    }
+  }
+
   updateInputs <- function(chartId) {
     updateTextInput(session, "chartid", value = chartId)
     if (chartId == -1) {
@@ -63,16 +76,9 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
         }
       } else inputs <- ctrl$uiSpec$inputs$ind[[chartId]]
 
-      content <- shiny::tagList(lapply(inputs, function(x) {
-        if (!x$getID() %in% listeners) {
-          observeEvent(input[[x$getID()]], {
-            ctrl$setValueById(x$getID(), input[[x$getID()]])
-            updateContent(updateContent() + 1)
-          })
-          listeners <<- append(x$getID(), listeners)
-        }
-        x$getHTML(ns)
-      }))
+      content <- shiny::tagList(lapply(inputs, function(x) {x$getHTML(ns)}))
+
+      lapply(ctrl$uiSpec$inputList$inputs, addListener)
     }
 
     output$inputarea <- shiny::renderUI(content)
