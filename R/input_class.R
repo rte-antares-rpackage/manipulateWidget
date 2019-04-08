@@ -248,7 +248,7 @@ Input <- setRefClass(
       if (type == "group") {
         lapply(value, function(i) i$destroy())
       } else {
-        rm(name, envir = env)
+        rm(list = name, envir = env)
       }
     }
   )
