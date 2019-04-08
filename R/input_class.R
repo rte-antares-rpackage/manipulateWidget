@@ -230,6 +230,26 @@ Input <- setRefClass(
           value[[n]]$show()
         }
       }
+    },
+
+    clone = function(env) {
+      newInput <- .self$copy()
+      newInput$env <- env
+      if (type == "group") {
+        newInput$value <- lapply(value, function(i) i$clone(env))
+      } else {
+        assign(name, newInput$value, envir = env)
+        newInput$env <- env
+      }
+      newInput
+    },
+
+    destroy = function() {
+      if (type == "group") {
+        lapply(value, function(i) i$destroy())
+      } else {
+        rm(name, envir = env)
+      }
     }
   )
 )

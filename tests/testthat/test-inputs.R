@@ -95,10 +95,3 @@ test_input(
 
 # Groups of input
 test_input(mwGroup(a = mwText(), b = mwText()))
-test_that("mwGroup throws an error if an argument is not named", {
-  expect_error(mwGroup(mwText()), "All arguments need to be named.")
-})
-test_that("mwGroup throws an error if an argument is not an input", {
-  expect_error(mwGroup(a = 1), "All arguments need to be Input objects.")
-})
-
