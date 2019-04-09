@@ -34,4 +34,21 @@ describe("mwGroup", {
     expect_equal(get("a", envir = env2), "test")
     expect_equal(get("a", envir = env1), "")
   })
+
+  it("removes inner inputs from environment", {
+    env1 <- initEnv(parent.frame(), 1)
+
+    a <- mwText()
+    b <- mwText()
+    inner_grp = mwGroup(a = a)
+    grp <- mwGroup(inner_grp = inner_grp, b = b)
+    a$init("a", env1)
+    b$init("b", env1)
+    inner_grp$init("inner_grp", env1)
+    grp$init("grp", env1)
+
+    grp$destroy()
+    expect_true(!"a" %in% ls(envir = env1))
+    expect_true(!"b" %in% ls(envir = env1))
+  })
 })
