@@ -78,9 +78,8 @@ Model <- setRefClass(
       if (name %in% names(inputs$shared)) {
         return(character())
       }
+
       newInput <- inputs$ind[[1]][[name]]$clone(envs$shared)
-      inputs$shared <<- append(inputs$shared, structure(list(newInput), .Names = name))
-      inputList$addInputs(newInput$getInputs())
 
       for (i in seq_len(ncharts)) {
         innerInputs <- names(inputs$ind[[i]][[name]]$getInputs())
@@ -91,6 +90,9 @@ Model <- setRefClass(
         inputs$ind[[i]][[name]] <<- NULL
       }
 
+      inputs$shared <<- append(inputs$shared, structure(list(newInput), .Names = name))
+      inputList$addInputs(newInput$getInputs())
+
       unname(sapply(newInput$getInputs(), function(i) i$getID()))
     },
 
@@ -98,6 +100,12 @@ Model <- setRefClass(
       if (name %in% names(inputs$ind[[1]])) return(character())
 
       oldInput <- inputs$shared[[name]]
+
+      innerInputs <- names(oldInput$getInputs())
+
+      for (n in innerInputs) {
+        inputList$removeInput(n, chartId = 0)
+      }
 
       newInputIds <- character()
 
@@ -110,11 +118,7 @@ Model <- setRefClass(
           unname(sapply(newInput$getInputs(), function(i) i$getID()))
         )
       }
-      innerInputs <- names(oldInput$getInputs())
 
-      for (n in innerInputs) {
-        inputList$removeInput(n, chartId = 0)
-      }
       oldInput$destroy()
       inputs$shared[[name]] <<- NULL
 

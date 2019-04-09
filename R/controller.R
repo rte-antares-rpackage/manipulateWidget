@@ -370,7 +370,6 @@ cloneEnv <- function(env, parentEnv = parent.env(env)) {
 cloneUISpec <- function(uiSpec, session) {
   newSharedEnv <- cloneEnv(uiSpec$envs$shared)
   newEnvs <- lapply(uiSpec$envs$ind, cloneEnv, parentEnv = newSharedEnv)
-
   newInputs <- lapply(seq_along(uiSpec$inputList$inputs), function(i) {
     x <- uiSpec$inputList$inputs[[i]]$copy()
     chartId <- uiSpec$inputList$chartIds[i]
@@ -385,7 +384,7 @@ cloneUISpec <- function(uiSpec, session) {
   res <- Model()
   res$envs <- list(shared = newSharedEnv, ind = newEnvs)
   res$inputs <- newSpec
-  res$inputList <- InputList(newInputs, session)
+  res$inputList <- InputList(newInputs, session, flatten = FALSE)
   res$ncharts <- uiSpec$ncharts
 
   res

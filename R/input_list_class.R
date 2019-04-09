@@ -10,11 +10,12 @@ InputList <- setRefClass(
   "InputList",
   fields = c("inputs", "session", "names", "chartIds", "initialized"),
   methods = list(
-    initialize = function(inputs, session = NULL) {
+    initialize = function(inputs, session = NULL, flatten = TRUE) {
       "args:
        - inputs: list of initialized inputs
        - session: shiny session"
-      inputList <- flattenInputs(unname(inputs))
+      if (flatten) inputList <- flattenInputs(unname(inputs))
+      else inputList <- inputs
       inputs <<- inputList
       names(inputs) <<- sapply(inputList, function(x) {x$getID()})
       names <<- sapply(inputList, function(x) x$name)
@@ -106,6 +107,8 @@ InputList <- setRefClass(
         chartIds <<- append(chartIds, get(".id", envir = input$env))
       }
 
+      if (length(inputs) != length(names)) stop("Problem when adding inputs")
+
       # Reset dependencies
       setDeps()
       if (initialized) update(forceDeps = TRUE)
@@ -120,6 +123,7 @@ InputList <- setRefClass(
       }
 
       if (length(idx) == 0) stop("cannot find input with name ", name)
+      if (length(idx) > 1) stop("Something wrong with input", name)
       for (i in idx) {
         inputs[[i]] <<- NULL
         names <<- names[-i]
