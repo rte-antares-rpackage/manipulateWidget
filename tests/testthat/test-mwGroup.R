@@ -51,4 +51,22 @@ describe("mwGroup", {
     expect_true(!"a" %in% ls(envir = env1))
     expect_true(!"b" %in% ls(envir = env1))
   })
+
+  it("can return list of inner inputs", {
+    env1 <- initEnv(parent.frame(), 1)
+
+    a <- mwText()
+    b <- mwText()
+    inner_grp = mwGroup(a = a)
+    grp <- mwGroup(inner_grp = inner_grp, b = b)
+    a$init("a", env1)
+    b$init("b", env1)
+    inner_grp$init("inner_grp", env1)
+    grp$init("grp", env1)
+
+    inputs <- grp$getInputs()
+    expect_equal(names(inputs), c("a", "b"))
+    expect_identical(inputs$a, a)
+    expect_identical(inputs$b, b)
+  })
 })

@@ -250,6 +250,14 @@ Input <- setRefClass(
       } else {
         rm(list = name, envir = env)
       }
+    },
+
+    getInputs = function() {
+      if (type == "group") {
+        do.call(c, unname(lapply(value, function(i) i$getInputs())))
+      } else {
+        structure(list(.self), .Names = name)
+      }
     }
   )
 )
