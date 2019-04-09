@@ -111,6 +111,7 @@ Model <- setRefClass(
         )
       }
       innerInputs <- names(oldInput$getInputs())
+
       for (n in innerInputs) {
         inputList$removeInput(n, chartId = 0)
       }
@@ -118,6 +119,10 @@ Model <- setRefClass(
       inputs$shared[[name]] <<- NULL
 
       newInputIds
+    },
+
+    getShareable = function() {
+      union(names(inputs$shared), names(inputs$ind[[1]]))
     },
 
     addChart = function() {
@@ -144,7 +149,10 @@ Model <- setRefClass(
       if (ncharts == 1) stop("Need at least one chart.")
 
       for (n in names(inputs$ind[[ncharts]])) {
-        inputList$removeInput(n, chartId = ncharts)
+        inputsToRemove <- names(inputs$ind[[ncharts]][[n]]$getInputs())
+        for (k in inputsToRemove) {
+          inputList$removeInput(k, chartId = ncharts)
+        }
       }
       envs$ind[[ncharts]] <<- NULL
       inputs$ind[[ncharts]] <<- NULL

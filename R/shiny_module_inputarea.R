@@ -37,7 +37,9 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
   ctrl$init()
   ctrl$setShinySession(output, session)
 
-  observe(shiny::updateSelectInput(session, ".compareVars", choices = unique(ctrl$inputList$names)))
+  observe({
+    shiny::updateSelectInput(session, ".compareVars", choices = ctrl$uiSpec$getShareable())
+  })
 
   dim <- reactive({
     if (nbCharts() == 1) {
@@ -115,7 +117,7 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     for (n in input$.compareVars) {
       ctrl$uiSpec$unshareInput(n)
     }
-    for (n in setdiff(sort(unique(ctrl$inputList$names)), input$.compareVars)) {
+    for (n in setdiff(ctrl$uiSpec$getShareable(), input$.compareVars)) {
       ctrl$uiSpec$shareInput(n)
     }
     ctrl$inputList$update(forceDeps = TRUE)

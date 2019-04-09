@@ -120,9 +120,11 @@ InputList <- setRefClass(
       }
 
       if (length(idx) == 0) stop("cannot find input with name ", name)
-      inputs[[idx]] <<- NULL
-      names <<- names[-idx]
-      chartIds <<- chartIds[-idx]
+      for (i in idx) {
+        inputs[[i]] <<- NULL
+        names <<- names[-i]
+        chartIds <<- chartIds[-i]
+      }
 
       setDeps()
 
