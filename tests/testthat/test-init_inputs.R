@@ -127,7 +127,7 @@ describe("Model Class", {
 
     model$inputList$init()
     newInput <- model$shareInput("grp")
-    expect_equal(sort(newInput), c("shared_a", "shared_b","shared_grp"))
+    expect_equal(sort(newInput), c("shared_a", "shared_b"))
 
     expect_length(model$inputs$shared, 1)
     expect_named(model$inputs$shared, "grp")
@@ -136,20 +136,15 @@ describe("Model Class", {
     for (i in 1:2) {
       expect_length(model$inputs$ind[[i]], 0)
     }
-
-    for (i in 1:2) {
-      expect_null(model$envs$ind[[i]]$a)
-      expect_null(model$envs$ind[[i]]$b)
-    }
-
   })
 
   it ("unshares a group of inputs", {
-    model <- test_structure(list(grp = mwGroup(a = mwText(), b = mwText("test"))))
-    newInputs <- model$unshareInput(grp)
+    model <- test_structure(list(grp = mwGroup(a = mwText(), b = mwText("test"))),
+                            ncharts = 2)
+    newInputs <- model$unshareInput("grp")
     expect_equal(
       sort(newInputs),
-      c("output_1_a", "output_1_b", "output_1_grp", "output_2_a", "output_2_b", "output_2_grp")
+      c("output_1_a", "output_1_b", "output_2_a", "output_2_b")
     )
     expect_length(model$inputs$shared, 0)
 

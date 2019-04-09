@@ -79,41 +79,43 @@ Model <- setRefClass(
         return(character())
       }
       newInput <- inputs$ind[[1]][[name]]$clone(envs$shared)
-      newInput <- list(newInput)
-      names(newInput) <- name
-      inputs$shared <<- append(inputs$shared, newInput)
-      inputList$addInputs(newInput)
+      inputs$shared <<- append(inputs$shared, structure(list(newInput), .Names = name))
+      inputList$addInputs(newInput$getInputs())
 
       for (i in seq_len(ncharts)) {
+        innerInputs <- names(inputs$ind[[i]][[name]]$getInputs())
+        for (n in innerInputs) {
+          inputList$removeInput(n, chartId = i)
+        }
         inputs$ind[[i]][[name]]$destroy()
         inputs$ind[[i]][[name]] <<- NULL
-        inputList$removeInput(name, chartId = i)
       }
 
-      newInput[[1]]$getID()
+      unname(sapply(newInput$getInputs(), function(i) i$getID()))
     },
 
     unshareInput = function(name) {
       if (name %in% names(inputs$ind[[1]])) return(character())
-      value <- get(name, envir = envs$shared)
+
       oldInput <- inputs$shared[[name]]
 
       newInputIds <- character()
 
       for (i in seq_len(ncharts)) {
-        assign(name, value, envir = envs$ind[[i]])
-        newInput <- oldInput$copy()
-        newInput$env <- envs$ind[[i]]
-        newInput <- list(newInput)
-        names(newInput) <- name
-        inputs$ind[[i]] <<- append(inputs$ind[[i]], newInput)
-        inputList$addInputs(newInput)
-        newInputIds <- append(newInputIds, newInput[[1]]$getID())
+        newInput <- oldInput$clone(envs$ind[[i]])
+        inputs$ind[[i]] <<- append(inputs$ind[[i]], structure(list(newInput), .Names = name))
+        inputList$addInputs(newInput$getInputs())
+        newInputIds <- append(
+          newInputIds,
+          unname(sapply(newInput$getInputs(), function(i) i$getID()))
+        )
       }
-
-      rm(list = name, envir = envs$shared)
+      innerInputs <- names(oldInput$getInputs())
+      for (n in innerInputs) {
+        inputList$removeInput(n, chartId = 0)
+      }
+      oldInput$destroy()
       inputs$shared[[name]] <<- NULL
-      inputList$removeInput(name, chartId = 0)
 
       newInputIds
     },
