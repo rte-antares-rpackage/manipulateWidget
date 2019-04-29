@@ -42,7 +42,7 @@ initInputs <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1
 
 Model <- setRefClass(
   "Model",
-  fields = c("envs", "inputs", "inputList", "ncharts"),
+  fields = c("envs", "inputs", "inputList", "ncharts", "hierarchy"),
   methods = list(
     initialize = function() {},
 
@@ -50,8 +50,25 @@ Model <- setRefClass(
       if (is.null(names(inputs))) stop("All arguments need to be named.")
       for (i in inputs) if (!inherits(i, "Input")) stop("All arguments need to be Input objects.")
 
+      # Initialize environments
       sharedEnv <- initEnv(env, 0)
       indEnvs <- lapply(seq_len(ncharts), function(i) initEnv(sharedEnv, i))
+
+      # Get the hierarchy of inputs (used for html generation)
+      getHierarchyRecursive <- function(inputs) {
+        res <- sapply(names(inputs), function(n) {
+          if (inputs[[n]]$type == "group") {
+            getHierarchyRecursive(inputs[[n]]$value)
+          } else {
+            n
+          }
+        }, USE.NAMES = TRUE, simplify = FALSE)
+      }
+
+      hierarchy <<- getHierarchyRecursive(inputs)
+
+      # flatten and init inputs
+      flattenedInputs <- flattenInputs(inputs)
 
       sharedInputs <- filterAndInitInputs(inputs, names(compare), drop = TRUE, sharedEnv)
       indInputs <- lapply(seq_len(ncharts), function(i) {

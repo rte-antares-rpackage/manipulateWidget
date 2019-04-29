@@ -9,7 +9,7 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   inputList <- flattenInputs(inputList)
 
   expect_is(res, "Model")
-  expect_named(res$getRefClass()$fields(), c("envs", "inputs", "inputList", "ncharts"))
+  expect_named(res$getRefClass()$fields(), c("envs", "inputs", "inputList", "ncharts", "hierarchy"))
   expect_is(res$envs, "list")
   expect_named(res$envs, c("shared", "ind"))
   expect_is(res$envs$ind, "list")
@@ -23,7 +23,7 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   expect_is(res$inputList, "InputList")
   expectedLength <- length(inputList) + length(compare) * (ncharts - 1)
   # inexact when one tries to compare grouped inputs
-  expect_length(res$inputList$inputs, expectedLength)
+  expect_equal(nrow(res$inputList$inputTable), expectedLength)
 
   sharedInputs <- setdiff(names(inputList), names(compare))
 
@@ -39,7 +39,7 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
     }
   }
 
-  expect_true(all(expected_names %in% names(res$inputList$inputs)))
+  expect_true(all(expected_names %in% row.names(res$inputList$inputTable)))
 
   res
 }
@@ -196,8 +196,8 @@ describe("Model Class", {
     expect_equal(model$ncharts, 1)
     expect_length(model$envs$ind, 1)
     expect_length(model$inputs$ind, 1)
-    expect_length(model$inputList$inputs, 2)
-    expect_named(model$inputList$inputs, c("shared_b", "output_1_a"), ignore.order = TRUE)
+    expect_length(model$inputList$inputTable$input, 2)
+    expect_equal(row.names(model$inputList$inputTable), c("shared_b", "output_1_a"), ignore.order = TRUE)
   })
 
   it ("does not remove last chart", {
