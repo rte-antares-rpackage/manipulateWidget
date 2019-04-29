@@ -106,6 +106,6 @@ describe("flattenInputs", {
     inputs <- list(grp = mwGroup(a = mwText(), b = mwText()), c = mwText())
     inputs <- filterAndInitInputs(inputs, c(), TRUE, env = initEnv(parent.frame(), 1))
     inputList <- flattenInputs(inputs)
-    expect_silent(InputList(inputs = inputList))
+    expect_silent(InputList(inputs = inputList, flatten = FALSE))
   })
 })

@@ -8,7 +8,7 @@ extractVarsFromExpr <- function(expr) {
 # when the value of an input changes.
 InputList <- setRefClass(
   "InputList",
-  fields = c("inputs", "session", "names", "chartIds", "initialized"),
+  fields = c("session", "initialized", "inputTable"),
   methods = list(
     initialize = function(inputs, session = NULL, flatten = TRUE) {
       "args:
@@ -16,10 +16,15 @@ InputList <- setRefClass(
        - session: shiny session"
       if (flatten) inputList <- flattenInputs(unname(inputs))
       else inputList <- inputs
-      inputs <<- inputList
-      names(inputs) <<- sapply(inputList, function(x) {x$getID()})
-      names <<- sapply(inputList, function(x) x$name)
-      chartIds <<- sapply(inputList, function(x) get(".id", envir = x$env))
+
+      inputTable <<- data.frame(
+        row.names = sapply(inputList, function(x) {x$getID()}),
+        name = sapply(inputList, function(x) x$name),
+        chartId = sapply(inputList, function(x) get(".id", envir = x$env)),
+        type = sapply(inputList, function(x) x$type),
+        input = I(inputList)
+      )
+
       session <<- session
       initialized <<- FALSE
 
@@ -29,20 +34,18 @@ InputList <- setRefClass(
 
     setDeps = function() {
       # Reset all deps
-      for (input in inputs) {
-        inputId <- input$getID()
-        inputs[[inputId]]$revDeps <<- character(0)
-        inputs[[inputId]]$displayRevDeps <<- character(0)
+      for (id in row.names(inputTable)) {
+        .self[id]$resetDeps()
       }
 
-      for (input in inputs) {
+      for (input in inputTable$input) {
         inputId <- input$getID()
         deps <- getDeps(input)
         for (d in deps$params) {
-          inputs[[d]]$revDeps <<- union(.self$inputs[[d]]$revDeps, inputId)
+          .self[d]$addDeps(newRevDeps = inputId)
         }
         for (d in deps$display) {
-          inputs[[d]]$displayRevDeps <<- union(.self$inputs[[d]]$displayRevDeps, inputId)
+          .self[d]$addDeps(newDisplayRevDeps = inputId)
         }
       }
     },
@@ -56,9 +59,9 @@ InputList <- setRefClass(
     },
 
     isShared = function(name) {
-      idx <- which(names == name)
+      idx <- which(inputTable$name == name)
       if (length(idx) == 0) stop("cannot find input ", name)
-      any(chartIds[idx] == 0)
+      any(inputTable$chartId[idx] == 0)
     },
 
     isVisible = function(name, chartId = 1, inputId = NULL) {
@@ -79,35 +82,41 @@ InputList <- setRefClass(
     },
 
     getDeps = function(input) {
+      chartId <- get(".id", input$env)
+
       deps <- lapply(input$params, extractVarsFromExpr)
       deps <- do.call(c, deps)
 
       displayDeps <- extractVarsFromExpr(input$display)
 
       list(
-        params = names(inputs)[names %in% deps],
-        display = names(inputs)[names %in% displayDeps]
+        params = row.names(inputTable)[inputTable$name %in% deps & inputTable$chartId %in% c(0, chartId)],
+        display = row.names(inputTable)[inputTable$name %in% displayDeps & inputTable$chartId %in% c(0, chartId)]
       )
     },
 
     getInput = function(name, chartId = 1, inputId = NULL) {
       if (!is.null(inputId)) {
-        if (!inputId %in% names(inputs)) stop("cannot find input with id ", inputId)
-        return(inputs[[inputId]])
+        if (!inputId %in% row.names(inputTable)) {
+          stop("cannot find input with id ", inputId)
+        }
+        return(.self[inputId])
       }
-      idx <- which(names == name & chartIds %in% c(0, chartId))
+      idx <- which(inputTable$name == name & inputTable$chartId %in% c(0, chartId))
       if (length(idx) == 0) stop("cannot find input with name ", name)
-      inputs[[idx]]
+      .self[idx]
     },
 
     addInputs = function(x) {
-      for (input in x) {
-        inputs[[input$getID()]] <<- input
-        names <<- append(names, input$name)
-        chartIds <<- append(chartIds, get(".id", envir = input$env))
-      }
+      newInputs <- data.frame(
+        row.names = sapply(x, function(i) i$getID()),
+        name = sapply(x, function(i) i$name),
+        chartId = sapply(x, function(i) get(".id", envir = i$env)),
+        type = sapply(x, function(i) i$type),
+        input = I(x)
+      )
 
-      if (length(inputs) != length(names)) stop("Problem when adding inputs")
+      inputTable <<- rbind(inputTable, newInputs)
 
       # Reset dependencies
       setDeps()
@@ -116,19 +125,15 @@ InputList <- setRefClass(
 
     removeInput = function(name, chartId = 0, inputId = NULL) {
       if (!is.null(inputId)) {
-        if (!inputId %in% names(inputs)) stop("cannot find input with id ", inputId)
-        idx <- which(names(inputs) == inputId)
+        if (!inputId %in% row.names(inputTable)) stop("cannot find input with id ", inputId)
+        idx <- which(row.names(inputTable) == inputId)
       } else {
-        idx <- which(names == name & chartIds == chartId)
+        idx <- which(inputTable$name == name & inputTable$chartId == chartId)
       }
 
       if (length(idx) == 0) stop("cannot find input with name ", name)
       if (length(idx) > 1) stop("Something wrong with input", name)
-      for (i in idx) {
-        inputs[[i]] <<- NULL
-        names <<- names[-i]
-        chartIds <<- chartIds[-i]
-      }
+      inputTable <<- inputTable[-idx,]
 
       setDeps()
 
@@ -140,9 +145,9 @@ InputList <- setRefClass(
     },
 
     getValues = function(chartId = 1) {
-      idx <- which(chartIds %in% c(0, chartId))
-      res <- lapply(names[idx], function(n) getValue(n, chartId))
-      names(res) <- names[idx]
+      idx <- which(inputTable$chartId %in% c(0, chartId) & inputTable$type != "group")
+      res <- lapply(inputTable$input[idx], function(i) i$value)
+      names(res) <- inputTable$name[idx]
       res
     },
 
@@ -170,7 +175,7 @@ InputList <- setRefClass(
 
     update = function(forceDeps = FALSE) {
       "Update all inputs"
-      for (input in inputs) {
+      for (input in inputTable$input) {
         if (!identical(input$value, input$updateValue())) updateRevDeps(input, force = forceDeps)
       }
       updateHTML()
@@ -178,10 +183,22 @@ InputList <- setRefClass(
 
     updateHTML = function() {
       if (!is.null(session)) {
-        for (input in inputs) {
+        for (input in inputTable$input) {
           input$updateHTML(session)
         }
       }
+    },
+
+    show = function() {
+      print(inputTable)
     }
   )
 )
+
+`[.InputList` <- function(x, i, j, ...) {
+  if (missing(j) & !missing(i)) {
+    if (length(i) == 1) return (x[i, "input"][[1]])
+    else return(x[i, "input"])
+  }
+  x$inputTable[i, j, ...]
+}

@@ -258,6 +258,20 @@ Input <- setRefClass(
       } else {
         structure(list(.self), .Names = name)
       }
+    },
+
+    resetDeps = function() {
+      revDeps <<- character(0)
+      displayRevDeps <<- character(0)
+    },
+
+    addDeps = function(newRevDeps = character(0), newDisplayRevDeps = character(0)) {
+      revDeps <<- union(revDeps, newRevDeps)
+      displayRevDeps <<- union(displayRevDeps, newDisplayRevDeps)
     }
   )
 )
+
+as.character.Input <- function(x) {
+  "InputObject"
+}

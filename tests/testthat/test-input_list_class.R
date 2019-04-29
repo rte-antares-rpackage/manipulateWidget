@@ -6,10 +6,10 @@ describe("InputList", {
     inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
     inputList <- InputList(inputs)$init()
 
-    expect_equal(inputList$inputs$output_1_y$value, 5)
+    expect_equal(inputList["output_1_y"]$value, 5)
 
     inputList$setValue(inputId = "output_1_x", value = 7)
-    expect_equal(inputList$inputs$output_1_y$value, 7)
+    expect_equal(inputList["output_1_x"]$value, 7)
   })
 
   it("detects dependencies between inputs", {
@@ -20,13 +20,13 @@ describe("InputList", {
     )
     inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
     inputList <- InputList(inputs)$init()
-    expect_equal(inputList$getDeps(inputList$inputs$output_1_x),
+    expect_equal(inputList$getDeps(inputList["output_1_x"]),
                  list(params = character(), display = character()))
-    expect_length(inputList$inputs$output_1_y$revDeps, 0)
-    expect_equal(inputList$getDeps(inputList$inputs$output_1_y),
+    expect_length(inputList["output_1_y"]$revDeps, 0)
+    expect_equal(inputList$getDeps(inputList["output_1_y"]),
                  list(params = "output_1_x", display = "output_1_z"))
-    expect_equal(inputList$inputs$output_1_x$revDeps, c("output_1_y", "output_1_z"))
-    expect_equal(inputList$inputs$output_1_z$displayRevDeps, c("output_1_y"))
+    expect_equal(inputList["output_1_x"]$revDeps, c("output_1_y", "output_1_z"))
+    expect_equal(inputList["output_1_z"]$displayRevDeps, c("output_1_y"))
   })
 
   inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(0, 10, 0))
@@ -90,14 +90,14 @@ describe("InputList", {
       inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
       inputList <- InputList(inputs)
 
-      expect_equal(inputList$inputs$output_1_y$value, 0)
+      expect_equal(inputList["output_1_y"]$value, 0)
       inputList$setValue(inputId = "output_1_x", value = 7)
-      expect_equal(inputList$inputs$output_1_y$value, 0)
+      expect_equal(inputList["output_1_y"]$value, 0)
 
       inputList$init()
-      expect_equal(inputList$inputs$output_1_y$value, 7)
+      expect_equal(inputList["output_1_y"]$value, 7)
       inputList$setValue(inputId = "output_1_x", value = 8)
-      expect_equal(inputList$inputs$output_1_y$value, 8)
+      expect_equal(inputList["output_1_y"]$value, 8)
     })
 
     it ("can add an input", {
@@ -106,10 +106,10 @@ describe("InputList", {
       inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
       inputList <- InputList(inputs[1])$init()
       inputList$addInputs(inputs[2])
-      expect_equal(inputList$inputs$output_1_y$value, 5)
+      expect_equal(inputList["output_1_y"]$value, 5)
 
       inputList$setValue(inputId = "output_1_x", value = 7)
-      expect_equal(inputList$inputs$output_1_y$value, 7)
+      expect_equal(inputList["output_1_y"]$value, 7)
 
       values <- inputList$getValues(1)
       expect_is(values, "list")
@@ -125,8 +125,8 @@ describe("InputList", {
       inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
       inputList <- InputList(inputs)$init()
       inputList$removeInput("y", 1)
-      expect_null(inputList$inputs$output_1_y)
-      expect_length(inputList$inputs$output_1_x$revDeps, 0)
+      expect_null(inputList["output_1_y"])
+      expect_length(inputList["output_1_x"]$revDeps, 0)
       expect_silent(inputList$setValue(inputId = "output_1_x", value = 7))
 
       values <- inputList$getValues(1)
