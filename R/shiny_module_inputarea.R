@@ -57,7 +57,7 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     id <- i$getID()
     if (!is.character(id)) return()
     if (id %in% listeners) return()
-    if (ctrl$inputList$inputs[[id]]$type != "sharedValue") {
+    if (ctrl$inputList[id]$type != "sharedValue") {
       observeEvent(input[[id]], {
         ctrl$setValueById(id, value = input[[id]])
         updateContent(updateContent() + 1)
@@ -80,13 +80,13 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
 
       content <- shiny::tagList(lapply(inputs, function(x) {x$getHTML(ns)}))
 
-      lapply(ctrl$uiSpec$inputList$inputs, addListener)
+      lapply(ctrl$uiSpec$inputList$inputTable$input, addListener)
     }
 
     output$inputarea <- shiny::renderUI(content)
 
     # Update visibility of inputs
-    lapply(ctrl$inputList$inputs, function(input) {
+    lapply(ctrl$inputList$inputTable$input, function(input) {
       # Update input visibility
       catIfDebug("Update visibility of", input$getID())
       shiny::updateCheckboxInput(

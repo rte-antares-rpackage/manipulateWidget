@@ -138,7 +138,7 @@ MWController <- setRefClass(
       if (autoUpdate$value && !identical(oldValue, newValue)) {
         if (grepl("^shared_", id)) updateCharts()
         else {
-          chartId <- get(".id", envir = inputList$inputs[[id]]$env)
+          chartId <- get(".id", envir = inputList[id]$env)
           updateChart(chartId)
         }
       }
@@ -260,7 +260,7 @@ MWController <- setRefClass(
         setShinySession(output, session)
         output$ui <- renderUI(getModuleUI()(ns, height = "100%", fillPage = fillPage))
 
-        lapply(inputList$inputs, function(input) {
+        lapply(inputList$inputTable$input, function(input) {
           # Update input visibility
           catIfDebug("Update visibility of", input$getID())
           shiny::updateCheckboxInput(
@@ -296,7 +296,7 @@ MWController <- setRefClass(
           print(id)
           if (!is.character(id)) return()
           if (id %in% controller$listeners) return()
-          if (controller$inputList$inputs[[id]]$type != "sharedValue") {
+          if (controller$inputList[id]$type != "sharedValue") {
             # When shiny starts, this code is executed but input[[id]] is not defined yet.
             # The code is designed to skip this first useless update.
             e <- environment()
@@ -314,7 +314,7 @@ MWController <- setRefClass(
           }
         }
 
-        lapply(names(controller$inputList$inputs), addListener)
+        lapply(row.names(controller$inputList$inputTable), addListener)
 
         observeEvent(input$.update, controller$updateCharts(), ignoreNULL = !autoUpdate$initBtn)
         observeEvent(input$done, onDone(controller))
@@ -370,14 +370,14 @@ cloneEnv <- function(env, parentEnv = parent.env(env)) {
 cloneUISpec <- function(uiSpec, session) {
   newSharedEnv <- cloneEnv(uiSpec$envs$shared)
   newEnvs <- lapply(uiSpec$envs$ind, cloneEnv, parentEnv = newSharedEnv)
-  newInputs <- lapply(seq_along(uiSpec$inputList$inputs), function(i) {
-    x <- uiSpec$inputList$inputs[[i]]$copy()
-    chartId <- uiSpec$inputList$chartIds[i]
+  newInputs <- lapply(uiSpec$inputList$inputTable$input, function(i) {
+    x <- i$copy()
+    chartId <- get(".id", envir = x$env)
     if (chartId == 0) x$env <- newSharedEnv
     else x$env <- newEnvs[[chartId]]
     x
   })
-  names(newInputs) <- names(uiSpec$inputList$inputs)
+  names(newInputs) <- row.names(uiSpec$inputList$inputTable)
 
   newSpec <- replaceInputs(uiSpec$inputs, newInputs, c(list(newSharedEnv), newEnvs))
 
@@ -431,8 +431,8 @@ summary.MWController <- function(object, ...) {
   cat("Number of row(s)    :", object$nrow, "\n")
   cat("Number of column(s) :", object$ncol, "\n")
   cat("\nList of inputs : \n\n")
-  infos <- lapply(names(object$inputList$inputs), function(n){
-    input <- object$inputList$inputs[[n]]
+  infos <- lapply(row.names(object$inputList$inputTable), function(n){
+    input <- object$inputList[n]
     if (is.atomic(input$value)) {
       if (is.null(input$value)) value <- "NULL"
       else if (length(input$value) == 0) value <- ""
@@ -461,4 +461,3 @@ summary.MWController <- function(object, ...) {
   infos <- do.call(rbind, infos)
   print(infos)
 }
-
