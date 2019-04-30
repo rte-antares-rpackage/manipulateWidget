@@ -132,6 +132,12 @@ Input <- setRefClass(
       }
 
       lastParams <<- NULL
+
+      if (type == "group") {
+        lapply(names(value), function(n) {
+          value[[n]]$init(n, env)
+        })
+      }
     },
 
     getID = function() {
@@ -254,7 +260,8 @@ Input <- setRefClass(
 
     getInputs = function() {
       if (type == "group") {
-        do.call(c, unname(lapply(value, function(i) i$getInputs())))
+        res <- do.call(c, unname(lapply(value, function(i) i$getInputs())))
+        append(structure(list(.self), .Names = name), res)
       } else {
         structure(list(.self), .Names = name)
       }

@@ -64,6 +64,14 @@ InputList <- setRefClass(
       any(inputTable$chartId[idx] == 0)
     },
 
+    shared = function() {
+      inputTable$name[inputTable$chartId == 0]
+    },
+
+    unshared = function() {
+      unique(inputTable$name[inputTable$chartId != 0])
+    },
+
     isVisible = function(name, chartId = 1, inputId = NULL) {
       i <- getInput(name, chartId, inputId)
       eval(i$display, envir = i$env)

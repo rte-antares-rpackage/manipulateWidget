@@ -42,7 +42,7 @@ initInputs <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1
 
 Model <- setRefClass(
   "Model",
-  fields = c("envs", "inputs", "inputList", "ncharts", "hierarchy"),
+  fields = c("envs", "inputList", "ncharts", "hierarchy"),
   methods = list(
     initialize = function() {},
 
@@ -50,9 +50,15 @@ Model <- setRefClass(
       if (is.null(names(inputs))) stop("All arguments need to be named.")
       for (i in inputs) if (!inherits(i, "Input")) stop("All arguments need to be Input objects.")
 
+      ncharts <<- ncharts
+
       # Initialize environments
       sharedEnv <- initEnv(env, 0)
       indEnvs <- lapply(seq_len(ncharts), function(i) initEnv(sharedEnv, i))
+      envs <<- list(
+        shared = sharedEnv,
+        ind = indEnvs
+      )
 
       # Get the hierarchy of inputs (used for html generation)
       getHierarchyRecursive <- function(inputs) {
@@ -67,56 +73,48 @@ Model <- setRefClass(
 
       hierarchy <<- getHierarchyRecursive(inputs)
 
-      # flatten and init inputs
-      flattenedInputs <- flattenInputs(inputs)
+      # Init inputs
+      lapply(names(inputs), function(n) {inputs[[n]]$init(n, sharedEnv)})
+      inputList <<- InputList(inputs)
 
-      sharedInputs <- filterAndInitInputs(inputs, names(compare), drop = TRUE, sharedEnv)
-      indInputs <- lapply(seq_len(ncharts), function(i) {
-        newValues <- list()
-        for (n in names(compare)) {
-          if(!is.null(compare[[n]])) newValues[[n]] <- compare[[n]][[i]]
+      # If compare is not null, unshare inputs and set initial values
+      lapply(names(compare) , function(n) {
+        newInputIds <- unshareInput(n)
+        if (!is.null(compare[[n]])) {
+          for (i in seq_len(ncharts)) {
+            inputList$setValue(inputId = newInputIds[i], value = compare[[n]][[i]])
+          }
         }
-        filterAndInitInputs(inputs, names(compare), env = indEnvs[[i]], newValues = newValues)
       })
-
-      inputList <<- InputList(list(sharedInputs, indInputs))
-      envs <<- list(
-        shared = sharedEnv,
-        ind = indEnvs
-      )
-      inputs <<- list(
-        shared = sharedInputs,
-        ind = indInputs
-      )
-      ncharts <<- ncharts
     },
 
     shareInput = function(name) {
-      if (name %in% names(inputs$shared)) {
+      if (name %in% inputList$shared()) {
         return(character())
       }
 
-      newInput <- inputs$ind[[1]][[name]]$clone(envs$shared)
+      newInput <- inputList$getInput(name, 1)$clone(envs$shared)
 
       for (i in seq_len(ncharts)) {
-        innerInputs <- names(inputs$ind[[i]][[name]]$getInputs())
-        for (n in innerInputs) {
+        inputList$getInput(name, i)$destroy()
+        innerInputs <- inputList$getInput(name, i)$getInputs()
+        for (n in names(innerInputs)) {
           inputList$removeInput(n, chartId = i)
         }
-        inputs$ind[[i]][[name]]$destroy()
-        inputs$ind[[i]][[name]] <<- NULL
       }
 
-      inputs$shared <<- append(inputs$shared, structure(list(newInput), .Names = name))
-      inputList$addInputs(newInput$getInputs())
+      allNewInputs <- newInput$getInputs()
+      inputList$addInputs(allNewInputs)
 
-      unname(sapply(newInput$getInputs(), function(i) i$getID()))
+      unname(sapply(allNewInputs, function(i) i$getID()))
     },
 
     unshareInput = function(name) {
-      if (name %in% names(inputs$ind[[1]])) return(character())
+      if (! name %in% inputList$shared()) return(character())
 
-      oldInput <- inputs$shared[[name]]
+      oldInput <- inputList$getInput(name, 0)
+      for (n in oldInput$revDeps) unshareInput(n)
+      for (n in oldInput$displayRevDeps) unshareInput(n)
 
       innerInputs <- names(oldInput$getInputs())
 
@@ -128,7 +126,6 @@ Model <- setRefClass(
 
       for (i in seq_len(ncharts)) {
         newInput <- oldInput$clone(envs$ind[[i]])
-        inputs$ind[[i]] <<- append(inputs$ind[[i]], structure(list(newInput), .Names = name))
         inputList$addInputs(newInput$getInputs())
         newInputIds <- append(
           newInputIds,
@@ -137,13 +134,12 @@ Model <- setRefClass(
       }
 
       oldInput$destroy()
-      inputs$shared[[name]] <<- NULL
 
       newInputIds
     },
 
     getShareable = function() {
-      union(names(inputs$shared), names(inputs$ind[[1]]))
+      setdiff(names(hierarchy), inputList$unshared())
     },
 
     addChart = function() {
@@ -153,31 +149,33 @@ Model <- setRefClass(
       assign(".id", ncharts, envir = envs$ind[[ncharts]])
       assign(".output", paste0("output_", ncharts), envir = envs$ind[[ncharts]])
 
+      # Get the list of inputs to clone
+      toClone <- inputList$inputTable$chartId == ncharts - 1 &
+        inputList$inputTable$name %in% names(hierarchy)
+      inputsToClone <- inputList[toClone]
+
       # Copy inputs
-      newInputs <- lapply(inputs$ind[[ncharts - 1]], function(input) {
-        newInput <- input$copy()
-        newInput$env <- envs$ind[[ncharts]]
-        newInput
+      newInputs <- lapply(inputsToClone, function(input) {
+        input$clone(envs$ind[[ncharts]])
       })
 
-      names(newInputs) <- names(inputs$ind[[ncharts - 1]])
-      inputs$ind[[ncharts]] <<- newInputs
+      allNewInputs <- lapply(unname(newInputs), function(input) {
+        input$getInputs()
+      })
 
-      inputList$addInputs(newInputs)
+      allNewInputs <- do.call(c, allNewInputs)
+
+      inputList$addInputs(allNewInputs)
     },
 
     removeChart = function() {
       if (ncharts == 1) stop("Need at least one chart.")
 
-      for (n in names(inputs$ind[[ncharts]])) {
-        inputsToRemove <- names(inputs$ind[[ncharts]][[n]]$getInputs())
-        for (k in inputsToRemove) {
-          inputList$removeInput(k, chartId = ncharts)
-        }
+      for (n in inputList$unshared()) {
+        inputList$removeInput(n, chartId = ncharts)
       }
-      envs$ind[[ncharts]] <<- NULL
-      inputs$ind[[ncharts]] <<- NULL
 
+      envs$ind[[ncharts]] <<- NULL
       ncharts <<- ncharts - 1
     },
 

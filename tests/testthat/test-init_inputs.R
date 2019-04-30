@@ -9,16 +9,11 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   inputList <- flattenInputs(inputList)
 
   expect_is(res, "Model")
-  expect_named(res$getRefClass()$fields(), c("envs", "inputs", "inputList", "ncharts", "hierarchy"))
+  expect_named(res$getRefClass()$fields(), c("envs", "inputList", "ncharts", "hierarchy"))
   expect_is(res$envs, "list")
   expect_named(res$envs, c("shared", "ind"))
   expect_is(res$envs$ind, "list")
   expect_length(res$envs$ind, ncharts)
-
-  expect_is(res$inputs, "list")
-  expect_named(res$inputs, c("shared", "ind"))
-  expect_is(res$inputs$ind, "list")
-  expect_length(res$inputs$ind, ncharts)
 
   expect_is(res$inputList, "InputList")
   expectedLength <- length(inputList) + length(compare) * (ncharts - 1)
@@ -83,12 +78,11 @@ describe("Model Class", {
     newInput <- model$shareInput("x")
     expect_equal(newInput, "shared_x")
 
-    expect_length(model$inputs$shared, 1)
-    expect_named(model$inputs$shared, "x")
+    expect_silent(model$inputList$getInput("x", 0))
+    expect_error(model$inputList$getInput("y", 0), "cannot find input")
 
     for (i in 1:2) {
-      expect_length(model$inputs$ind[[i]], 1)
-      expect_named(model$inputs$ind[[i]], c("y"))
+      expect_silent(model$inputList$getInput("y", i))
     }
 
     expect_equal(model$envs$shared$x, 5)
@@ -103,14 +97,14 @@ describe("Model Class", {
 
     newInputs <- model$unshareInput("b")
     expect_equal(newInputs, c("output_1_b", "output_2_b"))
-    expect_length(model$inputs$shared, 0)
+
+    expect_error(model$inputList$getInput("b", 0), "cannot find input")
 
     for (i in 1:2) {
-      expect_length(model$inputs$ind[[i]], 2)
-      expect_named(model$inputs$ind[[i]], c("a", "b"))
+      expect_silent(model$inputList$getInput("a", i))
+      expect_silent(model$inputList$getInput("b", i))
     }
 
-    expect_null(model$envs$shared$b)
     for (i in 1:2) {
       expect_equal(model$envs$ind[[i]]$b, "test")
     }
@@ -127,14 +121,26 @@ describe("Model Class", {
 
     model$inputList$init()
     newInput <- model$shareInput("grp")
-    expect_equal(sort(newInput), c("shared_a", "shared_b"))
+    expect_equal(sort(newInput), c("shared_a", "shared_b", "shared_grp"))
 
-    expect_length(model$inputs$shared, 1)
-    expect_named(model$inputs$shared, "grp")
-    expect_named(model$inputs$shared$grp$value, c("a", "b"))
+    expect_silent(model$inputList$getInput("grp", 0))
+    expect_silent(model$inputList$getInput("a", 0))
+    expect_silent(model$inputList$getInput("b", 0))
+
+    expect_named(model$inputList$getInput("grp", 0)$value, c("a", "b"))
 
     for (i in 1:2) {
-      expect_length(model$inputs$ind[[i]], 0)
+      expect_error(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
+      expect_error(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
+      expect_error(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
+    }
+
+    # Check environments
+    expect_true(exists("a", envir = model$envs$shared))
+    expect_true(exists("b", envir = model$envs$shared))
+    for (i in 1:2){
+      expect_false(exists("a", envir = model$envs$ind[[i]], inherits = FALSE))
+      expect_false(exists("b", envir = model$envs$ind[[i]], inherits = FALSE))
     }
   })
 
@@ -144,14 +150,16 @@ describe("Model Class", {
     newInputs <- model$unshareInput("grp")
     expect_equal(
       sort(newInputs),
-      c("output_1_a", "output_1_b", "output_2_a", "output_2_b")
+      c("output_1_a", "output_1_b", "output_1_grp", "output_2_a", "output_2_b", "output_2_grp")
     )
-    expect_length(model$inputs$shared, 0)
+    expect_error(model$inputList$getInput("a", 0), "cannot find input")
+    expect_error(model$inputList$getInput("b", 0), "cannot find input")
+    expect_error(model$inputList$getInput("grp", 0), "cannot find input")
 
     for (i in 1:2) {
-      expect_length(model$inputs$ind[[i]], 1)
-      expect_named(model$inputs$ind[[i]], c("grp"))
-      expect_named(model$inputs$ind[[i]]$grp$value, c("a", "b"))
+      expect_silent(model$inputList$getInput("a", i))
+      expect_silent(model$inputList$getInput("b", i))
+      expect_silent(model$inputList$getInput("grp", i))
     }
 
     expect_null(model$envs$shared$a)
@@ -172,7 +180,6 @@ describe("Model Class", {
 
     expect_equal(model$ncharts, 2)
     expect_length(model$envs$ind, 2)
-    expect_length(model$inputs$ind, 2)
 
     for (i in 1:2) {
       expect_equal(model$envs$ind[[i]]$a, "test")
@@ -195,7 +202,6 @@ describe("Model Class", {
 
     expect_equal(model$ncharts, 1)
     expect_length(model$envs$ind, 1)
-    expect_length(model$inputs$ind, 1)
     expect_length(model$inputList$inputTable$input, 2)
     expect_equal(row.names(model$inputList$inputTable), c("shared_b", "output_1_a"), ignore.order = TRUE)
   })
@@ -213,7 +219,6 @@ describe("Model Class", {
     model$setChartNumber(4)
     expect_equal(model$ncharts, 4)
     expect_length(model$envs$ind, 4)
-    expect_length(model$inputs$ind, 4)
   })
 
   it ("removes many charts", {
@@ -222,6 +227,5 @@ describe("Model Class", {
     model$setChartNumber(2)
     expect_equal(model$ncharts, 2)
     expect_length(model$envs$ind, 2)
-    expect_length(model$inputs$ind, 2)
   })
 })
