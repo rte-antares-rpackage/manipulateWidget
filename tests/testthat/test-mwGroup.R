@@ -65,7 +65,7 @@ describe("mwGroup", {
     grp$init("grp", env1)
 
     inputs <- grp$getInputs()
-    expect_equal(names(inputs), c("a", "b"))
+    expect_equal(sort(names(inputs)), c("a", "b", "grp", "inner_grp"))
     expect_identical(inputs$a, a)
     expect_identical(inputs$b, b)
   })

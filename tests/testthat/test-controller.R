@@ -34,7 +34,7 @@ describe("MWController", {
   })
 
   it("creates a copy that is completely autonomous", {
-    inputs <- initInputs(list(a = mwText("a"), b = mwText("b")))
+    inputs <- initInputs(list(grp = mwGroup(a = mwText("a"), b = mwText("b"))))
     expr <- expression(paste(a, b))
     controller1 <- MWController(expr, inputs)$init()
     controller2 <- controller1$clone()

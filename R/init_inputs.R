@@ -179,6 +179,33 @@ Model <- setRefClass(
           removeChart()
         }
       }
+    },
+
+    clone = function() {
+      newSharedEnv <- cloneEnv(envs$shared)
+      newEnvs <- lapply(envs$ind, cloneEnv, parentEnv = newSharedEnv)
+
+      newInputList <- InputList(list())
+
+      newInputs <- list()
+      for (n in names(hierarchy)) {
+        if(inputList$isShared(n)) {
+          newInputs <- append(newInputs, inputList$getInput(n, 0)$clone(newSharedEnv))
+        } else {
+          for (i in seq_len(ncharts)) {
+            newInputs <- append(newInputs, inputList$getInput(n, i)$clone(newEnvs[[i]]))
+          }
+        }
+      }
+      newInputList$addInputs(newInputs)
+
+      res <- Model()
+      res$envs <- list(shared = newSharedEnv, ind = newEnvs)
+      res$inputList <- newInputList
+      res$hierarchy <- hierarchy
+      res$ncharts <- ncharts
+
+      res
     }
   )
 )

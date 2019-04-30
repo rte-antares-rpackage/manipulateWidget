@@ -224,7 +224,7 @@ MWController <- setRefClass(
     clone = function(env = parent.frame()) {
       res <- MWController(
         expr,
-        cloneUISpec(uiSpec, session),
+        uiSpec$clone(),
         autoUpdate
       )
       res$charts <- charts
@@ -366,47 +366,6 @@ cloneEnv <- function(env, parentEnv = parent.env(env)) {
   parent.env(res) <- parentEnv
   res
 }
-
-cloneUISpec <- function(uiSpec, session) {
-  newSharedEnv <- cloneEnv(uiSpec$envs$shared)
-  newEnvs <- lapply(uiSpec$envs$ind, cloneEnv, parentEnv = newSharedEnv)
-  newInputs <- lapply(uiSpec$inputList$inputTable$input, function(i) {
-    x <- i$copy()
-    chartId <- get(".id", envir = x$env)
-    if (chartId == 0) x$env <- newSharedEnv
-    else x$env <- newEnvs[[chartId]]
-    x
-  })
-  names(newInputs) <- row.names(uiSpec$inputList$inputTable)
-
-  newSpec <- replaceInputs(uiSpec$inputs, newInputs, c(list(newSharedEnv), newEnvs))
-
-  res <- Model()
-  res$envs <- list(shared = newSharedEnv, ind = newEnvs)
-  res$inputs <- newSpec
-  res$inputList <- InputList(newInputs, session, flatten = FALSE)
-  res$ncharts <- uiSpec$ncharts
-
-  res
-}
-
-replaceInputs <- function(inputs, newInputs, envs) {
-  lapply(inputs, function(el) {
-    if (is.list(el)) return(replaceInputs(el, newInputs, envs))
-    else if (el$type == "group") {
-      params <- replaceInputs(el$value, newInputs, envs)
-      params$.display <- el$display
-      params$label <- el$label
-      newGroup <- do.call(mwGroup, params)
-      env <- envs[[1 + get(".id", envir = el$env)]]
-      newGroup$init(el$name, env)
-      return(newGroup)
-    }
-    else return(newInputs[[el$getID()]])
-  })
-}
-
-
 
 #' knit_print method for MWController object
 #'
