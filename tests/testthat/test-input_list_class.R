@@ -119,6 +119,17 @@ describe("InputList", {
       }
     })
 
+    it ("can add a group of inputs", {
+      e <- initEnv(parent.frame(), 1)
+      inputs <- list(x = mwSlider(0, 10, 5), grp = mwGroup(y = mwSlider(x, 10, 0)))
+      inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
+      inputList <- InputList(inputs[1])$init()
+      inputList$addInputs(inputs[2])
+
+      expect_equal(nrow(inputList$inputTable), 3)
+      expect_equal(sort(inputList$inputTable$name), c("grp", "x", "y"))
+    })
+
     it ("can remove an input", {
       e <- initEnv(parent.frame(), 1)
       inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
@@ -126,6 +137,21 @@ describe("InputList", {
       inputList <- InputList(inputs)$init()
       inputList$removeInput("y", 1)
       expect_null(inputList["output_1_y"])
+      expect_length(inputList["output_1_x"]$revDeps, 0)
+      expect_silent(inputList$setValue(inputId = "output_1_x", value = 7))
+
+      values <- inputList$getValues(1)
+      expect_equal(values, list(x = 7))
+    })
+
+    it ("can remove a group of inputs", {
+      e <- initEnv(parent.frame(), 1)
+      inputs <- list(x = mwSlider(0, 10, 5), grp = mwGroup(y = mwSlider(x, 10, 0)))
+      inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
+      inputList <- InputList(inputs)$init()
+      inputList$removeInput("grp", 1)
+      expect_null(inputList["output_1_y"])
+      expect_null(inputList["output_1_grp"])
       expect_length(inputList["output_1_x"]$revDeps, 0)
       expect_silent(inputList$setValue(inputId = "output_1_x", value = 7))
 

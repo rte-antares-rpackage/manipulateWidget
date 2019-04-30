@@ -22,7 +22,8 @@ InputList <- setRefClass(
         name = sapply(inputList, function(x) x$name),
         chartId = sapply(inputList, function(x) get(".id", envir = x$env)),
         type = sapply(inputList, function(x) x$type),
-        input = I(inputList)
+        input = I(inputList),
+        stringsAsFactors = FALSE
       )
 
       session <<- session
@@ -116,12 +117,19 @@ InputList <- setRefClass(
     },
 
     addInputs = function(x) {
+      initialInputs <- row.names(inputTable)
+
+      for (input in x) {
+        if (input$type == "group") addInputs(input$value)
+      }
+
       newInputs <- data.frame(
         row.names = sapply(x, function(i) i$getID()),
         name = sapply(x, function(i) i$name),
         chartId = sapply(x, function(i) get(".id", envir = i$env)),
         type = sapply(x, function(i) i$type),
-        input = I(x)
+        input = I(x),
+        stringsAsFactors = FALSE
       )
 
       inputTable <<- rbind(inputTable, newInputs)
@@ -129,6 +137,8 @@ InputList <- setRefClass(
       # Reset dependencies
       setDeps()
       if (initialized) update(forceDeps = TRUE)
+
+      setdiff(row.names(inputTable), initialInputs)
     },
 
     removeInput = function(name, chartId = 0, inputId = NULL) {
@@ -141,7 +151,14 @@ InputList <- setRefClass(
 
       if (length(idx) == 0) stop("cannot find input with name ", name)
       if (length(idx) > 1) stop("Something wrong with input", name)
+
+      inputToRemove <- .self[idx]
+
       inputTable <<- inputTable[-idx,]
+
+      if(inputToRemove$type == "group") {
+        for (input in inputToRemove$value) removeInput(inputId = input$getID())
+      }
 
       setDeps()
 

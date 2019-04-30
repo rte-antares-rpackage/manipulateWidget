@@ -97,39 +97,30 @@ Model <- setRefClass(
 
       for (i in seq_len(ncharts)) {
         inputList$getInput(name, i)$destroy()
-        innerInputs <- inputList$getInput(name, i)$getInputs()
-        for (n in names(innerInputs)) {
-          inputList$removeInput(n, chartId = i)
-        }
+        inputList$removeInput(name, chartId = i)
       }
 
-      allNewInputs <- newInput$getInputs()
-      inputList$addInputs(allNewInputs)
-
-      unname(sapply(allNewInputs, function(i) i$getID()))
+      inputList$addInputs(list(name = newInput))
     },
 
     unshareInput = function(name) {
-      if (! name %in% inputList$shared()) return(character())
+      if (name %in% inputList$unshared()) return(character())
 
       oldInput <- inputList$getInput(name, 0)
-      for (n in oldInput$revDeps) unshareInput(n)
-      for (n in oldInput$displayRevDeps) unshareInput(n)
-
-      innerInputs <- names(oldInput$getInputs())
-
-      for (n in innerInputs) {
-        inputList$removeInput(n, chartId = 0)
+      for (id in c(oldInput$revDeps,oldInput$displayRevDeps)) {
+        unshareInput(inputList$getInput(inputId = id)$name)
       }
+
+      inputList$removeInput(name, chartId = 0)
 
       newInputIds <- character()
 
       for (i in seq_len(ncharts)) {
         newInput <- oldInput$clone(envs$ind[[i]])
-        inputList$addInputs(newInput$getInputs())
+
         newInputIds <- append(
           newInputIds,
-          unname(sapply(newInput$getInputs(), function(i) i$getID()))
+          inputList$addInputs(list(name = newInput))
         )
       }
 
