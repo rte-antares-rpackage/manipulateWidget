@@ -160,9 +160,11 @@ MWController <- setRefClass(
     },
 
     updateChart = function(chartId = 1) {
-      catIfDebug("Update chart", chartId)
       if(!is.null(envs)){
-        e <- new.env(parent = envs$ind[[chartId]]) # User can set values in expr without messing environments
+        catIfDebug("Update chart", chartId)
+        # Create a new environment so that users can set values in expr without
+        # messing environments
+        e <- new.env(parent = envs$ind[[chartId]])
         charts[[chartId]] <<- eval(expr, envir = e)
         if (useCombineWidgets) {
           charts[[chartId]] <<- combineWidgets(charts[[chartId]])
@@ -246,7 +248,7 @@ MWController <- setRefClass(
              okBtn = okBtn, saveBtn = autoUpdate$saveBtn,
              exportBtn = autoUpdate$exportBtn, exportType = autoUpdate$exportType,
              updateBtn = !autoUpdate$value,
-             areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
+             areaBtns = length(uiSpec$inputList$unshared()) > 1, border = addBorder,
              width = width, height = height, fillPage = fillPage,
              showCompare = autoUpdate$showCompare)
       }

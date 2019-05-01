@@ -159,7 +159,6 @@ Input <- setRefClass(
 
     updateValue = function() {
       "Update value after a change in environment"
-      catIfDebug("Update value of ", getID())
       oldValue <- value
 
       if (!emptyField(validFunc)){
@@ -174,6 +173,7 @@ Input <- setRefClass(
         }
       }
       if (!identical(value, oldValue)) {
+        catIfDebug("Update value of", getID())
         valueHasChanged <<- TRUE
         assign(name, value, envir = env)
       }

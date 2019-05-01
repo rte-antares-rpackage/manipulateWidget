@@ -92,7 +92,7 @@ Model <- setRefClass(
       if (name %in% inputList$shared()) {
         return(character())
       }
-
+      catIfDebug("Share variable", name)
       newInput <- inputList$getInput(name, 1)$clone(envs$shared)
 
       for (i in seq_len(ncharts)) {
@@ -105,6 +105,8 @@ Model <- setRefClass(
 
     unshareInput = function(name) {
       if (name %in% inputList$unshared()) return(character())
+
+      catIfDebug("Unshare variable", name)
 
       oldInput <- inputList$getInput(name, 0)
       for (id in c(oldInput$revDeps,oldInput$displayRevDeps)) {
@@ -129,8 +131,19 @@ Model <- setRefClass(
       newInputIds
     },
 
+    getInputsForChart = function(chartId) {
+      if (chartId == 0) {
+        inputNames <- intersect(names(hierarchy), inputList$shared())
+      } else {
+        inputNames <- intersect(names(hierarchy), inputList$unshared())
+      }
+      sapply(inputNames, function(n) {
+        inputList$getInput(n, chartId)
+      }, simplify = FALSE, USE.NAMES = TRUE)
+    },
+
     getShareable = function() {
-      setdiff(names(hierarchy), inputList$unshared())
+      names(hierarchy)
     },
 
     addChart = function() {

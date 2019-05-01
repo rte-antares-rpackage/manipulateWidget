@@ -117,6 +117,7 @@ InputList <- setRefClass(
     },
 
     addInputs = function(x) {
+      if (length(x) == 0) return()
       initialInputs <- row.names(inputTable)
 
       for (input in x) {
@@ -185,7 +186,8 @@ InputList <- setRefClass(
     },
 
     updateRevDeps = function(input, force = FALSE) {
-      if (!initialized && !force) return()
+      if ((!initialized && !force) | length(input$revDeps) == 0) return()
+      catIfDebug("Update dependencies of variable", input$name)
       for (inputId in input$revDeps) {
         revDepInput <- getInput(inputId = inputId)
         if(!identical(revDepInput$value, revDepInput$updateValue())) {

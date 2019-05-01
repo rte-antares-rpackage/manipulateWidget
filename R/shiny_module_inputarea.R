@@ -55,12 +55,18 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
 
   addListener <- function(i) {
     id <- i$getID()
+    e <- new.env()
+    e$firstCall <- TRUE
     if (!is.character(id)) return()
     if (id %in% listeners) return()
     if (ctrl$inputList[id]$type != "sharedValue") {
       observeEvent(input[[id]], {
-        ctrl$setValueById(id, value = input[[id]])
-        updateContent(updateContent() + 1)
+        if (e$firstCall) {
+          e$firstCall <- FALSE
+        } else {
+          ctrl$setValueById(id, value = input[[id]])
+          updateContent(updateContent() + 1)
+        }
       })
       listeners <<- append(listeners, id)
     }
@@ -72,11 +78,11 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
       content <- ""
     } else {
       if (chartId == 0) {
-        inputs <- ctrl$uiSpec$inputs$shared
-        if (nbCharts() == 1 && length(ctrl$uiSpec$inputs$ind[[1]]) > 0) {
-          inputs <- c(inputs, ctrl$uiSpec$inputs$ind[[1]])
+        inputs <- ctrl$uiSpec$getInputsForChart(0)
+        if (nbCharts() == 1 && length(ctrl$uiSpec$inputList$unshared()) > 0) {
+          inputs <- c(inputs, ctrl$uiSpec$getInputsForChart(1))
         }
-      } else inputs <- ctrl$uiSpec$inputs$ind[[chartId]]
+      } else inputs <- ctrl$uiSpec$getInputsForChart(chartId)
 
       content <- shiny::tagList(lapply(inputs, function(x) {x$getHTML(ns)}))
 
@@ -88,12 +94,14 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     # Update visibility of inputs
     lapply(ctrl$inputList$inputTable$input, function(input) {
       # Update input visibility
-      catIfDebug("Update visibility of", input$getID())
-      shiny::updateCheckboxInput(
-        session,
-        paste0(input$getID(), "_visible"),
-        value = eval(input$display, envir = input$env)
-      )
+      if (chartId != get(".id", envir = input$env)) return()
+
+      # catIfDebug("Update visibility of", input$getID())
+      # shiny::updateCheckboxInput(
+      #   session,
+      #   paste0(input$getID(), "_visible"),
+      #   value = eval(input$display, envir = input$env)
+      # )
       # Hack to fix https://github.com/rstudio/shiny/issues/1490
       if (input$type == "select" && identical(input$lastParams$multiple, TRUE)) {
         input$valueHasChanged <- TRUE
@@ -117,11 +125,14 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     for (n in input$.compareVars) {
       ctrl$uiSpec$unshareInput(n)
     }
+
     for (n in setdiff(ctrl$uiSpec$getShareable(), input$.compareVars)) {
-      ctrl$uiSpec$shareInput(n)
+      newSharedInputs <- ctrl$uiSpec$shareInput(n)
+      if (length(newSharedInputs) > 0 & nbCharts() > 1) {
+        for (i in 2:nbCharts()) ctrl$updateChart(i)
+      }
     }
-    ctrl$inputList$update(forceDeps = TRUE)
-    ctrl$updateCharts()
+
     updateInputs(chartId())
     updateContent(updateContent() + 1)
   })
