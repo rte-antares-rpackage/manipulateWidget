@@ -112,7 +112,6 @@ Model <- setRefClass(
       for (id in c(oldInput$revDeps,oldInput$displayRevDeps)) {
         unshareInput(inputList$getInput(inputId = id)$name)
       }
-
       inputList$removeInput(name, chartId = 0)
 
       newInputIds <- character()

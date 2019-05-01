@@ -3,7 +3,7 @@ context("InputList class")
 describe("InputList", {
   it ("correctly updates values when an input value changes", {
     inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
-    inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
+    inputs <- initAllInputs(inputs, initEnv(parent.frame(), 1))
     inputList <- InputList(inputs)$init()
 
     expect_equal(inputList["output_1_y"]$value, 5)
@@ -18,7 +18,7 @@ describe("InputList", {
       y = mwSlider(x, 10, 0, .display = z > 3),
       z = mwSlider(0, x, 0)
     )
-    inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
+    inputs <- initAllInputs(inputs, initEnv(parent.frame(), 1))
     inputList <- InputList(inputs)$init()
     expect_equal(inputList$getDeps(inputList["output_1_x"]),
                  list(params = character(), display = character()))
@@ -32,10 +32,9 @@ describe("InputList", {
   inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(0, 10, 0))
   inputs2 <- list(x = mwSlider(0, 10, 6), y = mwSlider(0, 10, 1))
   inputs <- c(
-    filterAndInitInputs(list(shared = mwText("test")), c(), TRUE,
-                        initEnv(parent.frame(), 0)),
-    filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1)),
-    filterAndInitInputs(inputs2, c(), TRUE, initEnv(parent.frame(), 2))
+    initAllInputs(list(shared = mwText("test")), initEnv(parent.frame(), 0)),
+    initAllInputs(inputs, initEnv(parent.frame(), 1)),
+    initAllInputs(inputs2, initEnv(parent.frame(), 2))
   )
   inputList <- InputList(inputs)$init()
 
@@ -87,7 +86,7 @@ describe("InputList", {
 
     it ("does not modify values until it is initialized", {
       inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
-      inputs <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
+      inputs <- initAllInputs(inputs, initEnv(parent.frame(), 1))
       inputList <- InputList(inputs)
 
       expect_equal(inputList["output_1_y"]$value, 0)
@@ -103,7 +102,7 @@ describe("InputList", {
     it ("can add an input", {
       e <- initEnv(parent.frame(), 1)
       inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
-      inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
+      inputs <- initAllInputs(inputs, e)
       inputList <- InputList(inputs[1])$init()
       inputList$addInputs(inputs[2])
       expect_equal(inputList["output_1_y"]$value, 5)
@@ -122,7 +121,7 @@ describe("InputList", {
     it ("can add a group of inputs", {
       e <- initEnv(parent.frame(), 1)
       inputs <- list(x = mwSlider(0, 10, 5), grp = mwGroup(y = mwSlider(x, 10, 0)))
-      inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
+      initInputs(inputs, e)
       inputList <- InputList(inputs[1])$init()
       inputList$addInputs(inputs[2])
 
@@ -133,7 +132,7 @@ describe("InputList", {
     it ("can remove an input", {
       e <- initEnv(parent.frame(), 1)
       inputs <- list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0))
-      inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
+      inputs <- initAllInputs(inputs, e)
       inputList <- InputList(inputs)$init()
       inputList$removeInput("y", 1)
       expect_null(inputList["output_1_y"])
@@ -147,7 +146,7 @@ describe("InputList", {
     it ("can remove a group of inputs", {
       e <- initEnv(parent.frame(), 1)
       inputs <- list(x = mwSlider(0, 10, 5), grp = mwGroup(y = mwSlider(x, 10, 0)))
-      inputs <- filterAndInitInputs(inputs, c(), TRUE, e)
+      inputs <- initAllInputs(inputs, e)
       inputList <- InputList(inputs)$init()
       inputList$removeInput("grp", 1)
       expect_null(inputList["output_1_y"])

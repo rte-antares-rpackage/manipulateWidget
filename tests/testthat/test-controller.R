@@ -53,17 +53,6 @@ describe("MWController", {
     expect_equal(controller$getParams("a")$choices, c("a", "b", "c"))
   })
 
-  it("generates server and ui functions", {
-    inputs <- initInputs(list(a = mwSelect(c("a", "b", "c")), b = mwText("b")))
-    expr <- expression(paste(a, b))
-    controller <- MWController(expr, inputs)$init()
-    ui <- controller$getModuleUI()
-    server <- controller$getModuleServer()
-    expect_is(ui, "function")
-    expect_is(server, "function")
-    expect_true(all(c("input", "output", "session", "...") %in% names(formals(server))))
-  })
-
   it("does not update values or create charts until it is initialized", {
     inputs <- initInputs(list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0)))
     expr <- expression(paste(x, y))

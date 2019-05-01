@@ -10,12 +10,12 @@ InputList <- setRefClass(
   "InputList",
   fields = c("session", "initialized", "inputTable"),
   methods = list(
-    initialize = function(inputs, session = NULL, flatten = TRUE) {
+    initialize = function(inputs, session = NULL) {
       "args:
        - inputs: list of initialized inputs
        - session: shiny session"
-      if (flatten) inputList <- flattenInputs(unname(inputs))
-      else inputList <- inputs
+      inputList <- lapply(inputs, function(input) input$getInputs())
+      inputList <- do.call(c, inputList)
 
       inputTable <<- data.frame(
         row.names = sapply(inputList, function(x) {x$getID()}),
@@ -181,19 +181,23 @@ InputList <- setRefClass(
       input <- getInput(name, chartId, inputId)
       oldValue <- input$value
       res <- input$setValue(value, reactive = reactive)
-      if (!identical(oldValue, res)) updateRevDeps(input)
+      if (!identical(oldValue, res)) updateRevDeps(input, TRUE)
       res
     },
 
     updateRevDeps = function(input, force = FALSE) {
-      if ((!initialized && !force) | length(input$revDeps) == 0) return()
-      catIfDebug("Update dependencies of variable", input$name)
-      for (inputId in input$revDeps) {
-        revDepInput <- getInput(inputId = inputId)
-        if(!identical(revDepInput$value, revDepInput$updateValue())) {
-          updateRevDeps(revDepInput)
+      if ((!initialized && !force)) return()
+
+      if (length(input$revDeps) > 0) {
+        catIfDebug("Update dependencies of variable", input$name)
+        for (inputId in input$revDeps) {
+          revDepInput <- getInput(inputId = inputId)
+          if(!identical(revDepInput$value, revDepInput$updateValue())) {
+            updateRevDeps(revDepInput)
+          }
         }
       }
+
       for (inputId in input$displayRevDeps) {
         updateHTMLVisibility(inputId = inputId)
       }
@@ -205,7 +209,6 @@ InputList <- setRefClass(
       for (input in inputTable$input) {
         if (!identical(input$value, input$updateValue())) updateRevDeps(input, force = forceDeps)
       }
-      updateHTML()
     },
 
     updateHTML = function() {

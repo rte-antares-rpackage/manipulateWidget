@@ -241,19 +241,6 @@ MWController <- setRefClass(
       res
     },
 
-    getModuleUI = function(gadget = TRUE, saveBtn = TRUE, exportBtn = FALSE, exportType = "html2canvas", addBorder = !gadget) {
-      function(ns, okBtn = gadget, width = "100%", height = "400px", fillPage = TRUE) {
-        #ns <- shiny::NS
-        mwUI(ns, uiSpec, nrow, ncol, outputFunc,
-             okBtn = okBtn, saveBtn = autoUpdate$saveBtn,
-             exportBtn = autoUpdate$exportBtn, exportType = autoUpdate$exportType,
-             updateBtn = !autoUpdate$value,
-             areaBtns = length(uiSpec$inputList$unshared()) > 1, border = addBorder,
-             width = width, height = height, fillPage = fillPage,
-             showCompare = autoUpdate$showCompare)
-      }
-    },
-
     render = function(output, session, fillPage) {
       if (initialized) return()
       ns <- session$ns
@@ -278,87 +265,6 @@ MWController <- setRefClass(
         })
         if (autoUpdate$value) renderShinyOutputs()
       }, error = function(e) {catIfDebug("Initialization error"); print(e)})
-    },
-
-    getModuleServer = function() {
-      function(input, output, session, fillPage = TRUE, ...) {
-
-        controller <- .self$clone()
-
-        reactiveValueList <- list(...)
-
-        observe({
-          for (n in names(reactiveValueList)) {
-            controller$setValue(n, reactiveValueList[[n]](), reactive = TRUE)
-          }
-          controller$render(output, session, fillPage = fillPage)
-        })
-
-        addListener <- function(id) {
-          print(id)
-          if (!is.character(id)) return()
-          if (id %in% controller$listeners) return()
-          if (controller$inputList[id]$type != "sharedValue") {
-            # When shiny starts, this code is executed but input[[id]] is not defined yet.
-            # The code is designed to skip this first useless update.
-            e <- environment()
-            e$shinyInitialisation <- TRUE
-            observe({
-              shinyValue <- input[[id]]
-              if (e$shinyInitialisation) {
-                assign("shinyInitialisation", FALSE, envir = e)
-              } else {
-                controller$setValueById(id, value = shinyValue)
-                controller$render(output, session)
-              }
-            })
-            controller$listeners <- append(controller$listeners, id)
-          }
-        }
-
-        lapply(row.names(controller$inputList$inputTable), addListener)
-
-        observeEvent(input$.update, controller$updateCharts(), ignoreNULL = !autoUpdate$initBtn)
-        observeEvent(input$done, onDone(controller))
-        observeEvent(input$.compare_vars, ignoreNULL = FALSE, ignoreInit = TRUE,  {
-          for (n in input$.compare_vars) {
-            newInputs <- controller$uiSpec$unshareInput(n)
-            for (inputId in newInputs) addListener(inputId)
-          }
-          for (n in setdiff(sort(unique(controller$inputList$names)), input$.compare_vars)) {
-            newInput <- controller$uiSpec$shareInput(n)
-            for (inputId in newInput) addListener(inputId)
-          }
-          inputList$update(forceDeps = TRUE)
-          controller$updateCharts()
-          ns <- session$ns
-          output$ui <- renderUI(controller$getModuleUI()(ns, height = "100%", fillPage = fillPage))
-        })
-
-        output$save <- shiny::downloadHandler(
-          filename = function() {
-            paste('mpWidget-', Sys.Date(), '.html', sep='')
-          },
-          content = function(con) {
-            htmlwidgets::saveWidget(widget = onDone(controller$clone(), stopApp = FALSE),
-                                    file = con, selfcontained = TRUE)
-          }
-        )
-
-        output$export <- shiny::downloadHandler(
-          filename = function() {
-            'mp-export.png'
-          },
-          content = function(con) {
-            tmp_html <- tempfile(fileext=".html")
-            htmlwidgets::saveWidget(widget = onDone(controller$clone(), stopApp = FALSE),
-                                    file = tmp_html, selfcontained = TRUE)
-            webshot::webshot(url = tmp_html, file = con)
-          }
-        )
-
-        return(controller)
-      }
     }
   )
 )

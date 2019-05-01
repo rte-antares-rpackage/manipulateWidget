@@ -5,8 +5,9 @@ context("initInputs")
 test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   res <- initInputs(inputs, compare = compare, ncharts = ncharts)
 
-  inputList <- filterAndInitInputs(inputs, c(), TRUE, initEnv(parent.frame(), 1))
-  inputList <- flattenInputs(inputList)
+  #initAllInputs(inputs, initEnv(parent.frame(), 1))
+  inputList <- lapply(unname(inputs), function(input) input$getInputs())
+  inputList <- do.call(c, inputList)
 
   expect_is(res, "Model")
   expect_named(res$getRefClass()$fields(), c("envs", "inputList", "ncharts", "hierarchy"))
