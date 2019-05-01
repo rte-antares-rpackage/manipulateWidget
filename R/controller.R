@@ -176,10 +176,10 @@ MWController <- setRefClass(
 
     returnCharts = function() {
       "Return all charts."
-      if (length(charts) == 1) {
+      if (uiSpec$ncharts == 1) {
         finalWidget <-  charts[[1]]
       } else {
-        finalWidget <- combineWidgets(list = charts, nrow = nrow, ncol = ncol)
+        finalWidget <- combineWidgets(list = charts[1:uiSpec$ncharts], nrow = nrow, ncol = ncol)
       }
       returnFunc(finalWidget, envs$ind)
     },
