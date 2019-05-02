@@ -82,12 +82,12 @@ changeValueParam <- function(func, valueArgName) {
 #' @family controls
 mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
   params <- dotsToExpr()
-  params$min <- substitute(min)
-  params$max <- substitute(max)
+  params$min <- as.expression(substitute(min))
+  params$max <- as.expression(substitute(max))
   value <- substitute(value)
   Input(
     type = "slider", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       if (is.null(x) || is.na(x)) return(c(params$min, params$max))
       pmin(pmax(params$min, x, na.rm = TRUE), params$max, na.rm = TRUE)
@@ -128,7 +128,7 @@ mwText <- function(value = "", label = NULL, ..., .display = TRUE) {
   value <- substitute(value)
   Input(
     type = "text", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       if(length(x) == 0) return("")
       as.character(x)[1]
@@ -168,7 +168,7 @@ mwNumeric <- function(value, label = NULL, ..., .display = TRUE) {
   value <- substitute(value)
   Input(
     type = "numeric", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       if (is.null(x) || !is.numeric(x)) return(NULL)
       min(max(params$min, x), params$max)
@@ -212,7 +212,7 @@ mwPassword <- function(value = "", label = NULL, ..., .display = TRUE) {
   value <- substitute(value)
   Input(
     type = "password", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       if(length(x) == 0) return("")
       as.character(x)[1]
@@ -275,7 +275,7 @@ mwSelect <- function(choices = value, value = NULL, label = NULL, ...,
   value <- substitute(value)
   Input(
     type = "select", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       x <- intersect(x, unlist(params$choices))
       if (params$multiple) return(x)
@@ -334,7 +334,7 @@ mwSelectize <- function(choices = value, value = NULL, label = NULL, ...,
   value <- substitute(value)
   Input(
     type = "select", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       x <- intersect(x, unlist(params$choices))
       if (params$multiple) return(x)
@@ -377,7 +377,7 @@ mwCheckbox <- function(value = FALSE, label = NULL, ..., .display = TRUE) {
   value <- substitute(value)
   Input(
     type = "checkbox", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       if (is.null(x)) return(FALSE)
       x <- as.logical(x)
@@ -424,7 +424,7 @@ mwRadio <- function(choices, value = NULL, label = NULL, ..., .display = TRUE) {
   value <- substitute(value)
   Input(
     type = "radio", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       if (length(params$choices) == 0) return(NULL)
       if (is.null(x) || !x %in% unlist(params$choices)) return(params$choices[[1]])
@@ -464,7 +464,7 @@ mwDate <- function(value = NULL, label = NULL, ..., .display = TRUE) {
   value <- substitute(value)
   Input(
     type = "date", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       if (length(x) == 0) x <- Sys.Date()
       x <- as.Date(x)
@@ -509,7 +509,7 @@ mwDateRange <- function(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...
   value <- substitute(value)
   Input(
     type = "dateRange", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       if (length(x) == 0) x <- c(Sys.Date(), Sys.Date())
       else if (length(x) == 1) x <-  c(x, Sys.Date())
@@ -585,7 +585,7 @@ mwCheckboxGroup <- function(choices, value = c(), label = NULL, ..., .display = 
   value <- substitute(value)
   Input(
     type = "checkboxGroup", value = value, label = label, params = params,
-    display = substitute(.display),
+    display = as.expression(substitute(.display)),
     validFunc = function(x, params) {
       intersect(x, unlist(params$choices))
     },
@@ -687,7 +687,7 @@ mwGroup <- function(..., label = NULL, .display = TRUE) {
 
   Input(
     type = "group", value = list(...), params = list(),
-    label = label, display = substitute(.display),
+    label = label, display = as.expression(substitute(.display)),
     htmlFunc = function(id, label, value, params, ns) {
       htmlElements <- lapply(value, function(x) x$getHTML(ns))
 
