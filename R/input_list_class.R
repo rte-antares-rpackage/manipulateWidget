@@ -181,12 +181,12 @@ InputList <- setRefClass(
       input <- getInput(name, chartId, inputId)
       oldValue <- input$value
       res <- input$setValue(value, reactive = reactive)
-      if (!identical(oldValue, res)) updateRevDeps(input, TRUE)
+      if (!identical(oldValue, res)) updateRevDeps(input)
       res
     },
 
     updateRevDeps = function(input, force = FALSE) {
-      if ((!initialized && !force)) return()
+      if (!initialized && !force) return()
 
       if (length(input$revDeps) > 0) {
         catIfDebug("Update dependencies of variable", input$name)
