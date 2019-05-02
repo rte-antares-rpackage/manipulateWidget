@@ -229,4 +229,19 @@ describe("Model Class", {
     expect_equal(model$ncharts, 2)
     expect_length(model$envs$ind, 2)
   })
+
+  it ("unshares reverse dependencies", {
+    model <- test_structure(list(a = mwNumeric(10), b = mwSlider(0, a, 0)), ncharts = 2)
+    model$inputList$init()
+    new_inputs <- model$unshareInput("a")
+    expect_equal(sort(new_inputs), c("output_1_a", "output_1_b", "output_2_a", "output_2_b"))
+  })
+
+  it ("shares dependencies", {
+    model <- test_structure(list(a = mwNumeric(10), b = mwSlider(0, a, 0)), ncharts = 2,
+                            compare = list(a = NULL, b = NULL))
+    model$inputList$init()
+    new_inputs <- model$shareInput("b")
+    expect_equal(sort(new_inputs), c("shared_a", "shared_b"))
+  })
 })

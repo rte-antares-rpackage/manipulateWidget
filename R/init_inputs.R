@@ -93,28 +93,36 @@ Model <- setRefClass(
         return(character())
       }
       catIfDebug("Share variable", name)
-      newInput <- inputList$getInput(name, 1)$clone(envs$shared)
+      newInputIds <- character()
+
+      oldInput <- inputList$getInput(name, 1)
+      for (dep in unname(do.call(c, inputList$getDeps(oldInput)))) {
+        newInputIds <- append(newInputIds, shareInput(inputList$getInput(inputId = dep)$name))
+      }
+
+      newInput <- oldInput$clone(envs$shared)
 
       for (i in seq_len(ncharts)) {
         inputList$getInput(name, i)$destroy()
         inputList$removeInput(name, chartId = i)
       }
 
-      inputList$addInputs(list(name = newInput))
+      append(newInputIds, inputList$addInputs(list(name = newInput)))
     },
 
     unshareInput = function(name) {
       if (name %in% inputList$unshared()) return(character())
 
       catIfDebug("Unshare variable", name)
+      newInputIds <- character()
 
       oldInput <- inputList$getInput(name, 0)
+
       for (id in c(oldInput$revDeps,oldInput$displayRevDeps)) {
-        unshareInput(inputList$getInput(inputId = id)$name)
+        newInputIds <- append(newInputIds, unshareInput(inputList$getInput(inputId = id)$name))
       }
       inputList$removeInput(name, chartId = 0)
 
-      newInputIds <- character()
 
       for (i in seq_len(ncharts)) {
         newInput <- oldInput$clone(envs$ind[[i]])
