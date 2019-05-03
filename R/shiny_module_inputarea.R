@@ -12,12 +12,12 @@ inputAreaModuleUI <- function(id) {
       shiny::uiOutput(ns("inputarea")),
       shiny::conditionalPanel(
         sprintf("input['%s'] == '0'", ns("chartid")),
-        checkboxInput(ns("compare"), "Compare"),
+        checkboxInput(ns("compare"), "Compare", value = TRUE),
         shiny::conditionalPanel(
           sprintf("input['%s']", ns("compare")),
           shiny::selectInput(ns(".compareVars"), "Variables", choices = c(), multiple = TRUE),
           shiny::numericInput(ns("nbCharts"), "Number of charts",
-                              value = 2, min = 2, max = 12),
+                              value = 1, max = 12),
           shiny::selectInput(ns("ncols"), "Number of columns", c("auto", 1:4))
         )
       )
@@ -28,30 +28,38 @@ inputAreaModuleUI <- function(id) {
 inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
   ns <- session$ns
 
+  shiny::updateCheckboxInput(session, "compare", value = ctrl$ncharts > 1)
+  shiny::updateNumericInput(session, "nbCharts", value = ctrl$ncharts)
+  shiny::updateSelectInput(session, ".compareVars", choices = ctrl$uiSpec$getShareable(),
+                           selected = intersect(ctrl$uiSpec$getShareable(), ctrl$uiSpec$inputList$unshared()))
+
   listeners <- c()
   visible <- reactive(input$visible())
   updateContent <- reactiveVal(0)
-  nbCharts <- reactive({if (is.null(input$compare) || !input$compare) 1 else input$nbCharts})
 
   # Controller initialization
   ctrl$init()
   ctrl$setShinySession(output, session)
 
-  observe({
-    shiny::updateSelectInput(session, ".compareVars", choices = ctrl$uiSpec$getShareable())
-  })
-
   dim <- reactive({
-    if (nbCharts() == 1) {
+    if (input$nbCharts == 1) {
       ncol <- 1
     } else if (input$ncols == "auto") {
       ncol <- NULL
     } else {
       ncol <- as.numeric(input$ncols)
     }
-    append(.getRowAndCols(nbCharts(), ncol = ncol),
+    append(.getRowAndCols(input$nbCharts, ncol = ncol),
            list(updateContent = updateContent()))
   })
+
+  observeEvent(input$compare, {
+    if (!input$compare) {
+      shiny::updateNumericInput(session, "nbCharts", value = 1, min = 1)
+      updateSelectInput(session, ".compareVars", selected = list())
+    }
+    else shiny::updateNumericInput(session, "nbCharts", value = max(ctrl$ncharts, 2), min = 2)
+  }, ignoreInit = TRUE)
 
   addListener <- function(i) {
     id <- i$getID()
@@ -79,7 +87,7 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     } else {
       if (chartId == 0) {
         inputs <- ctrl$uiSpec$getInputsForChart(0)
-        if (nbCharts() == 1 && length(ctrl$uiSpec$inputList$unshared()) > 0) {
+        if (input$nbCharts == 1 && length(ctrl$uiSpec$inputList$unshared()) > 0) {
           inputs <- c(inputs, ctrl$uiSpec$getInputsForChart(1))
         }
       } else inputs <- ctrl$uiSpec$getInputsForChart(chartId)
@@ -114,13 +122,6 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     updateInputs(chartId())
   })
 
-  # In case users cancels comparison mode, share all inputs
-  observeEvent(nbCharts(), {
-    if (nbCharts() == 1) {
-      updateSelectInput(session, ".compareVars", selected = list())
-    }
-  })
-
   observeEvent(input$.compareVars, ignoreNULL = FALSE, ignoreInit = TRUE,  {
     for (n in input$.compareVars) {
       ctrl$uiSpec$unshareInput(n)
@@ -128,8 +129,8 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
 
     for (n in setdiff(ctrl$uiSpec$getShareable(), input$.compareVars)) {
       newSharedInputs <- ctrl$uiSpec$shareInput(n)
-      if (length(newSharedInputs) > 0 & nbCharts() > 1) {
-        for (i in 2:nbCharts()) ctrl$updateChart(i)
+      if (length(newSharedInputs) > 0 & input$compare) {
+        for (i in 2:input$nbCharts) ctrl$updateChart(i)
       }
     }
 
