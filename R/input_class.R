@@ -103,13 +103,14 @@ Input <- setRefClass(
   fields = c("type", "name", "idFunc", "label", "value", "display", "params", "env",
              "validFunc", "htmlFunc", "htmlUpdateFunc",
              "lastParams", "changedParams", "valueHasChanged",
-             "revDeps", "displayRevDeps", "value_expr"),
+             "revDeps", "displayRevDeps", "value_expr", "group"),
 
   methods = list(
-    init = function(name, env) {
+    init = function(name, env, group = NULL) {
       "Set environment and default values"
       name <<- name
       env <<- env
+      group <<- group
       valueHasChanged <<- FALSE
       changedParams <<- list()
       revDeps <<- character()
@@ -135,7 +136,7 @@ Input <- setRefClass(
 
       if (type == "group") {
         lapply(names(value), function(n) {
-          value[[n]]$init(n, env)
+          value[[n]]$init(n, env, name)
         })
       }
     },

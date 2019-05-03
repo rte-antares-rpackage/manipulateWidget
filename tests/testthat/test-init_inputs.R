@@ -244,4 +244,15 @@ describe("Model Class", {
     new_inputs <- model$shareInput("b")
     expect_equal(sort(new_inputs), c("shared_a", "shared_b"))
   })
+
+  it ("shares/unshares the whole group if the input is in a group", {
+    model <- test_structure(list(grp = mwGroup(a = mwNumeric(10), b = mwNumeric(0))),
+                            ncharts = 2)
+    model$inputList$init()
+    new_inputs <- model$unshareInput("b")
+    expect_equal(sort(new_inputs), c("output_1_a", "output_1_b", "output_1_grp", "output_2_a", "output_2_b", "output_2_grp"))
+
+    new_inputs <- model$shareInput("b")
+    expect_equal(sort(new_inputs), c("shared_a", "shared_b", "shared_grp"))
+  })
 })

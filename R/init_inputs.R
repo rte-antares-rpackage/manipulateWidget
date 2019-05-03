@@ -92,10 +92,15 @@ Model <- setRefClass(
       if (name %in% inputList$shared()) {
         return(character())
       }
+      oldInput <- inputList$getInput(name, 1)
+
+      if(!is.null(oldInput$group)) {
+        return(shareInput(oldInput$group))
+      }
+
       catIfDebug("Share variable", name)
       newInputIds <- character()
 
-      oldInput <- inputList$getInput(name, 1)
       for (dep in unname(do.call(c, inputList$getDeps(oldInput)))) {
         newInputIds <- append(newInputIds, shareInput(inputList$getInput(inputId = dep)$name))
       }
@@ -113,10 +118,14 @@ Model <- setRefClass(
     unshareInput = function(name) {
       if (name %in% inputList$unshared()) return(character())
 
+      oldInput <- inputList$getInput(name, 0)
+
+      if(!is.null(oldInput$group)) {
+        return(unshareInput(oldInput$group))
+      }
+
       catIfDebug("Unshare variable", name)
       newInputIds <- character()
-
-      oldInput <- inputList$getInput(name, 0)
 
       for (id in c(oldInput$revDeps,oldInput$displayRevDeps)) {
         newInputIds <- append(newInputIds, unshareInput(inputList$getInput(inputId = id)$name))
