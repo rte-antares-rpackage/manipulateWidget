@@ -98,17 +98,6 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
   })
 
   observeEvent(compareMod$.compareVars(), ignoreNULL = FALSE, ignoreInit = TRUE,  {
-    for (n in compareMod$.compareVars()) {
-      ctrl$uiSpec$unshareInput(n)
-    }
-
-    for (n in setdiff(ctrl$uiSpec$getShareable(), compareMod$.compareVars())) {
-      newSharedInputs <- ctrl$uiSpec$shareInput(n)
-      if (length(newSharedInputs) > 0 & compareMod$dim()$n > 1) {
-        for (i in 2:compareMod$dim()$n) ctrl$updateChart(i)
-      }
-    }
-
     updateInputs(chartId())
     updateContent(updateContent() + 1)
   })

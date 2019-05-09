@@ -24,14 +24,16 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
     )
   })
 
-
   nbCharts <- reactive(if (input$compare) input$nbCharts else 1)
 
   observeEvent(input$compare, {
     if (!is.null(input$compare) & !input$compare) {
-     #updateSelectInput(session, ".compareVars", selected = list())
+      for (n in intersect(ctrl$uiSpec$getShareable(), input$.compareVars)) {
+        ctrl$uiSpec$shareInput(n)
+      }
+      updateSelectInput(session, ".compareVars", selected = list())
     }
-  }, ignoreInit = TRUE, ignoreNULL = TRUE)
+  }, ignoreInit = TRUE, ignoreNULL = FALSE)
 
   res <- reactiveValues()
 
@@ -45,6 +47,30 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
       ncol <- as.numeric(input$ncols)
     }
     .getRowAndCols(nbCharts(), ncol = ncol)
+  })
+
+  observeEvent(input$.compareVars, {
+    toUnshare <- setdiff(input$.compareVars, ctrl$uiSpec$inputList$unshared())
+    toShare <- setdiff(
+      setdiff(ctrl$uiSpec$getShareable(), input$.compareVars),
+      ctrl$uiSpec$inputList$shared()
+    )
+
+    for (n in toUnshare) {
+      ctrl$uiSpec$unshareInput(n)
+    }
+
+    for (n in toShare) {
+      newSharedInputs <- ctrl$uiSpec$shareInput(n)
+      if (length(newSharedInputs) > 0 & nbCharts() > 1) {
+        for (i in 2:nbCharts()) ctrl$updateChart(i)
+      }
+    }
+
+    unshared <- intersect(ctrl$uiSpec$getShareable(), ctrl$uiSpec$inputList$unshared())
+    if (!identical(sort(input$.compareVars), sort(unshared))) {
+      shiny::updateSelectInput(session, ".compareVars", selected = unshared)
+    }
   })
 
   res$.compareVars <- reactive(input$.compareVars)
