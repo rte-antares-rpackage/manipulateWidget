@@ -51,7 +51,7 @@ menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
   tagAppendChild(container, actionButtons)
 }
 
-menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, ns) {
+menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, displayIndBtns) {
   ns <- session$ns
 
   chartId <- shiny::reactiveVal(-1)
@@ -91,7 +91,7 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, ns) {
   })
 
   output$chart_btns <- renderUI({
-    if (ncharts() < 2) ""
+    if (ncharts() < 2 || !displayIndBtns()) ""
     else {
       ids <- ns(paste0("mw-ind-inputs-", seq_len(ncharts())))
 

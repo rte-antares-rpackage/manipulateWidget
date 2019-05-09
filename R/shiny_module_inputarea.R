@@ -31,11 +31,6 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
   ctrl$init()
   ctrl$setShinySession(output, session)
 
-  dim <- reactive({
-    append(compareMod$dim(),
-           list(updateContent = updateContent()))
-  })
-
   addListener <- function(i) {
     id <- i$getID()
     e <- new.env()
@@ -102,5 +97,11 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     updateContent(updateContent() + 1)
   })
 
-  return(dim)
+  reactive({
+    append(
+      compareMod$dim(),
+      list(updateContent = updateContent(),
+           displayIndBtns = length(compareMod$.compareVars()) > 0)
+    )
+  })
 }

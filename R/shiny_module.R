@@ -8,6 +8,7 @@ mwModuleServer <- function(input, output, session, ctrl, ...) {
   ncharts <- reactive(dim()$n)
   nrow <- reactive(dim()$nrow)
   ncol <- reactive(dim()$ncol)
+  displayIndBtns <- reactive(dim()$displayIndBtns)
 
   content <- reactive({
     lapply(seq_len(ncharts()), function(i) {
@@ -16,7 +17,7 @@ mwModuleServer <- function(input, output, session, ctrl, ...) {
   })
 
   callModule(manipulateWidget:::gridModuleServer, "grid", content = content, dim = dim)
-  menuState <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol)
+  menuState <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol, displayIndBtns)
 
   chartId <- reactive(menuState()$chartId)
 
