@@ -10,13 +10,11 @@ mwModuleServer <- function(input, output, session, ctrl, ...) {
   ncol <- reactive(dim()$ncol)
   displayIndBtns <- reactive(dim()$displayIndBtns)
 
-  content <- reactive({
-    lapply(seq_len(ncharts()), function(i) {
-      ctrl$outputFunc(ns(paste0("output_", i)), width = "100%", height = "100%")
-    })
-  })
 
-  callModule(manipulateWidget:::gridModuleServer, "grid", content = content, dim = dim)
+  shinyGridEnv <- callModule(manipulateWidget:::gridModuleServer, "grid", dim = dim, ctrl = ctrl)
+
+  ctrl$setShinySession(shinyGridEnv$output, shinyGridEnv$session)
+
   menuState <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol, displayIndBtns)
 
   chartId <- reactive(menuState()$chartId)

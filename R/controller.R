@@ -101,7 +101,7 @@ MWController <- setRefClass(
       catIfDebug("Set shiny session")
       session <<- session
       shinyOutput <<- output
-      inputList$session <<- session
+
       for (env in envs$ind) {
         assign(".initial", FALSE, envir = env)
         assign(".session", session, envir = env)
@@ -109,6 +109,14 @@ MWController <- setRefClass(
       # also on shared env
       assign(".initial", FALSE, envir = envs$shared)
       assign(".session", session, envir = envs$shared)
+
+      for (i in 1:ncharts) {
+        renderShinyOutput(i)
+      }
+    },
+
+    setShinyInputSession = function(session) {
+      inputList$session <<- session
     },
 
     getValue = function(name, chartId = 1) {
@@ -197,6 +205,7 @@ MWController <- setRefClass(
     },
 
     renderShinyOutput = function(chartId) {
+      print(shinyOutput)
       if (!is.null(renderFunc) & !is.null(shinyOutput) &
           is(charts[[chartId]], "htmlwidget")) {
         catIfDebug("Render shiny output")
@@ -219,10 +228,6 @@ MWController <- setRefClass(
       ncol <<- ncol
     },
 
-    renderShinyOutputs = function() {
-      for (i in seq_len(ncharts)) renderShinyOutput(i)
-    },
-
     clone = function(env = parent.frame()) {
       res <- MWController(
         expr,
@@ -239,32 +244,6 @@ MWController <- setRefClass(
       res$inputList$initialized <- initialized
 
       res
-    },
-
-    render = function(output, session, fillPage) {
-      if (initialized) return()
-      ns <- session$ns
-      tryCatch({
-        init()
-        setShinySession(output, session)
-        output$ui <- renderUI(getModuleUI()(ns, height = "100%", fillPage = fillPage))
-
-        lapply(inputList$inputTable$input, function(input) {
-          # Update input visibility
-          catIfDebug("Update visibility of", input$getID())
-          shiny::updateCheckboxInput(
-            session,
-            paste0(input$getID(), "_visible"),
-            value = eval(input$display, envir = input$env)
-          )
-          # Hack to fix https://github.com/rstudio/shiny/issues/1490
-          if (input$type == "select" && identical(input$lastParams$multiple, TRUE)) {
-            input$valueHasChanged <- TRUE
-            input$updateHTML(session)
-          }
-        })
-        if (autoUpdate$value) renderShinyOutputs()
-      }, error = function(e) {catIfDebug("Initialization error"); print(e)})
     }
   )
 )

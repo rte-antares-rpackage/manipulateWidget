@@ -8,7 +8,14 @@ gridModuleUI <- function(id) {
   })
 }
 
-gridModuleServer <- function(input, output, session, content, dim, ...) {
+gridModuleServer <- function(input, output, session, dim, ctrl, ...) {
+  ns <- session$ns
+
+  content <- reactive({
+    lapply(seq_len(dim()$n), function(i) {
+      ctrl$outputFunc(ns(paste0("output_", i)), width = "100%", height = "100%")
+    })
+  })
 
   observe({
     outputEls <- lapply(seq_len(dim()$nrow * dim()$ncol), function(i) {
@@ -21,5 +28,5 @@ gridModuleServer <- function(input, output, session, content, dim, ...) {
     output$cells <- renderUI(shiny::tagList(outputEls))
   })
 
-  return(dim)
+  return(list(output = output, session = session))
 }
