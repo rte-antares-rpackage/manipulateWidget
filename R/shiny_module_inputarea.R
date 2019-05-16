@@ -57,7 +57,7 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     } else {
       if (chartId == 0) {
         inputs <- ctrl$uiSpec$getInputsForChart(0)
-        if (compareMod$dim()$n == 1 && length(ctrl$uiSpec$inputList$unshared()) > 0) {
+        if (compareMod$n == 1 && length(ctrl$uiSpec$inputList$unshared()) > 0) {
           inputs <- c(inputs, ctrl$uiSpec$getInputsForChart(1))
         }
       } else inputs <- ctrl$uiSpec$getInputsForChart(chartId)
@@ -97,11 +97,12 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     #updateContent(updateContent() + 1)
   })
 
-  reactive({
-    append(
-      compareMod$dim(),
-      list(updateContent = updateContent(),
-           displayIndBtns = length(compareMod$.compareVars()) > 0)
-    )
-  })
+  res <- reactiveValues()
+  observe(res$n <- compareMod$n)
+  observe(res$ncol <- compareMod$ncol)
+  observe(res$nrow <- compareMod$nrow)
+  observe(res$updateContent <- updateContent())
+  observe(res$displayIndBtns <- length(compareMod$.compareVars()) > 0)
+
+  res
 }

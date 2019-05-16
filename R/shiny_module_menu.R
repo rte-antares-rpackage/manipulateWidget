@@ -69,6 +69,7 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, displa
 
   # Eventually add listeners
   observe({
+    req(ncharts())
     ids <- ns(paste0("mw-ind-inputs-", seq_len(ncharts())))
 
     lapply(seq_along(ids), function(i) {

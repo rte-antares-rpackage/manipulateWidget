@@ -24,7 +24,7 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
     )
   })
 
-  nbCharts <- reactive(if (input$compare) input$nbCharts else 1)
+  nbCharts <- reactive({if (is.null(input$compare)) NULL else if (input$compare) input$nbCharts else 1})
 
   observeEvent(input$compare, {
     if (!is.null(input$compare) & !input$compare) {
@@ -37,8 +37,8 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
 
   res <- reactiveValues()
 
-  res$dim <- reactive({
-    req(input$nbCharts)
+  observe({
+    req(nbCharts())
     if (nbCharts() == 1) {
       ncol <- 1
     } else if (input$ncols == "auto") {
@@ -46,7 +46,10 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
     } else {
       ncol <- as.numeric(input$ncols)
     }
-    .getRowAndCols(nbCharts(), ncol = ncol)
+    dim <- .getRowAndCols(nbCharts(), ncol = ncol)
+    res$n <- dim$n
+    res$ncol <- dim$ncol
+    res$nrow <- dim$nrow
   })
 
   observeEvent(input$.compareVars, {
