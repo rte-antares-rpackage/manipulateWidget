@@ -92,6 +92,7 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, displa
   })
 
   output$chart_btns <- renderUI({
+    req(ncharts())
     if (ncharts() < 2 || !displayIndBtns()) ""
     else {
       ids <- ns(paste0("mw-ind-inputs-", seq_len(ncharts())))
