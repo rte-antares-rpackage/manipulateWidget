@@ -14,17 +14,23 @@ InputList <- setRefClass(
       "args:
        - inputs: list of initialized inputs
        - session: shiny session"
+
       inputList <- lapply(inputs, function(input) input$getInputs())
       inputList <- do.call(c, inputList)
 
-      inputTable <<- data.frame(
-        row.names = sapply(inputList, function(x) {x$getID()}),
-        name = sapply(inputList, function(x) x$name),
-        chartId = sapply(inputList, function(x) get(".id", envir = x$env)),
-        type = sapply(inputList, function(x) x$type),
-        input = I(inputList),
-        stringsAsFactors = FALSE
-      )
+      if (length(inputs) > 0) {
+        inputTable <<- data.frame(
+          row.names = sapply(inputList, function(x) {x$getID()}),
+          name = sapply(inputList, function(x) x$name),
+          chartId = sapply(inputList, function(x) get(".id", envir = x$env)),
+          type = sapply(inputList, function(x) x$type),
+          input = I(inputList),
+          stringsAsFactors = FALSE
+        )
+      } else {
+        inputTable <<- data.frame()
+      }
+
 
       session <<- session
       initialized <<- FALSE
