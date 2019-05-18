@@ -168,6 +168,7 @@ Model <- setRefClass(
       envs$ind <<- append(envs$ind, cloneEnv(envs$ind[[ncharts - 1]], envs$shared))
       assign(".id", ncharts, envir = envs$ind[[ncharts]])
       assign(".output", paste0("output_", ncharts), envir = envs$ind[[ncharts]])
+      assign(".initial", TRUE, envir = envs$ind[[ncharts]])
 
       # Get the list of inputs to clone
       toClone <- inputList$inputTable$chartId == ncharts - 1 &

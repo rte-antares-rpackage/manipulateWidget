@@ -205,7 +205,6 @@ MWController <- setRefClass(
     },
 
     renderShinyOutput = function(chartId) {
-      print(shinyOutput)
       if (!is.null(renderFunc) & !is.null(shinyOutput) &
           is(charts[[chartId]], "htmlwidget")) {
         catIfDebug("Render shiny output")
@@ -220,8 +219,12 @@ MWController <- setRefClass(
         envs <<- uiSpec$envs
         inputList <<- uiSpec$inputList
         if (n > ncharts) {
-          for (i in (ncharts + 1):n) updateChart(i)
+          for (i in (ncharts + 1):n) {
+            assign(".initial", TRUE, envir = envs$ind[[i]])
+            updateChart(i)
+          }
         }
+
         ncharts <<- n
       }
       nrow <<- nrow

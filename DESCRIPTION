@@ -30,7 +30,8 @@ Imports:
     base64enc,
     grDevices,
     codetools,
-    webshot
+    webshot,
+    shinyjs
 Suggests:
     dygraphs,
     leaflet,

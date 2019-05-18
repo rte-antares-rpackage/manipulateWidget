@@ -79,6 +79,7 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
 
   if(fillPage){
     container <- fillPage(
+      shinyjs::useShinyjs(),
       tags$div(
         class = class,
         style = paste("width:", width, ";height:", height, ";"),
@@ -88,6 +89,7 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
   } else {
     container <- tags$div(
       class = class,
+      shinyjs::useShinyjs(),
       content
     )
   }
