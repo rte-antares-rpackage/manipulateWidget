@@ -222,6 +222,8 @@ MWController <- setRefClass(
           for (i in (ncharts + 1):n) {
             assign(".initial", TRUE, envir = envs$ind[[i]])
             updateChart(i)
+            if (!is.null(session))
+              assign(".initial", FALSE, envir = envs$ind[[i]])
           }
         }
 
