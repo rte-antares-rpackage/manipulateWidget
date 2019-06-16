@@ -42,17 +42,17 @@ InputList <- setRefClass(
     setDeps = function() {
       # Reset all deps
       for (id in row.names(inputTable)) {
-        .self[id]$resetDeps()
+        getInputById(id)$resetDeps()
       }
 
       for (input in inputTable$input) {
         inputId <- input$getID()
         deps <- getDeps(input)
         for (d in deps$params) {
-          .self[d]$addDeps(newRevDeps = inputId)
+          getInputById(d)$addDeps(newRevDeps = inputId)
         }
         for (d in deps$display) {
-          .self[d]$addDeps(newDisplayRevDeps = inputId)
+          getInputById(d)$addDeps(newDisplayRevDeps = inputId)
         }
       }
     },
@@ -112,14 +112,18 @@ InputList <- setRefClass(
 
     getInput = function(name, chartId = 1, inputId = NULL) {
       if (!is.null(inputId)) {
-        if (!inputId %in% row.names(inputTable)) {
-          stop("cannot find input with id ", inputId)
-        }
-        return(.self[inputId])
+        return(getInputById(inputId))
       }
       idx <- which(inputTable$name == name & inputTable$chartId %in% c(0, chartId))
       if (length(idx) == 0) stop("cannot find input with name ", name)
-      .self[idx]
+      inputTable$input[[idx]]
+    },
+
+    getInputById = function(inputId) {
+      if (!inputId %in% row.names(inputTable)) {
+        stop("cannot find input with id ", inputId)
+      }
+      inputTable[inputId, "input"][[1]]
     },
 
     addInputs = function(x) {
@@ -159,7 +163,7 @@ InputList <- setRefClass(
       if (length(idx) == 0) stop("cannot find input with name ", name)
       if (length(idx) > 1) stop("Something wrong with input", name)
 
-      inputToRemove <- .self[idx]
+      inputToRemove <- inputTable[idx, "input"][[1]]
 
       inputTable <<- inputTable[-idx,]
 
@@ -232,9 +236,5 @@ InputList <- setRefClass(
 )
 
 `[.InputList` <- function(x, i, j, ...) {
-  if (missing(j) & !missing(i)) {
-    if (length(i) == 1) return (x[i, "input"][[1]])
-    else return(x[i, "input"])
-  }
   x$inputTable[i, j, ...]
 }

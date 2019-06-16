@@ -173,7 +173,7 @@ Model <- setRefClass(
       # Get the list of inputs to clone
       toClone <- inputList$inputTable$chartId == ncharts - 1 &
         inputList$inputTable$name %in% names(hierarchy)
-      inputsToClone <- inputList[toClone]
+      inputsToClone <- inputList$inputTable[toClone, "input"]
 
       # Copy inputs
       newInputs <- lapply(inputsToClone, function(input) {

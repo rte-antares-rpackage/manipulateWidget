@@ -283,7 +283,7 @@ summary.MWController <- function(object, ...) {
   cat("Number of column(s) :", object$ncol, "\n")
   cat("\nList of inputs : \n\n")
   infos <- lapply(row.names(object$inputList$inputTable), function(n){
-    input <- object$inputList[n]
+    input <- object$inputList$getInputById(n)
     if (is.atomic(input$value)) {
       if (is.null(input$value)) value <- "NULL"
       else if (length(input$value) == 0) value <- ""
