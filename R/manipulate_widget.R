@@ -225,7 +225,7 @@
 #' @export
 #'
 manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
-                             .exportBtn = FALSE, .exportType = c("html2canvas", "webshot"),
+                             .exportBtn = TRUE, .exportType = c("html2canvas", "webshot"),
                              .updateBtnInit = FALSE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,

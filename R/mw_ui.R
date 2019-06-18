@@ -33,7 +33,7 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
     style = "manipulate_widget.css"
   )
 
-  if(exportBtn & exportType %in% "html2canvas"){
+  if(exportBtn & (exportType %in% "html2canvas")) {
 
     fileSaver_dep <- htmltools::htmlDependency(
       name = "FileSaver",
@@ -58,7 +58,7 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
 
     html2canvas_dep <- htmltools::htmlDependency(
       name = "html2canvas",
-      version = "0.5.0",
+      version = "1.0",
       src = c(file=system.file("lib/export/html2canvas", package="manipulateWidget")),
       script = "html2canvas.js"
     )
