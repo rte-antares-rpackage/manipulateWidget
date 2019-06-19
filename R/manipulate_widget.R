@@ -278,7 +278,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
     )
 
     ui <- mwUI("mw", border = FALSE, okBtn = TRUE, updateBtn = .updateBtn,
-                     saveBtn = .saveBtn, exportBtn = .exportBtn,
+                     saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType,
                      width = "100%", height = "100%")
 
     server <- function(input, output, session) {

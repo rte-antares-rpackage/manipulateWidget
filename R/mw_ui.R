@@ -73,7 +73,7 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
     flex = c(NA, NA, 1),
     width = width, height = height,
     menuModuleUI(ns("menu"), updateBtn = updateBtn, saveBtn = saveBtn,
-                 okBtn = okBtn, exportBtn = exportBtn),
+                 okBtn = okBtn, exportBtn = exportBtn, exportType = exportType),
     inputAreaModuleUI(ns("inputarea")),
     gridModuleUI(ns("grid"))
   )
