@@ -3,7 +3,7 @@ mwModuleServer <- function(input, output, session, ctrl, ...) {
 
   ctrl <- ctrl$clone()
 
-  dim <- callModule(manipulateWidget:::inputAreaModuleServer, "inputarea", chartId, ctrl)
+  dim <- callModule(inputAreaModuleServer, "inputarea", chartId, ctrl)
 
   ncharts <- reactive(dim$n)
   nrow <- reactive(dim$nrow)
@@ -11,11 +11,11 @@ mwModuleServer <- function(input, output, session, ctrl, ...) {
   displayIndBtns <- reactive(dim$displayIndBtns)
 
 
-  shinyGridEnv <- callModule(manipulateWidget:::gridModuleServer, "grid", dim = dim, ctrl = ctrl)
+  shinyGridEnv <- callModule(gridModuleServer, "grid", dim = dim, ctrl = ctrl)
 
   ctrl$setShinySession(shinyGridEnv$output, shinyGridEnv$session)
 
-  menuState <- callModule(manipulateWidget:::menuModuleServer, "menu", ncharts, nrow, ncol, displayIndBtns, ctrl)
+  menuState <- callModule(menuModuleServer, "menu", ncharts, nrow, ncol, displayIndBtns, ctrl)
 
   chartId <- reactive(menuState()$chartId)
 

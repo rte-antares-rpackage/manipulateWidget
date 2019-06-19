@@ -300,6 +300,6 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the controller
     # to not block the R execution.
-    controller
+    invisible(controller)
   }
 }
