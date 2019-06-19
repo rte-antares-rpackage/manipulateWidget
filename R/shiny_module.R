@@ -27,12 +27,4 @@ mwModuleServer <- function(input, output, session, ctrl, ...) {
   observeEvent(menuState()$done, {
     onDone(ctrl)
   })
-
-  observeEvent(menuState()$save, {
-    print("save")
-  })
-
-  observeEvent(menuState()$update, {
-    print("update")
-  })
 }
