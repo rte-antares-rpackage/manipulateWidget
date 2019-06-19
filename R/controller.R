@@ -146,7 +146,7 @@ MWController <- setRefClass(
       if (autoUpdate$value && !identical(oldValue, newValue)) {
         if (grepl("^shared_", id)) updateCharts()
         else {
-          chartId <- get(".id", envir = inputList[id]$env)
+          chartId <- get(".id", envir = inputList$getInputById(id)$env)
           updateChart(chartId)
         }
       }
