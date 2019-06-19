@@ -28,7 +28,6 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
   updateContent <- reactiveVal(0)
 
   # Controller initialization
-  ctrl$init()
   ctrl$setShinyInputSession(session)
 
   addListener <- function(i) {

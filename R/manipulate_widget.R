@@ -243,7 +243,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   .compareOpts <- do.call(compareOptions, .compareOpts)
 
   .exportType <- match.arg(.exportType)
-  if (.exportType == "webshot" & !requireNamespace("webshot")) {
+  if (.exportType == "webshot" && !requireNamespace("webshot")) {
     stop("Package 'webshot' has not been installed. Install it or use argument .exportType = 'html2canvas'")
   }
 

@@ -97,3 +97,19 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
 
   htmltools::attachDependencies(container, htmldep, TRUE)
 }
+
+
+#' @param border Should a border be added to the module ?
+#' @param okBtn Should the UI contain the OK button ?
+#' @param saveBtn Should the UI contain the save button ? For saving output as html
+#' @param exportBtn Should an export button be added to the controls ? For saving output as png
+#' @param margin Margin to apply around the module UI. Should be one two or four valid css
+#'   units.
+#' @param width Width of the module UI.
+#' @param height Height of the module UI.
+#' @param header	Tag or list of tags to display as a common header above all tabPanels.
+#' @param footer	Tag or list of tags to display as a common footer below all tabPanels
+#'
+#' @rdname mwModule
+#' @export
+mwModuleUI <- mwUI

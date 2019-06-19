@@ -148,7 +148,8 @@ Input <- setRefClass(
 
     setValue = function(newValue, reactive = FALSE) {
       "Modify value of the input. If newValue is invalid, it sets a valid value"
-      catIfDebug("Set value of ", getID())
+      catIfDebug("Set value of", getID())
+
       if(reactive & type == "sharedValue"){
         params$dynamic <<- FALSE
       }
