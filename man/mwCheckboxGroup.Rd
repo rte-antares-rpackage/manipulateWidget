@@ -4,7 +4,8 @@
 \alias{mwCheckboxGroup}
 \title{Add a group of checkboxes to a manipulateWidget gadget}
 \usage{
-mwCheckboxGroup(choices, value = c(), label = NULL, ..., .display = TRUE)
+mwCheckboxGroup(choices, value = c(), label = NULL, ...,
+  .display = TRUE)
 }
 \arguments{
 \item{choices}{Vector or list of choices. If it is named, then the names rather than the
@@ -50,3 +51,4 @@ Other controls: \code{\link{mwCheckbox}},
   \code{\link{mwSharedValue}}, \code{\link{mwSlider}},
   \code{\link{mwText}}
 }
+\concept{controls}

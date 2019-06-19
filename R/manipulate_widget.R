@@ -241,7 +241,11 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   .viewer <- match.arg(.viewer)
   .env <- parent.frame()
   .compareOpts <- do.call(compareOptions, .compareOpts)
+
   .exportType <- match.arg(.exportType)
+  if (.exportType == "webshot" & !requireNamespace("webshot")) {
+    stop("Package 'webshot' has not been installed. Install it or use argument .exportType = 'html2canvas'")
+  }
 
   if (is.null(.compare)) {
     .compareOpts$ncharts <- 1

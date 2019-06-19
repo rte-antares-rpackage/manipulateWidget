@@ -58,3 +58,4 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwSelect}}, \code{\link{mwSlider}},
   \code{\link{mwText}}
 }
+\concept{controls}

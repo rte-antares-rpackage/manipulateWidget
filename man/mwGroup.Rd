@@ -46,3 +46,4 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwSharedValue}}, \code{\link{mwSlider}},
   \code{\link{mwText}}
 }
+\concept{controls}

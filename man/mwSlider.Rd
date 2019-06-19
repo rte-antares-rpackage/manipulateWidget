@@ -60,3 +60,4 @@ Other controls: \code{\link{mwCheckboxGroup}},
   \code{\link{mwSelect}}, \code{\link{mwSharedValue}},
   \code{\link{mwText}}
 }
+\concept{controls}

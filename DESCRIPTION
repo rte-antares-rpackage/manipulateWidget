@@ -30,7 +30,6 @@ Imports:
     base64enc,
     grDevices,
     codetools,
-    webshot,
     shinyjs
 Suggests:
     dygraphs,
@@ -38,9 +37,10 @@ Suggests:
     plotly,
     xts,
     rmarkdown,
+    webshot,
     testthat,
     covr
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Encoding: UTF-8

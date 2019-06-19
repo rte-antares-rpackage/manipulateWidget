@@ -77,12 +77,12 @@
 #' @docType package
 #' @importFrom shiny tags observe observeEvent reactive isolate icon tagAppendChild
 #' @importFrom shiny tagAppendChildren fillPage fillRow NS uiOutput checkboxInput
+#'   callModule reactiveVal reactiveValues renderUI req updateSelectInput updateTextInput
 #' @importFrom miniUI miniContentPanel miniPage miniTabPanel miniTabstripPanel gadgetTitleBar
 #' @importFrom htmlwidgets getDependency
 #' @importFrom methods is new setRefClass
 #' @importFrom utils getFromNamespace
 #' @importFrom stats runif
-#' @import webshot
 NULL
 #
 globalVariables(c("mod", "multiple", "name", "type"))
