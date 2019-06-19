@@ -37,7 +37,8 @@ menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
                                             class = "mw-btn mw-btn-export",
                                             onclick = sprintf("saveAsPNG('%s')", "mw-chartarea"))
     } else {
-      exportBtnInput <- shiny::downloadButton(ns("export"), label = "PNG", class = "mw-btn mw-btn-export")
+      exportBtnInput <- shiny::downloadButton(ns("export"), icon = icon("camera"), label = "",
+                                              class = "mw-btn mw-btn-export")
     }
 
     actionButtons <- tagAppendChild(actionButtons, exportBtnInput)
@@ -51,7 +52,8 @@ menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
   tagAppendChild(container, actionButtons)
 }
 
-menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, displayIndBtns) {
+menuModuleServer <- function(input, output, session, ncharts, nrow, ncol,
+                             displayIndBtns, ctrl) {
   ns <- session$ns
 
   chartId <- shiny::reactiveVal(-1)
@@ -123,6 +125,16 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol, displa
     if (chartId() == 0) chartId(-1)
     else chartId(0)
   })
+
+  output$save <- shiny::downloadHandler(
+    filename = function() {
+      paste('mw-', Sys.Date(), '.html', sep='')
+    },
+    content = function(con) {
+      htmlwidgets::saveWidget(widget = onDone(ctrl$clone(), stopApp = FALSE),
+                              file = con, selfcontained = TRUE)
+    }
+  )
 
   return(state)
 }

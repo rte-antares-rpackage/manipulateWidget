@@ -277,7 +277,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
       browser = shiny::browserViewer()
     )
 
-    ui <- mwUI("mw", border = FALSE, okBtn = TRUE,
+    ui <- mwUI("mw", border = FALSE, okBtn = TRUE, updateBtn = .updateBtn,
                      saveBtn = .saveBtn, exportBtn = .exportBtn,
                      width = "100%", height = "100%")
 

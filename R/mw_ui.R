@@ -72,7 +72,8 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
   content <- fillRow(
     flex = c(NA, NA, 1),
     width = width, height = height,
-    menuModuleUI(ns("menu"), updateBtn = FALSE),
+    menuModuleUI(ns("menu"), updateBtn = updateBtn, saveBtn = saveBtn,
+                 okBtn = okBtn, exportBtn = exportBtn),
     inputAreaModuleUI(ns("inputarea")),
     gridModuleUI(ns("grid"))
   )
