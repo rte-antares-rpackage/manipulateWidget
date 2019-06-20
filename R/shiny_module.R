@@ -46,7 +46,14 @@ startModule <- function(ctrl) {
     ctrl$setChartNumber(dim$n, dim$nrow, dim$ncol)
   })
 
-  observeEvent(menuState()$done, {
+  observeEvent(
+    menuState()$done,
     onDone(ctrl)
-  })
+  )
+
+  observeEvent(
+    menuState()$update,
+    ctrl$updateCharts(),
+    ignoreNULL = !ctrl$autoUpdate$initBtn
+  )
 }
