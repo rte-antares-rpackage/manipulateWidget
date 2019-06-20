@@ -24,7 +24,6 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
                  fillPage = TRUE, showCompare = TRUE) {
 
   ns <- NS(id)
-
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
     "0.7.0",
@@ -82,14 +81,17 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
     container <- fillPage(
       shinyjs::useShinyjs(),
       tags$div(
+        id = ns("ui"),
         class = class,
-        style = paste("width:", width, ";height:", height, ";"),
+        style = paste("width:", width, ";height:", height, ";", sep = ""),
         content
       )
     )
   } else {
     container <- tags$div(
+      id = ns("ui"),
       class = class,
+      style = paste("width:", width, ";height:", height, ";", sep = ""),
       shinyjs::useShinyjs(),
       content
     )
@@ -112,4 +114,13 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
 #'
 #' @rdname mwModule
 #' @export
-mwModuleUI <- mwUI
+mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, exportBtn = TRUE,
+                       margin = 0, width = "100%", height = 400, header = NULL, footer = NULL) {
+  res <- mwUI(id, border = border, okBtn = okBtn, saveBtn = saveBtn, exportBtn = exportBtn,
+              width = width, height = height, fillPage = FALSE)
+  shiny::tagList(
+    header,
+    res,
+    footer
+  )
+}
