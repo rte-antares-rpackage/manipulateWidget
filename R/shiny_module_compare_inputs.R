@@ -15,7 +15,7 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
 
   output$content <- shiny::renderUI({
     shiny::tagList(
-      tags$div(class="separator", style="border-top:solid 1px #4e9cff;width:100%;height:1px;"),
+      tags$div(class="separator", style="border-top:solid 1px #4e9cff;width:100%;height:1px;margin-top:-1px;"),
       checkboxInput(ns("compare"), "Compare", value = ctrl$ncharts > 1),
       shiny::conditionalPanel(
         sprintf("input['%s']", ns("compare")),

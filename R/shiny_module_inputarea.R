@@ -9,6 +9,11 @@ inputAreaModuleUI <- function(id, allowCompare = TRUE) {
     tags$div(
       class ="mw-inputs",
       style = "display:block;",
+      tags$div(
+        shiny::textOutput(ns("input_title")),
+        class="input-title",
+        style="width:100%;font-size:1.6em;border-bottom:solid 1px #4e9cff; margin-bottom:5px;padding-bottom:5px;"
+      ),
       shiny::uiOutput(ns("inputarea")),
       shiny::conditionalPanel(
         sprintf("input['%s'] == '0'", ns("chartid")),
@@ -89,6 +94,11 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
 
   observeEvent(chartId(), {
     updateInputs(chartId())
+
+    if (chartId() == -1) title <- ""
+    else if (chartId() == 0) title <- "Settings"
+    else title <- paste("Chart", chartId())
+    output$input_title <- shiny::renderText(title)
   })
 
   observeEvent(compareMod$.compareVars(), ignoreNULL = FALSE, ignoreInit = TRUE,  {
