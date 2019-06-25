@@ -21,7 +21,7 @@
 mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
                  saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas", updateBtn = FALSE,
                  areaBtns = TRUE, border = FALSE, width = "100%", height = "400px",
-                 fillPage = TRUE, showCompare = TRUE) {
+                 fillPage = TRUE, allowCompare = TRUE) {
 
   ns <- NS(id)
   htmldep <- htmltools::htmlDependency(
@@ -115,8 +115,10 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
 #' @rdname mwModule
 #' @export
 mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, exportBtn = TRUE,
+                       allowCompare = TRUE,
                        margin = 0, width = "100%", height = 400, header = NULL, footer = NULL) {
   res <- mwUI(id, border = border, okBtn = okBtn, saveBtn = saveBtn, exportBtn = exportBtn,
+              allowCompare = allowCompare,
               width = width, height = height, fillPage = FALSE)
   shiny::tagList(
     header,

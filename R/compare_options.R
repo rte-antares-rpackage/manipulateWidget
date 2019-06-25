@@ -8,6 +8,8 @@
 #'   best number of rows given the number of charts and columns.
 #' @param ncol Number of columns. If \code{NULL}, the function tries to pick the
 #'   best number of columns given the number of charts and rows.
+#' @param allowCompare If \code{TRUE} (the default), then the user can use the
+#'   UI to add or remove charts and choose which variables to compare
 #'
 #' @return List of options
 #'
@@ -40,10 +42,11 @@
 #' }
 #'
 #' @export
-compareOptions <- function(ncharts = NULL, nrow = NULL, ncol = NULL) {
+compareOptions <- function(ncharts = NULL, nrow = NULL, ncol = NULL, allowCompare = TRUE) {
   list(
     ncharts = ncharts,
     nrow = nrow,
-    ncol = ncol
+    ncol = ncol,
+    allowCompare = allowCompare
   )
 }
