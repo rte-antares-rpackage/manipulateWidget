@@ -1,4 +1,4 @@
-inputAreaModuleUI <- function(id) {
+inputAreaModuleUI <- function(id, allowCompare = TRUE) {
   ns <- NS(id)
   shiny::conditionalPanel(
     sprintf("input['%s'] != -1", ns("chartid")),
@@ -12,7 +12,7 @@ inputAreaModuleUI <- function(id) {
       shiny::uiOutput(ns("inputarea")),
       shiny::conditionalPanel(
         sprintf("input['%s'] == '0'", ns("chartid")),
-        compareInputsModuleUI(ns("compare"))
+        compareInputsModuleUI(ns("compare"), allowCompare = allowCompare)
       )
     )
   )

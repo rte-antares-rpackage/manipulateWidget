@@ -283,7 +283,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
 
     ui <- mwUI("mw", border = FALSE, okBtn = TRUE, updateBtn = .updateBtn,
                      saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType,
-                     width = "100%", height = "100%")
+                     width = "100%", height = "100%", allowCompare = .compareOpts$allowCompare)
 
     server <- function(input, output, session) {
       callModule(mwModuleServer, "mw", controller)
@@ -292,7 +292,9 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
     shiny::runGadget(ui, server, viewer = .viewer)
   } else if (.runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
-    ui <- mwUI("mw", width = "100%", height = "100%")
+    ui <- mwUI("mw", border = TRUE, okBtn = FALSE, updateBtn = .updateBtn,
+               saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType,
+               width = "100%", height = "100%", allowCompare = .compareOpts$allowCompare)
     server <- function(input, output, session) {
       callModule(mwModuleServer, "mw", controller)
     }

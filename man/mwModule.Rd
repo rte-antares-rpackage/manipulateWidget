@@ -8,8 +8,8 @@
 mwModule(id, controller, fillPage = FALSE, ...)
 
 mwModuleUI(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE,
-  exportBtn = TRUE, margin = 0, width = "100\%", height = 400,
-  header = NULL, footer = NULL)
+  exportBtn = TRUE, allowCompare = TRUE, margin = 0,
+  width = "100\%", height = 400, header = NULL, footer = NULL)
 }
 \arguments{
 \item{id}{A unique string that identifies the module}
@@ -30,6 +30,9 @@ the main shiny application to the module.}
 \item{saveBtn}{Should the UI contain the save button ? For saving output as html}
 
 \item{exportBtn}{Should an export button be added to the controls ? For saving output as png}
+
+\item{allowCompare}{If \code{TRUE} (the default), then the user can use the
+UI to add or remove charts and choose which variables to compare}
 
 \item{margin}{Margin to apply around the module UI. Should be one two or four valid css
 units.}

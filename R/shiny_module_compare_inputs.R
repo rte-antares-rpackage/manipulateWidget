@@ -1,6 +1,13 @@
-compareInputsModuleUI <- function(id) {
+compareInputsModuleUI <- function(id, allowCompare = TRUE) {
   ns <- NS(id)
-  shiny::uiOutput(ns("content"))
+  if (allowCompare) {
+    shiny::uiOutput(ns("content"))
+  } else {
+    tags$div(
+      style = "visibility:hidden;",
+      shiny::uiOutput(ns("content"))
+    )
+  }
 }
 
 compareInputsModuleServer <- function(input, output, session, ctrl) {

@@ -73,7 +73,7 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
     width = width, height = height,
     menuModuleUI(ns("menu"), updateBtn = updateBtn, saveBtn = saveBtn,
                  okBtn = okBtn, exportBtn = exportBtn, exportType = exportType),
-    inputAreaModuleUI(ns("inputarea")),
+    inputAreaModuleUI(ns("inputarea"), allowCompare = allowCompare),
     gridModuleUI(ns("grid"))
   )
 
@@ -111,6 +111,7 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
 #' @param height Height of the module UI.
 #' @param header	Tag or list of tags to display as a common header above all tabPanels.
 #' @param footer	Tag or list of tags to display as a common footer below all tabPanels
+#' @inheritParams compareOptions
 #'
 #' @rdname mwModule
 #' @export

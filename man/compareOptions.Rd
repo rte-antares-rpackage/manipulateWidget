@@ -4,7 +4,8 @@
 \alias{compareOptions}
 \title{Options for comparison mode}
 \usage{
-compareOptions(ncharts = NULL, nrow = NULL, ncol = NULL)
+compareOptions(ncharts = NULL, nrow = NULL, ncol = NULL,
+  allowCompare = TRUE)
 }
 \arguments{
 \item{ncharts}{Number of charts to generate.}
@@ -14,6 +15,9 @@ best number of rows given the number of charts and columns.}
 
 \item{ncol}{Number of columns. If \code{NULL}, the function tries to pick the
 best number of columns given the number of charts and rows.}
+
+\item{allowCompare}{If \code{TRUE} (the default), then the user can use the
+UI to add or remove charts and choose which variables to compare}
 }
 \value{
 List of options
