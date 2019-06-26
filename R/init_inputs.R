@@ -159,7 +159,10 @@ Model <- setRefClass(
     },
 
     getShareable = function() {
-      names(hierarchy)
+      intersect(
+        names(hierarchy),
+        inputList$inputTable[inputList$inputTable$type != "sharedValue", "name"]
+      )
     },
 
     addChart = function() {
