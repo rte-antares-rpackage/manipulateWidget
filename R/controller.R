@@ -48,12 +48,14 @@ MWController <- setRefClass(
   "MWController",
   fields = c("inputList", "uiSpec", "envs", "session", "shinyOutput", "expr", "ncharts", "charts",
              "autoUpdate", "renderFunc", "outputFunc", "useCombineWidgets", "nrow", "ncol",
-             "returnFunc", "initialized", "listeners"),
+             "returnFunc", "initialized", "listeners", "translations"),
   methods = list(
 
-    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE,
-                                                          saveBtn = TRUE, exportBtn = FALSE, exportType = "html2canvas"),
-                          nrow = NULL, ncol = NULL, returnFunc = function(widget, envs) {widget}) {
+    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE,
+                                                          saveBtn = TRUE, exportBtn = FALSE,
+                                                          exportType = "html2canvas"),
+                          nrow = NULL, ncol = NULL, returnFunc = function(widget, envs) {widget},
+                          translations = mwTranslations()) {
       expr <<- expr
       inputList <<- inputs$inputList
       uiSpec <<- inputs
@@ -71,6 +73,7 @@ MWController <- setRefClass(
       charts <<- list()
       initialized <<- FALSE
       listeners <<- character()
+      translations <<- translations
     },
 
     init = function() {
@@ -164,7 +167,7 @@ MWController <- setRefClass(
 
     isVisible = function(name, chartId = 1) {
       "Indicates if a given input is visible"
-      inputList$isVisible(name, chartId = 1)
+      inputList$isVisible(name, chartId = chartId)
     },
 
     updateChart = function(chartId = 1) {
@@ -237,7 +240,8 @@ MWController <- setRefClass(
       res <- MWController(
         expr,
         uiSpec$clone(),
-        autoUpdate
+        autoUpdate,
+        translations = translations
       )
       res$charts <- charts
       res$nrow <- nrow

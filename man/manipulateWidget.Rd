@@ -8,8 +8,8 @@ manipulateWidget(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   .exportBtn = TRUE, .exportType = c("html2canvas", "webshot"),
   .updateBtnInit = FALSE, .viewer = c("pane", "window", "browser"),
   .compare = NULL, .compareOpts = compareOptions(),
-  .showCompare = TRUE, .return = function(widget, envs) {     widget },
-  .width = NULL, .height = NULL, .runApp = TRUE)
+  .translations = mwTranslations(), .return = function(widget, envs) { 
+     widget }, .width = NULL, .height = NULL, .runApp = TRUE)
 }
 \arguments{
 \item{.expr}{expression to evaluate that returns an interactive plot of class
@@ -52,7 +52,8 @@ initialized with the default value for the two charts.}
 \item{.compareOpts}{List of options created \code{\link{compareOptions}}.
 These options indicate the number of charts to create and their disposition.}
 
-\item{.showCompare}{\code{logical}. In case of \code{.compare}. Show windows selection on menu ?}
+\item{.translations}{List of translation strings created with function
+\code{\link{mwTranslations}}. Used to translate UI titles and labels.}
 
 \item{.return}{A function that can be used to modify the output of
 \code{manipulateWidget}. It must take two parameters: the first one is the

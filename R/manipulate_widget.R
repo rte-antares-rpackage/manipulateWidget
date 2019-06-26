@@ -42,7 +42,8 @@
 #'   initialized with the default value for the two charts.
 #' @param .compareOpts List of options created \code{\link{compareOptions}}.
 #'   These options indicate the number of charts to create and their disposition.
-#' @param .showCompare \code{logical}. In case of \code{.compare}. Show windows selection on menu ?
+#' @param .translations List of translation strings created with function
+#'   \code{\link{mwTranslations}}. Used to translate UI titles and labels.
 #' @param .return A function that can be used to modify the output of
 #'   \code{manipulateWidget}. It must take two parameters: the first one is the
 #'   final widget, the second one is a list of environments containing the input
@@ -230,7 +231,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareOpts = compareOptions(),
-                             .showCompare = TRUE,
+                             .translations = mwTranslations(),
                              .return = function(widget, envs) {widget},
                              .width = NULL, .height = NULL, .runApp = TRUE) {
 
@@ -241,6 +242,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   .viewer <- match.arg(.viewer)
   .env <- parent.frame()
   .compareOpts <- do.call(compareOptions, .compareOpts)
+  .translations <- do.call(mwTranslations, .translations)
 
   .exportType <- match.arg(.exportType)
   if (.exportType == "webshot" && !requireNamespace("webshot")) {
@@ -267,10 +269,10 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
   controller <- MWController(.expr, inputs,
-                             autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit, showCompare = .showCompare,
+                             autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit,
                                                saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType),
                              nrow = dims$nrow, ncol = .compareOpts$ncol,
-                             returnFunc = .return)
+                             returnFunc = .return, translations = .translations)
 
   if (.runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget

@@ -77,13 +77,6 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     lapply(ctrl$inputList$inputTable$input, function(input) {
       # Update input visibility
       if (chartId != get(".id", envir = input$env)) return()
-
-      # catIfDebug("Update visibility of", input$getID())
-      # shiny::updateCheckboxInput(
-      #   session,
-      #   paste0(input$getID(), "_visible"),
-      #   value = eval(input$display, envir = input$env)
-      # )
       # Hack to fix https://github.com/rstudio/shiny/issues/1490
       if (input$type == "select" && identical(input$lastParams$multiple, TRUE)) {
         input$valueHasChanged <- TRUE
@@ -96,8 +89,8 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
     updateInputs(chartId())
 
     if (chartId() == -1) title <- ""
-    else if (chartId() == 0) title <- "Settings"
-    else title <- paste("Chart", chartId())
+    else if (chartId() == 0) title <- ctrl$translations$settings
+    else title <- paste(ctrl$translations$chart, chartId())
     output$input_title <- shiny::renderText(title)
   })
 
