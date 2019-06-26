@@ -23,14 +23,11 @@ initEnv <- function(parentEnv, id) {
 #' @param compare character vector with the name of the inputs to compare
 #' @param ncharts number of charts that will be created
 #'
-#' @return A list with the following elements:
+#' @return An InputEnv object with the following elements:
 #' - envs: list with elements
 #'    - shared: shared environment
 #'    - ind: list of individual environments. Length is equal to ncharts
-#' - inputs: list with elements:
-#'    - shared: shared inputs (initialized)
-#'    -ind: list of individual inputs (initialized) for each chart. Length is
-#'          equal to ncharts
+#' - hierarchy: Named list representing the disposition of inputs
 #' - inputList: same as inputs but flattened to facilitate looping.
 #' - ncharts: number of charts
 #' @noRd
