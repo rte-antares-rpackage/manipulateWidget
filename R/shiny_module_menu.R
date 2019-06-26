@@ -9,8 +9,7 @@ menuModuleUI <- function(id, okBtn = TRUE, saveBtn = TRUE, updateBtn = FALSE,
         style = "padding:0;",
         class = "mw-btn mw-btn-settings",
         onclick = sprintf("select(this, '%s')", ns("mw-shared-inputs")),
-        shiny::actionButton(ns(".settings"), "", icon = shiny::icon("gears"), class = "bt1",
-                            style="padding:0;width:50px;height:50px;outline:0;border-radius:0;"),
+        shiny::actionButton(ns(".settings"), "", icon = shiny::icon("gears"), class = "bt1 settings"),
         tags$div(class="right-arrow")
       ),
       uiOutput(ns("chart_btns"))
@@ -109,11 +108,10 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol,
 
         tags$div(
           class = paste0("mw-btn mw-btn-area", active_class),
-          style = "padding: 0px",
+          style = "padding:0;",
           onclick = sprintf("select(this,'%s')", ids[i]),
           shiny::actionButton(
-            ns(ids[i]), class = "bt1",
-            style="padding:0;width:50px;height:50px;outline:0;border-radius:0;border: none;background: none;padding: 10px 3.3px;",
+            ns(ids[i]), class = "bt1 area",
             .uiChartIcon(i, nrow(), ncol())
           ),
           tags$div(class="right-arrow")

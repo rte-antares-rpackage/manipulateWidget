@@ -7,6 +7,13 @@
   border-right:solid 1px #e7e8ea;
 }
 
+.separator {
+  border-top:solid 1px #4e9cff;
+  width:100%;
+  height:1px;
+  margin-top:-1px;
+}
+
 
 /* general style for buttons */
 .mw-btn {
@@ -77,8 +84,6 @@
   background-color: #2b7be2;
   border: solid 1px #2b7be2;
 }
-
-
 
 /* Buttons used to display inputs for a specific area */
 .mw-btn-area {
@@ -168,6 +173,50 @@
   margin-bottom: 30px;
 }
 
+/* Settings button */
+.bt1.settings {
+  padding:0;
+  width:50px;
+  height:50px;
+  outline:0;
+  border-radius:0;
+}
+
+.bt1.area {
+  padding:0;
+  width:50px;
+  height:50px;
+  outline:0;
+  border-radius:0;
+  border: none;
+  background: none;
+  padding: 10px 3.3px;
+}
+
+/* Input title */
+.input-title {
+  width:100%;
+  font-size:1.6em;
+  border-bottom:solid 1px #4e9cff;
+  padding-bottom:5px;
+}
+
+/* Compare inputs */
+.compare-inputs {
+  width:100%;
+}
+
+.compare-inputs > div {
+  width:50%;
+  float:left;
+  padding-left:5px;
+}
+
+.compare-inputs > div:first-child {
+  padding-left:0px;
+  padding-right:5px;
+}
+
 
 /* /!\ DO NOT MODIFY THE REST OF THE FILE /!\ */
 
@@ -211,6 +260,7 @@ html, body {
   border-right:solid 1px #4e9cff;
   padding:10px;
   overflow: auto;
+  margin-top:5px;
 }
 
 .mw-chartarea {

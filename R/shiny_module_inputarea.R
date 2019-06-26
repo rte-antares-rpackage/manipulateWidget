@@ -11,12 +11,15 @@ inputAreaModuleUI <- function(id, allowCompare = TRUE) {
       style = "display:block;",
       tags$div(
         shiny::textOutput(ns("input_title")),
-        class="input-title",
-        style="width:100%;font-size:1.6em;border-bottom:solid 1px #4e9cff; margin-bottom:5px;padding-bottom:5px;"
+        class="input-title"
       ),
-      shiny::uiOutput(ns("inputarea")),
+      tags$div(
+        class = "mw-inputarea",
+        shiny::uiOutput(ns("inputarea"))
+      ),
       shiny::conditionalPanel(
         sprintf("input['%s'] == '0'", ns("chartid")),
+        class = "mw-inputarea",
         compareInputsModuleUI(ns("compare"), allowCompare = allowCompare)
       )
     )
