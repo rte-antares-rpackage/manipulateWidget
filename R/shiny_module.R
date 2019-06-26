@@ -21,6 +21,8 @@ mwModuleServer <- function(input, output, session, ctrl, ...) {
       }
     })
   }
+
+  return(ctrl)
 }
 
 startModule <- function(ctrl) {

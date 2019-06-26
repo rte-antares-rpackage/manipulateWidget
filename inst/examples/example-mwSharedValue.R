@@ -43,6 +43,10 @@ server <- function(input, output, session) {
       }
     })
 
-  mwModule("mw", controller, data = data, title = reactive(input$title))
+  ctrl <- mwModule("mw", controller, data = data, title = reactive(input$title))
+
+  observeEvent(input$obs, {
+    ctrl$setValueAll("range", c(2001, 2001 + (nrow(data())-1)))
+  }, ignoreInit = TRUE)
 }
 shinyApp(ui, server)
