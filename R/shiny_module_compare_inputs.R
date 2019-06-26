@@ -34,7 +34,7 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
           ),
           tags$div(
             style = "width:50%;float:left;padding-left:5px;",
-            shiny::selectInput(ns("ncols"), "Nb columns", c("auto", 1:4))
+            shiny::selectInput(ns("ncols"), "Nb columns", c("auto", 1:4), selected = ctrl$ncol)
           )
         )
       )

@@ -269,7 +269,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   controller <- MWController(.expr, inputs,
                              autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit, showCompare = .showCompare,
                                                saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType),
-                             nrow = dims$nrow, ncol = dims$ncol,
+                             nrow = dims$nrow, ncol = .compareOpts$ncol,
                              returnFunc = .return)
 
   if (.runApp & interactive()) {
