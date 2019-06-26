@@ -265,7 +265,7 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
 
   # Initialize inputs
-  inputs <- initInputs(list(...), env = .env, compare = .compare,
+  inputs <- initInputEnv(list(...), env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
   controller <- MWController(.expr, inputs,

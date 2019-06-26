@@ -1,8 +1,8 @@
 context("MWController class")
 
 describe("MWController", {
-  it("can be created with the result of initInputs()", {
-    inputs <- initInputs(list(a = mwText("a"), b = mwText("b")))
+  it("can be created with the result of initInputEnv()", {
+    inputs <- initInputEnv(list(a = mwText("a"), b = mwText("b")))
     expr <- expression(paste(a, b))
     controller <- MWController(expr, inputs)$init()
     controller$updateCharts()
@@ -12,7 +12,7 @@ describe("MWController", {
   })
 
   it("creates multiple charts in comparison mode", {
-    inputs <- initInputs(list(a = mwText("a"), b = mwText("b")), compare = "b",
+    inputs <- initInputEnv(list(a = mwText("a"), b = mwText("b")), compare = "b",
                          ncharts = 3)
     expr <- expression(paste(a, b))
     controller <- MWController(expr, inputs)$init()
@@ -23,7 +23,7 @@ describe("MWController", {
   })
 
   it ("does not update charts if values do not change", {
-    inputs <- initInputs(list(a = mwText("a"), b = mwText("b")))
+    inputs <- initInputEnv(list(a = mwText("a"), b = mwText("b")))
     expr <- expression(print("chart updated"))
     expect_output(controller <- MWController(expr, inputs)$init(), "chart updated")
     expect_output(controller$updateCharts(), "chart updated")
@@ -34,7 +34,7 @@ describe("MWController", {
   })
 
   it("creates a copy that is completely autonomous", {
-    inputs <- initInputs(list(grp = mwGroup(a = mwText("a"), b = mwText("b"))))
+    inputs <- initInputEnv(list(grp = mwGroup(a = mwText("a"), b = mwText("b"))))
     expr <- expression(paste(a, b))
     controller1 <- MWController(expr, inputs)$init()
     controller2 <- controller1$clone()
@@ -47,14 +47,14 @@ describe("MWController", {
   })
 
   it("accesses parameters of a given input", {
-    inputs <- initInputs(list(a = mwSelect(c("a", "b", "c")), b = mwText("b")))
+    inputs <- initInputEnv(list(a = mwSelect(c("a", "b", "c")), b = mwText("b")))
     expr <- expression(paste(a, b))
     controller <- MWController(expr, inputs)$init()
     expect_equal(controller$getParams("a")$choices, c("a", "b", "c"))
   })
 
   it("does not update values or create charts until it is initialized", {
-    inputs <- initInputs(list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0)))
+    inputs <- initInputEnv(list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0)))
     expr <- expression(paste(x, y))
     controller <- MWController(expr, inputs)
     expect_length(controller$charts, 0)

@@ -121,7 +121,7 @@ describe("InputList", {
     it ("can add a group of inputs", {
       e <- initEnv(parent.frame(), 1)
       inputs <- list(x = mwSlider(0, 10, 5), grp = mwGroup(y = mwSlider(x, 10, 0)))
-      initInputs(inputs, e)
+      initInputEnv(inputs, e)
       inputList <- InputList(inputs[1])$init()
       inputList$addInputs(inputs[2])
 

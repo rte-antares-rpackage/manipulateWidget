@@ -8,7 +8,7 @@ describe("onDone", {
         x
       },
       {
-        inputs <- initInputs(list(x1 = mwText("value1"), x2 = mwSelect(1:3)))
+        inputs <- initInputEnv(list(x1 = mwText("value1"), x2 = mwSelect(1:3)))
         expr <- expression(combineWidgets(paste(x1, x2)))
         controller <- MWController(expr, inputs)$init()
 
@@ -28,7 +28,7 @@ describe("onDone", {
       },
       {
         compare <- list(x2 = list(1, 2, 3))
-        inputs <- initInputs(list(x1 = mwText("value1"), x2 = mwSelect(1:3)),
+        inputs <- initInputEnv(list(x1 = mwText("value1"), x2 = mwSelect(1:3)),
                              compare = compare, ncharts = 3)
         expr <- expression(paste(x1, x2))
         controller <- MWController(expr, inputs)$init()

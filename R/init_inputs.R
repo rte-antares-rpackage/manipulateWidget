@@ -34,14 +34,14 @@ initEnv <- function(parentEnv, id) {
 #' - inputList: same as inputs but flattened to facilitate looping.
 #' - ncharts: number of charts
 #' @noRd
-initInputs <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1) {
-  res <- Model()
+initInputEnv <- function(inputs, env = parent.frame(), compare = NULL, ncharts = 1) {
+  res <- InputEnv()
   res$init(inputs = inputs, env = env, compare = compare, ncharts = ncharts)
   res
 }
 
-Model <- setRefClass(
-  "Model",
+InputEnv <- setRefClass(
+  "InputEnv",
   fields = c("envs", "inputList", "ncharts", "hierarchy"),
   methods = list(
     initialize = function() {},
@@ -232,7 +232,7 @@ Model <- setRefClass(
       }
       newInputList$addInputs(newInputs)
 
-      res <- Model()
+      res <- InputEnv()
       res$envs <- list(shared = newSharedEnv, ind = newEnvs)
       res$inputList <- newInputList
       res$hierarchy <- hierarchy

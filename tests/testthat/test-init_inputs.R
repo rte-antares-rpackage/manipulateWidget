@@ -1,15 +1,15 @@
-context("initInputs")
+context("initInputEnv")
 
-# Helper function that checks the structure of the object returned by initInputs.
+# Helper function that checks the structure of the object returned by initInputEnv
 # It returns the said object for further testing
 test_structure <- function(inputs, compare = NULL, ncharts = 1) {
-  res <- initInputs(inputs, compare = compare, ncharts = ncharts)
+  res <- initInputEnv(inputs, compare = compare, ncharts = ncharts)
 
   #initAllInputs(inputs, initEnv(parent.frame(), 1))
   inputList <- lapply(unname(inputs), function(input) input$getInputs())
   inputList <- do.call(c, inputList)
 
-  expect_is(res, "Model")
+  expect_is(res, "InputEnv")
   expect_named(res$getRefClass()$fields(), c("envs", "inputList", "ncharts", "hierarchy"))
   expect_is(res$envs, "list")
   expect_named(res$envs, c("shared", "ind"))
@@ -40,7 +40,7 @@ test_structure <- function(inputs, compare = NULL, ncharts = 1) {
   res
 }
 
-describe("initInputs", {
+describe("initInputEnv", {
   it("generates correct structure", {
     test_structure(list(a = mwText(), b = mwText()))
   })
@@ -65,12 +65,12 @@ describe("initInputs", {
   })
 
   it("throws errors if inputs are not inputs or not named", {
-    expect_error(initInputs(list(mwText())), "All arguments need to be named.")
-    expect_error(initInputs(list(a = 1)), "All arguments need to be Input objects.")
+    expect_error(initInputEnv(list(mwText())), "All arguments need to be named.")
+    expect_error(initInputEnv(list(a = 1)), "All arguments need to be Input objects.")
   })
 })
 
-describe("Model Class", {
+describe("InputEnv Class", {
   it ("shares an input", {
     model <- test_structure(list(x = mwSlider(0, 10, 5), y = mwSlider(x, 10, 0)),
                             ncharts = 2, compare = list(x = list(5, 0), y = NULL))
