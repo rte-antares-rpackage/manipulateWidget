@@ -9,3 +9,4 @@ README_files
 ^codecov\.yml$
 newUI
 ^inst/examples
+^data-raw$

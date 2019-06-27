@@ -84,5 +84,37 @@
 #' @importFrom utils getFromNamespace
 #' @importFrom stats runif
 NULL
-#
+
+#' Evolution of energy use per country
+#'
+#' Data.frame containing energy consumption per country from 1960 to 2014. The
+#' data comes from the World Bank website. It contains one line per
+#' couple(country, year) and has the following columns:
+#'
+#' \itemize{
+#'   \item country Country name
+#'   \item iso2c Country code in two characters
+#'   \item year Year
+#'   \item population Population of the country
+#'   \item energy_used_per_capita Energy used per capita in kg of oil equivalent (EG.USE.PCAP.KG.OE)
+#'   \item energy_imported_prop Proportion of energy used that has been imported (EG.IMP.CONS.ZS)
+#'   \item energy_fossil_prop Fossil fuel energy consumption in proportion of total consumption (EG.USE.COMM.FO.ZS)
+#'   \item energy_used Energy consumption in kg of oil equivalent
+#'   \item energy_fossil Fossil fuel energy consumption in kg of oil equivalent
+#'   \item prop_world_energy_used Share of the country in the world energy consumption
+#'   \item prop_world_energy_fossil Share of the country in the world fossil energy consumption
+#'   \item prop_world_population Share of the country in the world population
+#'   \item long Longitude of the country
+#'   \item lat Lattitude of the country
+#'   \item region Region of the country
+#' }
+#'
+#' @author François Guillem \email{guillem.francois@gmail.com}
+#' @references \url{https://data.worldbank.org/indicator}
+"worldEnergyUse"
+
+
+
+
+
 globalVariables(c("mod", "multiple", "name", "type"))
