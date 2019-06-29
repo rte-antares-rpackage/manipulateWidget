@@ -8,6 +8,7 @@ function select(el, id) {
 }
 
 function resizeAllWidgets() {
+  if (!window.HTMLWidgets) {return}
   var widgets = HTMLWidgets.findAll(document, ".mw-chart>.html-widget");
   var ids = $.map($(".mw-chart>.html-widget"), function(x, i) {return x.id});
   var container;
