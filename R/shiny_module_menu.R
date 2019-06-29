@@ -155,8 +155,8 @@ menuModuleServer <- function(input, output, session, ncharts, nrow, ncol,
 
 
 .uiChartIcon <- function(i, nrow, ncol) {
-  WIDTH <- 42
-  HEIGHT <- 28
+  WIDTH <- 27
+  HEIGHT <- 22
   PAD <- 2
   i <- i - 1
 
