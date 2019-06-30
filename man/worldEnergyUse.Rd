@@ -4,7 +4,7 @@
 \name{worldEnergyUse}
 \alias{worldEnergyUse}
 \title{Evolution of energy use per country}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 11837 rows and 15 columns.}
+\format{An object of class \code{data.frame} with 9375 rows and 15 columns.}
 \usage{
 worldEnergyUse
 }
