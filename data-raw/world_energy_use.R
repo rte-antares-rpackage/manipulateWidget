@@ -29,7 +29,7 @@ worldEnergyUse <- data_source %>%
   mutate(
     prop_world_energy_used = energy_used / sum(energy_used, na.rm = TRUE),
     prop_world_energy_fossil = energy_fossil / sum(energy_fossil, na.rm = TRUE),
-    prop_world_population = energy_used / sum(population, na.rm = TRUE)
+    prop_world_population = population / sum(population, na.rm = TRUE)
   ) %>%
   ungroup()
 
