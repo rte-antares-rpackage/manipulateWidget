@@ -67,7 +67,7 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
     res$nrow <- dim$nrow
   })
 
-  observeEvent(input$.compareVars, {
+  observeEvent(ignoreNULL = FALSE, input$.compareVars, {
     toUnshare <- setdiff(input$.compareVars, ctrl$uiSpec$inputList$unshared())
     toShare <- setdiff(
       setdiff(ctrl$uiSpec$getShareable(), input$.compareVars),

@@ -33,7 +33,6 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
 
   listeners <- c()
   visible <- reactive(input$visible())
-  updateContent <- reactiveVal(0)
 
   # Controller initialization
   ctrl$setShinyInputSession(session)
@@ -50,9 +49,8 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
           e$firstCall <- FALSE
         } else {
           ctrl$setValueById(id, value = input[[id]])
-          #updateContent(updateContent() + 1)
         }
-      })
+      }, ignoreNULL = FALSE)
       listeners <<- append(listeners, id)
     }
   }
@@ -99,14 +97,12 @@ inputAreaModuleServer <- function(input, output, session, chartId, ctrl) {
 
   observeEvent(compareMod$.compareVars(), ignoreNULL = FALSE, ignoreInit = TRUE,  {
     updateInputs(chartId())
-    #updateContent(updateContent() + 1)
   })
 
   res <- reactiveValues()
   observe(res$n <- compareMod$n)
   observe(res$ncol <- compareMod$ncol)
   observe(res$nrow <- compareMod$nrow)
-  observe(res$updateContent <- updateContent())
   observe(res$displayIndBtns <- length(compareMod$.compareVars()) > 0)
 
   res
