@@ -89,7 +89,7 @@ mwSlider <- function(min, max, value, label = NULL, ..., .display = TRUE) {
     type = "slider", value = value, label = label, params = params,
     display = substitute(.display),
     validFunc = function(x, params) {
-      if (is.null(x) || is.na(x)) return(c(params$min, params$max))
+      if (is.null(x) || all(is.na(x))) return(c(params$min, params$max))
       pmin(pmax(params$min, x, na.rm = TRUE), params$max, na.rm = TRUE)
     },
     htmlFunc = htmlFuncFactory(function(...) {

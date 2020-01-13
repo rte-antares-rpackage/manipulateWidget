@@ -4,8 +4,12 @@
 \alias{mwDateRange}
 \title{Add a date range picker to a manipulateWidget gadget}
 \usage{
-mwDateRange(value = c(Sys.Date(), Sys.Date() + 1), label = NULL, ...,
-  .display = TRUE)
+mwDateRange(
+  value = c(Sys.Date(), Sys.Date() + 1),
+  label = NULL,
+  ...,
+  .display = TRUE
+)
 }
 \arguments{
 \item{value}{Vector containing two dates (either Date objects pr a string in yyy-mm-dd
@@ -38,11 +42,18 @@ if (require(dygraphs) && require(xts)) {
 
 }
 \seealso{
-Other controls: \code{\link{mwCheckboxGroup}},
-  \code{\link{mwCheckbox}}, \code{\link{mwDate}},
-  \code{\link{mwGroup}}, \code{\link{mwNumeric}},
-  \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelectize}}, \code{\link{mwSelect}},
-  \code{\link{mwSharedValue}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: 
+\code{\link{mwCheckboxGroup}()},
+\code{\link{mwCheckbox}()},
+\code{\link{mwDate}()},
+\code{\link{mwGroup}()},
+\code{\link{mwNumeric}()},
+\code{\link{mwPassword}()},
+\code{\link{mwRadio}()},
+\code{\link{mwSelectize}()},
+\code{\link{mwSelect}()},
+\code{\link{mwSharedValue}()},
+\code{\link{mwSlider}()},
+\code{\link{mwText}()}
 }
+\concept{controls}
