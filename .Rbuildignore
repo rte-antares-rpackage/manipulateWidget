@@ -9,3 +9,5 @@ README_files
 ^codecov\.yml$
 newUI
 ^inst/examples
+^revdep$
+^cran-comments\.md$
