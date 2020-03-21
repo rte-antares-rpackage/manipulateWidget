@@ -4,10 +4,23 @@
 \alias{combineWidgets}
 \title{Combine several interactive plots}
 \usage{
-combineWidgets(..., list = NULL, nrow = NULL, ncol = NULL,
-  title = NULL, rowsize = 1, colsize = 1, byrow = TRUE,
-  titleCSS = "", header = NULL, footer = NULL, leftCol = NULL,
-  rightCol = NULL, width = NULL, height = NULL)
+combineWidgets(
+  ...,
+  list = NULL,
+  nrow = NULL,
+  ncol = NULL,
+  title = NULL,
+  rowsize = 1,
+  colsize = 1,
+  byrow = TRUE,
+  titleCSS = "",
+  header = NULL,
+  footer = NULL,
+  leftCol = NULL,
+  rightCol = NULL,
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{...}{htmlwidgets to combine. If this list contains objects that are not

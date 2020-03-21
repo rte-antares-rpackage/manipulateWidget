@@ -4,8 +4,7 @@
 \alias{compareOptions}
 \title{Options for comparison mode}
 \usage{
-compareOptions(ncharts = NULL, nrow = NULL, ncol = NULL,
-  allowCompare = TRUE)
+compareOptions(ncharts = NULL, nrow = NULL, ncol = NULL, allowCompare = TRUE)
 }
 \arguments{
 \item{ncharts}{Number of charts to generate.}

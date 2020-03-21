@@ -7,9 +7,19 @@
 \usage{
 mwModule(id, controller, fillPage = FALSE, ...)
 
-mwModuleUI(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE,
-  exportBtn = TRUE, allowCompare = TRUE, margin = 0,
-  width = "100\%", height = 400, header = NULL, footer = NULL)
+mwModuleUI(
+  id,
+  border = TRUE,
+  okBtn = FALSE,
+  saveBtn = TRUE,
+  exportBtn = TRUE,
+  allowCompare = TRUE,
+  margin = 0,
+  width = "100\%",
+  height = 400,
+  header = NULL,
+  footer = NULL
+)
 }
 \arguments{
 \item{id}{A unique string that identifies the module}

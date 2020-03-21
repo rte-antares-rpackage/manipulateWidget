@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 inst/doc
+revdep/checks/
+revdep/data.sqlite
+revdep/library/

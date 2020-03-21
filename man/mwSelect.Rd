@@ -4,8 +4,14 @@
 \alias{mwSelect}
 \title{Add a Select list input to a manipulateWidget gadget}
 \usage{
-mwSelect(choices = value, value = NULL, label = NULL, ...,
-  multiple = FALSE, .display = TRUE)
+mwSelect(
+  choices = value,
+  value = NULL,
+  label = NULL,
+  ...,
+  multiple = FALSE,
+  .display = TRUE
+)
 }
 \arguments{
 \item{choices}{Vector or list of choices. If it is named, then the names rather than the
@@ -58,12 +64,18 @@ if (require(plotly)) {
 
 }
 \seealso{
-Other controls: \code{\link{mwCheckboxGroup}},
-  \code{\link{mwCheckbox}}, \code{\link{mwDateRange}},
-  \code{\link{mwDate}}, \code{\link{mwGroup}},
-  \code{\link{mwNumeric}}, \code{\link{mwPassword}},
-  \code{\link{mwRadio}}, \code{\link{mwSelectize}},
-  \code{\link{mwSharedValue}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: 
+\code{\link{mwCheckboxGroup}()},
+\code{\link{mwCheckbox}()},
+\code{\link{mwDateRange}()},
+\code{\link{mwDate}()},
+\code{\link{mwGroup}()},
+\code{\link{mwNumeric}()},
+\code{\link{mwPassword}()},
+\code{\link{mwRadio}()},
+\code{\link{mwSelectize}()},
+\code{\link{mwSharedValue}()},
+\code{\link{mwSlider}()},
+\code{\link{mwText}()}
 }
 \concept{controls}

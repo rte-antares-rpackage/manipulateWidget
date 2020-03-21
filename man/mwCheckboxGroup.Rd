@@ -4,8 +4,7 @@
 \alias{mwCheckboxGroup}
 \title{Add a group of checkboxes to a manipulateWidget gadget}
 \usage{
-mwCheckboxGroup(choices, value = c(), label = NULL, ...,
-  .display = TRUE)
+mwCheckboxGroup(choices, value = c(), label = NULL, ..., .display = TRUE)
 }
 \arguments{
 \item{choices}{Vector or list of choices. If it is named, then the names rather than the
@@ -43,12 +42,18 @@ if (require(plotly)) {
 
 }
 \seealso{
-Other controls: \code{\link{mwCheckbox}},
-  \code{\link{mwDateRange}}, \code{\link{mwDate}},
-  \code{\link{mwGroup}}, \code{\link{mwNumeric}},
-  \code{\link{mwPassword}}, \code{\link{mwRadio}},
-  \code{\link{mwSelectize}}, \code{\link{mwSelect}},
-  \code{\link{mwSharedValue}}, \code{\link{mwSlider}},
-  \code{\link{mwText}}
+Other controls: 
+\code{\link{mwCheckbox}()},
+\code{\link{mwDateRange}()},
+\code{\link{mwDate}()},
+\code{\link{mwGroup}()},
+\code{\link{mwNumeric}()},
+\code{\link{mwPassword}()},
+\code{\link{mwRadio}()},
+\code{\link{mwSelectize}()},
+\code{\link{mwSelect}()},
+\code{\link{mwSharedValue}()},
+\code{\link{mwSlider}()},
+\code{\link{mwText}()}
 }
 \concept{controls}

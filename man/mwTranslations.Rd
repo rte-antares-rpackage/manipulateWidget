@@ -4,9 +4,14 @@
 \alias{mwTranslations}
 \title{Translate UI titles and labels}
 \usage{
-mwTranslations(settings = "Settings", chart = "Chart",
-  compare = "Compare", compareVars = "Variables to compare",
-  ncol = "Nb Columns", ncharts = "Nb Charts")
+mwTranslations(
+  settings = "Settings",
+  chart = "Chart",
+  compare = "Compare",
+  compareVars = "Variables to compare",
+  ncol = "Nb Columns",
+  ncharts = "Nb Charts"
+)
 }
 \arguments{
 \item{settings}{Title of the settings panel.}
