@@ -1,9 +1,24 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
+# manipulateWidget 0.11.0 (2020-03-21)
+
+## New features
+* New comparison mode: the UI generated with `manipulateWidget()` has now new controls to enter in comparison mode, choose the number of charts, the layout and the variables to compare.
+* `compareOptions()` gains a new argument `allowCompare` to hide/show the new controls presented above.
+* New function `mwTranslations()` to translate UI elements.
+* UI has been slightly reworked.
+
+## Bug Fixes
+* The number of unnecesary updates has been decreased resulting in better performance.
+* Sometimes, there were some conflict when a parameter in `manipulateWidget()` had the same name as a variable in the global environment.
+* `mwSelect(multiple = TRUE)` was not updating charts when selection was empty.
+* `staticPlot()` was evaluating expressions in the wrong environment.
+
+
 # manipulateWidget 0.10.0 (2018-05-30)
 
 ## New features
-* UI has now a button to save the current chart in an PNF file.`manipulateWidget`gains a new parameter ".exportBtn" to show or hide this button.
+* UI has now a button to save the current chart in a PNG file. `manipulateWidget`gains a new parameter ".exportBtn" to show or hide this button.
 
 ## Bugfixes
 * Passing `.saveBtn` using module

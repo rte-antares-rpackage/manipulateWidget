@@ -19,6 +19,8 @@ Description: Like package 'manipulate' does for static graphics, this package
     chart created with package 'htmlwidgets'.
 URL: https://github.com/rte-antares-rpackage/manipulateWidget
 License: GPL (>= 2) | file LICENSE
+Depends:
+    R (>= 2.10)
 Imports:
     shiny (>= 1.0.3),
     miniUI,
@@ -30,7 +32,8 @@ Imports:
     base64enc,
     grDevices,
     codetools,
-    webshot
+    webshot,
+    shinyjs
 Suggests:
     dygraphs,
     leaflet,
