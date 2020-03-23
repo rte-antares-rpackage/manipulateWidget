@@ -42,7 +42,8 @@
 #'   initialized with the default value for the two charts.
 #' @param .compareOpts List of options created \code{\link{compareOptions}}.
 #'   These options indicate the number of charts to create and their disposition.
-#' @param .showCompare \code{logical}. In case of \code{.compare}. Show windows selection on menu ?
+#' @param .translations List of translation strings created with function
+#'   \code{\link{mwTranslations}}. Used to translate UI titles and labels.
 #' @param .return A function that can be used to modify the output of
 #'   \code{manipulateWidget}. It must take two parameters: the first one is the
 #'   final widget, the second one is a list of environments containing the input
@@ -106,131 +107,16 @@
 #'   is present after, the custom function will act very weird in a Rmarkdown
 #'   document with "runtime: shiny".
 #'
-#' @examples
-#' if (require(dygraphs)) {
-#'
-#'   mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
-#'   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ], main = title),
-#'                    range = mwSlider(2001, 2100, c(2001, 2100)),
-#'                    title = mwText("Fictive time series"))
-#'
-#' }
-#'
-#' # Comparison mode
-#' if (require(dygraphs)) {
-#'
-#'   mydata <- data.frame(
-#'     year = 2000+1:100,
-#'     series1 = rnorm(100),
-#'     series2 = rnorm(100),
-#'     series3 = rnorm(100)
-#'   )
-#'
-#'   manipulateWidget(
-#'     dygraph(mydata[range[1]:range[2] - 2000, c("year", series)], main = title),
-#'     range = mwSlider(2001, 2100, c(2001, 2100)),
-#'     series = mwSelect(c("series1", "series2", "series3")),
-#'     title = mwText("Fictive time series"),
-#'     .compare = c("title", "series")
-#'   )
-#'
-#'   # Setting different initial values for each chart
-#'   manipulateWidget(
-#'     dygraph(mydata[range[1]:range[2] - 2000, c("year", series)], main = title),
-#'     range = mwSlider(2001, 2100, c(2001, 2100)),
-#'     series = mwSelect(c("series1", "series2", "series3")),
-#'     title = mwText(),
-#'     .compare = list(
-#'       title = list("First chart", "Second chart"),
-#'       series = NULL
-#'     )
-#'   )
-#' }
-#'
-#' # Grouping inputs
-#' if (require(dygraphs)) {
-#'
-#'   mydata <- data.frame(year = 2000+1:100, value = rnorm(100))
-#'   manipulateWidget(dygraph(mydata[range[1]:range[2] - 2000, ],
-#'                            main = title, xlab = xlab, ylab = ylab),
-#'                    range = mwSlider(2001, 2100, c(2001, 2100)),
-#'                    "Graphical parameters" = mwGroup(
-#'                       title = mwText("Fictive time series"),
-#'                       xlab = mwText("X axis label"),
-#'                       ylab = mwText("Y axis label")
-#'                    )
-#'                   )
-#'
-#' }
-#'
-#' # Example of conditional input controls
-#' #
-#' # In this example, we plot a x series against a y series. User can choose to
-#' # use points or lines. If he chooses lines, then an additional input is displayed
-#' # to let him control the width of the lines.
-#' if (require("plotly")) {
-#'
-#'   dt <- data.frame (
-#'     x = sort(runif(100)),
-#'     y = rnorm(100)
-#'   )
-#'
-#'   myPlot <- function(type, lwd) {
-#'     if (type == "points") {
-#'       plot_ly(dt, x= ~x, y = ~y, type = "scatter", mode = "markers")
-#'     } else {
-#'       plot_ly(dt, x= ~x, y = ~y, type = "scatter", mode = "lines", line = list(width = lwd))
-#'     }
-#'   }
-#'
-#'   manipulateWidget(
-#'     myPlot(type, lwd),
-#'     type = mwSelect(c("points", "lines"), "points"),
-#'     lwd = mwSlider(1, 10, 1, .display = type == "lines")
-#'   )
-#'
-#' }
-#'
-#' # Advanced Usage
-#' #
-#' # .expr is evaluated with extra variables .initial, .outputId and .session
-#' # that can be used to update an already rendered widget instead of replacing
-#' # it each time an input value is modified.
-#' #
-#' # Here we generate a UI that permits to change color and size of arbitrary
-#' # points on a map generated with leaflet.
-#'
-#' if (require(leaflet)) {
-#'   lon <- rnorm(10, sd = 20)
-#'   lat <- rnorm(10, sd = 20)
-#'
-#'   myMapFun <- function(radius, color, initial, session, output) {
-#'     if (initial) {
-#'       # Widget has not been rendered
-#'       map <- leaflet() %>% addTiles()
-#'     } else {
-#'       # widget has already been rendered
-#'       map <- leafletProxy(output, session) %>% clearMarkers()
-#'     }
-#'
-#'     map %>% addCircleMarkers(lon, lat, radius = radius, color = color)
-#'   }
-#'
-#'   manipulateWidget(myMapFun(radius, color, .initial, .session, .output),
-#'                    radius = mwSlider(5, 30, 10),
-#'                    color = mwSelect(c("red", "blue", "green")))
-#'
-#' }
-#'
+#' @example inst/examples/manipulate_widget.R
 #' @export
 #'
 manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
-                             .exportBtn = FALSE, .exportType = c("html2canvas", "webshot"),
+                             .exportBtn = TRUE, .exportType = c("html2canvas", "webshot"),
                              .updateBtnInit = FALSE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareOpts = compareOptions(),
-                             .showCompare = TRUE,
+                             .translations = mwTranslations(),
                              .return = function(widget, envs) {widget},
                              .width = NULL, .height = NULL, .runApp = TRUE) {
 
@@ -241,7 +127,12 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   .viewer <- match.arg(.viewer)
   .env <- parent.frame()
   .compareOpts <- do.call(compareOptions, .compareOpts)
+  .translations <- do.call(mwTranslations, .translations)
+
   .exportType <- match.arg(.exportType)
+  if (.exportType == "webshot" && !requireNamespace("webshot")) {
+    stop("Package 'webshot' has not been installed. Install it or use argument .exportType = 'html2canvas'")
+  }
 
   if (is.null(.compare)) {
     .compareOpts$ncharts <- 1
@@ -259,14 +150,14 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
 
   # Initialize inputs
-  inputs <- initInputs(list(...), env = .env, compare = .compare,
+  inputs <- initInputEnv(list(...), env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
   controller <- MWController(.expr, inputs,
-                             autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit, showCompare = .showCompare,
+                             autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit,
                                                saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType),
-                             nrow = dims$nrow, ncol = dims$ncol,
-                             returnFunc = .return)
+                             nrow = dims$nrow, ncol = .compareOpts$ncol,
+                             returnFunc = .return, translations = .translations)
 
   if (.runApp & interactive()) {
     # We are in an interactive session so we start a shiny gadget
@@ -277,25 +168,27 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
       browser = shiny::browserViewer()
     )
 
-    ui <- mwModuleUI("ui", border = FALSE, okBtn = TRUE,
-                     saveBtn = .saveBtn, exportBtn = .exportBtn,
-                     width = "100%", height = "100%")
+    ui <- mwUI("mw", border = FALSE, okBtn = TRUE, updateBtn = .updateBtn,
+                     saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType,
+                     width = "100%", height = "100%", allowCompare = .compareOpts$allowCompare)
 
     server <- function(input, output, session) {
-      mwModule("ui", controller, fillPage = TRUE)
+      callModule(mwModuleServer, "mw", controller)
     }
 
     shiny::runGadget(ui, server, viewer = .viewer)
   } else if (.runApp & isRuntimeShiny) {
     # We are in Rmarkdown document with shiny runtime. So we start a shiny app
-    ui <- mwModuleUI("ui", margin = c("20px", 0), width = "100%", height = "100%")
+    ui <- mwUI("mw", border = TRUE, okBtn = FALSE, updateBtn = .updateBtn,
+               saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType,
+               width = "100%", height = "100%", allowCompare = .compareOpts$allowCompare)
     server <- function(input, output, session) {
-      mwModule("ui", controller, fillPage = TRUE)
+      callModule(mwModuleServer, "mw", controller)
     }
     shiny::shinyApp(ui = ui, server = server, options = list(width = .width, height = .height))
   } else {
     # Other cases (Rmarkdown or non interactive execution). We return the controller
     # to not block the R execution.
-    controller
+    invisible(controller)
   }
 }

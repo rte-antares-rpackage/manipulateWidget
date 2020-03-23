@@ -273,7 +273,7 @@ preRenderCombinedWidgets <- function(x) {
       result <- class(w)[1]
     else if (inherits(w, "shiny.tag"))
       result <- tagGetAttribute(w, "class")
-    paste(result, "cw-widget")
+    paste(result, "cw-widget", "html-widget-static-bound")
   })
 
   # Construct the html of the combined widget

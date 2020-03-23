@@ -69,7 +69,7 @@ combineWidgets(plotRandomTS(1), plotRandomTS(2))
 
 The functions tries to find the best number of columns and rows. But one can control them with parameters `nrow`and `ncol`. It is also possible to control their relative size with parameters `rowsize` and `colsize`. To achieve complex layouts, it is possible to use nested combined widgets. Here is an example of a complex layout.
 
-```{r combine_complex_layout, , out.width="100%"}
+```{r combine_complex_layout, out.width="100%"}
 combineWidgets(
   ncol = 2, colsize = c(2, 1),
   plotRandomTS(1),

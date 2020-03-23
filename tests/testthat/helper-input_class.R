@@ -29,3 +29,11 @@ expect_initialized <- function(input) {
   expect_is(input, "Input")
   expect(!emptyField(input$name) & !emptyField(input$env), "Input unitialized")
 }
+
+initAllInputs <- function(inputs, env) {
+  sapply(names(inputs), function(n) {
+    inputs[[n]]$init(n, env)
+    inputs[[n]]
+  }, simplify = FALSE, USE.NAMES = TRUE)
+}
+

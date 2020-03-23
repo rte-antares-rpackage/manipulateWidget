@@ -2,13 +2,13 @@ function select(el, id) {
   el = $(el);
   var active = el.hasClass("active");
   $(".mw-btn-settings,.mw-btn-area").removeClass("active");
-  $(".mw-inputs").css("display", "none");
   if (!active) {
 	  el.addClass("active");
-	  $("#" + id).css("display", "block");
   }
+}
 
-  // Resize all widgets
+function resizeAllWidgets() {
+  if (!window.HTMLWidgets) {return}
   var widgets = HTMLWidgets.findAll(document, ".mw-chart>.html-widget");
   var ids = $.map($(".mw-chart>.html-widget"), function(x, i) {return x.id});
   var container;
@@ -27,14 +27,26 @@ function saveAsPNG(id){
   if(chart_area[0]){
     html2canvas(chart_area[0], {
       background :'#FFFFFF',
-      useCORS : true,
-      onrendered: function(canvas) {
+      useCORS : true}
+    ).then(
+      function(canvas) {
         canvas.toBlobHD(function(blob) {
           saveAs(blob, "mw-export");
         }, "image/png");
       }
-    });
+    );
   }
 }
 
+var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutationRecord) {
+        resizeAllWidgets();
+    });
+});
 
+document.onreadystatechange = function() {
+  var target = document.getElementsByClassName('mw-input-container');
+  for (var i = 0; i < target.length; i++) {
+    observer.observe(target[i], { attributes : true, attributeFilter : ['style'] });
+  }
+};

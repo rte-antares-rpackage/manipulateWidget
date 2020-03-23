@@ -103,13 +103,14 @@ Input <- setRefClass(
   fields = c("type", "name", "idFunc", "label", "value", "display", "params", "env",
              "validFunc", "htmlFunc", "htmlUpdateFunc",
              "lastParams", "changedParams", "valueHasChanged",
-             "revDeps", "displayRevDeps", "value_expr"),
+             "revDeps", "displayRevDeps", "value_expr", "group"),
 
   methods = list(
-    init = function(name, env) {
+    init = function(name, env, group = NULL) {
       "Set environment and default values"
       name <<- name
       env <<- env
+      group <<- group
       valueHasChanged <<- FALSE
       changedParams <<- list()
       revDeps <<- character()
@@ -132,6 +133,12 @@ Input <- setRefClass(
       }
 
       lastParams <<- NULL
+
+      if (type == "group") {
+        lapply(names(value), function(n) {
+          value[[n]]$init(n, env, name)
+        })
+      }
     },
 
     getID = function() {
@@ -141,7 +148,8 @@ Input <- setRefClass(
 
     setValue = function(newValue, reactive = FALSE) {
       "Modify value of the input. If newValue is invalid, it sets a valid value"
-      catIfDebug("Set value of ", getID())
+      catIfDebug("Set value of", getID())
+
       if(reactive & type == "sharedValue"){
         params$dynamic <<- FALSE
       }
@@ -153,21 +161,15 @@ Input <- setRefClass(
 
     updateValue = function() {
       "Update value after a change in environment"
-      catIfDebug("Update value of ", getID())
       oldValue <- value
 
       if (!emptyField(validFunc)){
-        if(is.call(value_expr) | is.name(value_expr)){
-          tmp_value <- evalValue(value_expr, env)
-          if(is.null(tmp_value) & !is.call(oldValue) & !is.name(oldValue)) tmp_value <- oldValue
-          value <<- validFunc(tmp_value, getParams())
-        } else {
-          tmp_value <- evalValue(value, env)
-          if(is.null(tmp_value) & !is.call(oldValue) & !is.name(oldValue)) tmp_value <- oldValue
-          value <<- validFunc(tmp_value, getParams())
-        }
+        tmp_value <- evalValue(value, env)
+        if(is.null(tmp_value) & !is.call(oldValue) & !is.name(oldValue)) tmp_value <- oldValue
+        value <<- validFunc(tmp_value, getParams())
       }
       if (!identical(value, oldValue)) {
+        catIfDebug("Update value of", getID())
         valueHasChanged <<- TRUE
         assign(name, value, envir = env)
       }
@@ -230,6 +232,49 @@ Input <- setRefClass(
           value[[n]]$show()
         }
       }
+    },
+
+    clone = function(env) {
+      newInput <- .self$copy()
+      newInput$env <- env
+      if (type == "group") {
+        newInput$value <- lapply(value, function(i) i$clone(env))
+      } else {
+        assign(name, newInput$value, envir = env)
+        newInput$env <- env
+      }
+      newInput
+    },
+
+    destroy = function() {
+      if (type == "group") {
+        lapply(value, function(i) i$destroy())
+      } else {
+        rm(list = name, envir = env)
+      }
+    },
+
+    getInputs = function() {
+      if (type == "group") {
+        res <- do.call(c, unname(lapply(value, function(i) i$getInputs())))
+        append(structure(list(.self), .Names = name), res)
+      } else {
+        structure(list(.self), .Names = name)
+      }
+    },
+
+    resetDeps = function() {
+      revDeps <<- character(0)
+      displayRevDeps <<- character(0)
+    },
+
+    addDeps = function(newRevDeps = character(0), newDisplayRevDeps = character(0)) {
+      revDeps <<- union(revDeps, newRevDeps)
+      displayRevDeps <<- union(displayRevDeps, newDisplayRevDeps)
     }
   )
 )
+
+as.character.Input <- function(x) {
+  "InputObject"
+}

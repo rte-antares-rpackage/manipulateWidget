@@ -11,3 +11,4 @@ newUI
 ^inst/examples
 ^revdep$
 ^cran-comments\.md$
+^data-raw

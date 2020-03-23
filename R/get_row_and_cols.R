@@ -14,5 +14,5 @@
     ncol <- ceiling(n / nrow)
   }
 
-  list(nrow = nrow, ncol = ncol)
+  list(nrow = nrow, ncol = ncol, n = n)
 }

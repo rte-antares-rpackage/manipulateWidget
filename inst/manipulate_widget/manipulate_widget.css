@@ -1,19 +1,25 @@
 /* MENU */
 
 .mw-menu {
-  width:50px;
+  width:35px;
   height:100%;
   background-color: #e7e8ea;
   border-right:solid 1px #e7e8ea;
-  padding-top: 30px;
+}
+
+.separator {
+  border-top:solid 1px #4e9cff;
+  width:100%;
+  height:1px;
+  margin-top:-1px;
 }
 
 
 /* general style for buttons */
 .mw-btn {
   position: relative;
-  width:50px;
-  height:50px;
+  width:35px;
+  height:35px;
   cursor:pointer;
 }
 
@@ -26,11 +32,11 @@
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 25px 0 25px 8px;
+  border-width: 17.5px 0 17.5px 8px;
   border-color: transparent transparent transparent #4e9cff;
   position: absolute;
   top:0;
-  left: 50px;
+  left: 35px;
   display:none;
 }
 
@@ -44,7 +50,7 @@
 
 /* Settings button */
 .mw-btn-settings {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   padding: 2px;
 }
 
@@ -53,18 +59,22 @@
   background-color: #2b7be2;
 }
 
-.bt1, .btn.bt1 {
+.bt1, .btn.bt1, .mw-btn-settings .bt1:focus {
   color: #4e9cff;
   text-align: center;
   vertical-align: bottom;
-  line-height: 44px;
-  font-size: 30px;
+  line-height: 33px;
+  font-size: 20px;
   background-color: white;
   border: solid 1px #4e9cff;
 }
-.mw-btn-settings:hover .bt1 {
+.mw-btn-settings:hover .bt1, .mw-btn-settings .bt1:active, .mw-btn-settings .bt1:hover  {
   color:#fff;
   border:solid 1px #2b7be2;
+  background-color: #2b7be2;
+}
+
+.bt1.area:active {
   background-color: #2b7be2;
 }
 
@@ -92,8 +102,8 @@
   position:relative;
   background-color: white;
   border: solid 1px #4e9cff;
-  width: 44px;
-  height: 30px;
+  width: 29px;
+  height: 24px;
 }
 
 .mw-icon-chart {
@@ -107,19 +117,24 @@
 
 
 /* OK and save buttons button */
-.btn.mw-btn-ok, .btn.mw-btn-save, .btn.mw-btn-export {
-  margin: 0 3px;
-  width: 44px;
-  height: 44px;
+.action-buttons-container {
   position: absolute;
-  bottom: 30px;
+  bottom: 3px;
+  width:35px;
+}
+
+.btn.mw-btn-ok, .btn.mw-btn-save, .btn.mw-btn-export {
+  margin: 2px;
+  margin-top: 0px;
+  width: 29px;
+  height: 29px;
   background-color: #26b48b;
   color: white;
   text-align: center;
   vertical-align: bottom;
-  line-height: 44px;
+  line-height: 29px;
   border-radius: 5px;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: bold;
   padding:0;
 }
@@ -160,7 +175,51 @@
 
 
 .mw-chart-selection {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+}
+
+/* Settings button */
+.bt1.settings {
+  padding:0;
+  width:35px;
+  height:35px;
+  outline:0;
+  border-radius:0;
+}
+
+.bt1.area {
+  padding:0;
+  width:35px;
+  height:35px;
+  outline:0;
+  border-radius:0;
+  border: none;
+  background: none;
+  padding: 5.5px 3.3px;
+}
+
+/* Input title */
+.input-title {
+  width:100%;
+  font-size:20px;
+  border-bottom:solid 1px #4e9cff;
+  padding-bottom:5px;
+}
+
+/* Compare inputs */
+.compare-inputs {
+  width:100%;
+}
+
+.compare-inputs > div {
+  width:50%;
+  float:left;
+  padding-left:5px;
+}
+
+.compare-inputs > div:first-child {
+  padding-left:0px;
+  padding-right:5px;
 }
 
 
@@ -203,13 +262,15 @@ html, body {
 .mw-inputs {
   width: 200px;
   height:100%;
-  display:none;
   border-right:solid 1px #4e9cff;
-  padding:10px;
+  padding:3px 10px;
   overflow: auto;
 }
 
 .mw-chartarea {
+  height:100%;
+  width:100%;
+  position:absolute;
   flex: 1;
   -webkit-flex: 1;
   -moz-flex: 1;

@@ -20,6 +20,13 @@ library(manipulateWidget)
 
 This R package is largely inspired by the `manipulate` package from Rstudio. It provides the function `manipulateWidget` that can be used to create in a very easy way a graphical interface that let the user modify the data or the parameters of an interactive chart. Technically, the function generates a Shiny gadget, but the user does not even have to know what is Shiny.
 
+## Features
+
+* Easily combine multiple interactive charts (`htmlwidgets`) in a single interactive chart with function `combineWidgets`.
+* With only a few lines of code, create a complete user interface that lets a user change the settings of a chart: filter the input data, change the model, modify the chart type or anything else. 
+* Comparison mode: compare at a glance two set of parameters. For instance compare the same chart for two different countries or compare the results of several models or whatever.
+* Export to HTML or to PNG with a single click. 
+
 ## Why should you use it?
 
 All functionalities of this package can be replicated with other packages like [shiny](https://shiny.rstudio.com/), [flexdashboard](http://rmarkdown.rstudio.com/flexdashboard/), [crosstalk](http://rstudio.github.io/crosstalk/) and others. So why another package?
@@ -53,79 +60,100 @@ devtools::install_github("rte-antares-rpackage/manipulateWidget", ref="develop")
 The hard part for the user is to write a code that generates an interactive chart. Once this is
 done, he only has to describe what parameter of the code should be modified by what input control. For instance, consider the following code that identifies clusters in the iris data set and uses package `plotly` to generate an interactive scatter plot. 
 
-```{r kmeans, message=FALSE, out.width=600, out.height=400}
+```{r plotevouse, message=FALSE, warning=FALSE, out.width=600, out.height=400}
+library(manipulateWidget)
+library(dplyr)
+library(ggplot2)
 library(plotly)
-data(iris)
 
-plotClusters <- function(xvar, yvar, nclusters) {
-  clusters <- kmeans(iris[, 1:4], centers = nclusters)
-  clusters <- paste("Cluster", clusters$cluster)
-  
-  plot_ly(x = ~iris[[xvar]], y = ~iris[[yvar]], color = ~clusters,
-          type = "scatter", mode = "markers") %>% 
-    layout(xaxis = list(title=xvar), yaxis = list(title=yvar))
+data("worldEnergyUse")
+
+plotEvoUse <- function(Country, Period = c(1960,2014)) {
+  dataset <- worldEnergyUse %>%
+    filter(country == Country, year >= Period[1] & year <= Period[2])
+
+  ggplot(dataset, aes(year)) +
+    geom_line(aes(y = energy_used, color = "Total energy")) +
+    geom_line(aes(y = energy_fossil, color = "Fossil energy")) +
+    scale_color_manual(values = c("black", "red")) +
+    expand_limits(y = 0) +
+    ggtitle(paste("Evolution of energy\nconsumption in", Country)) +
+    xlab("") + ylab("Energy (kg of oil equivalent)") + labs(color = "") +
+    theme_bw() +
+    theme(plot.title = element_text(size=10)) +
+    theme(axis.title.y = element_text(size=9))
 }
 
-plotClusters("Sepal.Width", "Sepal.Length", 3)
+plotEvoUse("United States") %>% ggplotly()
 ```
 
-Once this code has been written, it is very easy to produce a UI that lets the user change the values of the three parameters of the function `plotClusters`:
+We create a second function that represents the share of a given country in the world energy consumption and population. We create also create a custom tooltip.
 
-```{r eval = FALSE}
-varNames <- names(iris)[1:4]
+```{r plotshareuse, message=FALSE, out.width=600, out.height=400}
+tooltipText <- function(title, value) {
+  sprintf("%s: %s%%", title, round(value * 100, 1))
+}
 
-manipulateWidget(
-  plotClusters(xvar, yvar, nclusters),
-  xvar = mwSelect(varNames),
-  yvar = mwSelect(varNames, value = "Sepal.Width"),
-  nclusters = mwSlider(1, 10, value = 3)
-)
+plotShareUse <- function(Country, Period = c(1960, 2014)) {
+  dataset <- worldEnergyUse %>%
+    filter(country == Country, year %in% Period)
+
+  ggplot(dataset) +
+    facet_grid(year ~ .) +
+    geom_bar(aes("Population", weight = prop_world_population,
+                 text = tooltipText("Population", prop_world_population))) +
+    geom_bar(aes("Energy Use", weight = prop_world_energy_used,
+                 text = tooltipText("Energy Use", prop_world_energy_used))) +
+    geom_bar(aes("Energy Fossil", weight = prop_world_energy_fossil,
+                 text = tooltipText("Energy Fossil", prop_world_energy_fossil))) +
+    ggtitle("Share of world...") +
+    xlab("") + ylab("") +
+    scale_y_continuous(labels = scales::percent) +
+    theme_bw() +
+    theme(plot.title = element_text(size=10)) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+suppressWarnings(plotShareUse("Germany")) %>%
+  ggplotly(tooltip = "text")
 ```
 
+We can combine two charts with the helper function `combineWidgets()`. We create a new function for clarity, but this is not a requirement.
 
-![An example of output of manipulateWidget](vignettes/example-kmeans.gif)
-
-The package also provides the `combineWidgets` function to easily combine multiple interactive charts in a single view. Of course both functions can be used together. Here is the code to generate the UI in the first animation.
-
-```{r eval = FALSE}
-myPlotFun <- function(distribution, range, title) {
-  randomFun <- switch(distribution, gaussian = rnorm, uniform = runif)
-  myData <- data.frame(
-    year = seq(range[1], range[2]),
-    value = randomFun(n = diff(range) + 1)
-  )
+```{r combinewidgets, message=FALSE, warning=FALSE, out.width=600, out.height=400}
+combinedPlots <- function(Country, Period = c(1960, 2014)) {
   combineWidgets(
-    ncol = 1, rowsize = c(2, 1),
-    dygraph(myData, main = title),
-    combineWidgets(
-      ncol = 2,
-      plot_ly(x = myData$value, type = "histogram"),
-      paste(
-        "The graph above represents a random time series generated using a <b>",
-        distribution, "</b>distribution function.<br/>",
-        "The chart on the left represents the empirical distribution of the generated values."
-      )
-    )
+    plotEvoUse(Country, Period) %>% ggplotly() %>% 
+      layout(
+        legend = list(orientation = "h", x = 0, y = 0, yanchor = "bottom")
+      ),
+    plotShareUse(Country, Period) %>% ggplotly(tooltip = "text"),
+    ncol = 2, colsize = c(2, 1)
   )
-  
 }
 
-manipulateWidget(
-  myPlotFun(distribution, range, title),
-  distribution = mwSelect(choices = c("gaussian", "uniform")),
-  range = mwSlider(2000, 2100, value = c(2000, 2100), label = "period"),
-  title = mwText()
-)
-
+combinedPlots("Germany")
 ```
 
+So we now have some R code that generates a nice interactive chart. Now we would like to create a user interface that lets a user choose the country and the period that he wants to visualize.
 
+Here comes the magic of package `manipulateWidget`! With this package, you only have to write a few more lines of R code to achieve this result:
+
+```{r eval = FALSE}
+manipulateWidget(
+  combinedPlots(Period, Country),
+  Period = mwSlider(1960, 2014, c(1960, 2014)),
+  Country = mwSelect(sort(unique(worldEnergyUse$country)), "United States")
+)
+```
+
+And voila!
 
 For more information take a look at the [package vignette](https://cran.r-project.org/web/packages/manipulateWidget/vignettes/manipulateWidgets.html).
 
 ## License Information:
 
-Copyright 2015-2016 RTE (France)
+Copyright 2015-2020 RTE (France)
 
 * RTE: http://www.rte-france.com
 

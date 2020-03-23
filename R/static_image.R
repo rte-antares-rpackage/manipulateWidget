@@ -41,7 +41,7 @@ staticPlot <- function(expr, width = 600, height = 400) {
   expr <- substitute(expr)
   file <- tempfile(fileext = ".png")
   png(file, width, height)
-  eval(expr)
+  eval(expr, envir = parent.frame())
   dev.off()
   staticImage(file)
 }

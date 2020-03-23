@@ -18,11 +18,12 @@
 #' @return shiny tags
 #'
 #' @noRd
-mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL, okBtn = TRUE,
+mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
                  saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas", updateBtn = FALSE,
                  areaBtns = TRUE, border = FALSE, width = "100%", height = "400px",
-                 fillPage = TRUE, showCompare = TRUE) {
+                 fillPage = TRUE, allowCompare = TRUE) {
 
+  ns <- NS(id)
   htmldep <- htmltools::htmlDependency(
     "manipulateWidget",
     "0.7.0",
@@ -31,7 +32,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL, okBtn = TRUE,
     style = "manipulate_widget.css"
   )
 
-  if(exportBtn & exportType %in% "html2canvas"){
+  if(exportBtn & (exportType %in% "html2canvas")) {
 
     fileSaver_dep <- htmltools::htmlDependency(
       name = "FileSaver",
@@ -56,7 +57,7 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL, okBtn = TRUE,
 
     html2canvas_dep <- htmltools::htmlDependency(
       name = "html2canvas",
-      version = "0.5.0",
+      version = "1.0",
       src = c(file=system.file("lib/export/html2canvas", package="manipulateWidget")),
       script = "html2canvas.js"
     )
@@ -64,170 +65,65 @@ mwUI <- function(ns, inputs, nrow = 1, ncol = 1, outputFun = NULL, okBtn = TRUE,
     htmldep <- list(htmldep, fileSaver_dep, Blob_dep, canvastoBlob_dep, html2canvas_dep)
   }
 
-  showSettings <- inputs$ncharts == 1 || length(inputs$inputs$shared) > 0
   if (border) class <- "mw-container with-border"
   else class <- "mw-container"
 
+  content <- fillRow(
+    flex = c(NA, NA, 1),
+    width = width, height = height,
+    menuModuleUI(ns("menu"), updateBtn = updateBtn, saveBtn = saveBtn,
+                 okBtn = okBtn, exportBtn = exportBtn, exportType = exportType),
+    inputAreaModuleUI(ns("inputarea"), allowCompare = allowCompare),
+    gridModuleUI(ns("grid"))
+  )
+
   if(fillPage){
     container <- fillPage(
+      shinyjs::useShinyjs(),
       tags$div(
+        id = ns("ui"),
         class = class,
-        style = paste("width:", width, ";height:", height, ";"),
-        fillRow(
-          flex = c(NA, NA, 1),
-          .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, exportBtn, exportType, updateBtn, areaBtns, showCompare),
-          .uiInputs(ns, inputs),
-          .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
-        )
+        style = paste("width:", width, ";height:", height, ";", sep = ""),
+        content
       )
     )
   } else {
     container <- tags$div(
+      id = ns("ui"),
       class = class,
-      fillRow(
-        flex = c(NA, NA, 1),
-        width = width, height = height,
-        .uiMenu(ns, inputs$ncharts, nrow, ncol, showSettings, okBtn, saveBtn, exportBtn, exportType, updateBtn, areaBtns, showCompare),
-        .uiInputs(ns, inputs),
-        .uiChartarea(ns, inputs$ncharts, nrow, ncol, outputFun)
-      )
+      style = paste("width:", width, ";height:", height, ";", sep = ""),
+      shinyjs::useShinyjs(),
+      content
     )
   }
 
   htmltools::attachDependencies(container, htmldep, TRUE)
 }
 
-.uiInputs <- function(ns, inputs) {
-  inputs <- c(list(inputs$inputs$shared), inputs$inputs$ind)
-  ids <- ns(c("mw-shared-inputs", paste0("mw-ind-inputs-", 1:(length(inputs) - 1))))
-  inputs <- mapply(function(x, id) {
-    if (length(x) == 0) return(NULL)
-    content <- lapply(x, function(i) i$getHTML(ns))
-    tags$div(class = "mw-inputs", id = id, shiny::tagList(content))
-  }, x = inputs, id = ids, USE.NAMES = FALSE, SIMPLIFY = FALSE)
 
-  inputs$class <- "mw-input-container"
-  do.call(tags$div, inputs)
-}
-
-.uiChartarea <- function(ns, ncharts, nrow, ncol, outputFun) {
-  outputEls <- lapply(seq_len(nrow * ncol), function(i) {
-    if (i > ncharts) return(tags$div())
-    outputId <- ns(paste0("output_", i))
-    if (is.null(outputFun)) {
-      el <- combineWidgetsOutput(outputId, width = "100%", height = "100%")
-    } else {
-      el <- outputFun(outputId, width = "100%", height = "100%")
-    }
-    style <- sprintf("float:left;width:%s%%;height:%s%%",
-                     floor(100 / ncol), floor(100 / nrow))
-    tags$div(class="mw-chart", el, style = style)
-  })
-
-  tags$div(
-    class = ns("mw-chart-area"),
-    style = "height:100%;width:100%",
-    shiny::tagList(outputEls)
-  )
-}
-
-.uiMenu <- function(ns, ncharts, nrow, ncol, settingsBtn, okBtn, saveBtn,
-                    exportBtn, exportType, updateBtn, areaBtns, showCompare = TRUE) {
-  container <- tags$div(
-    class="mw-menu"
-  )
-
-  if (settingsBtn) {
-    settingsBtn <- tags$div(
-      class = "mw-btn mw-btn-settings",
-      onclick = sprintf("select(this, '%s')", ns("mw-shared-inputs")),
-      tags$div(
-        class = "bt1",
-        icon("gears")
-      ),
-      tags$div(class="right-arrow")
-    )
-    container <- tagAppendChild(container, settingsBtn)
-  }
-
-  if ((areaBtns && ncharts > 1) &  showCompare){
-    container <- tagAppendChild(container, .uiChartBtns(ns, ncharts, nrow, ncol))
-  }
-
-  if (updateBtn) {
-    updateBtn <- tags$div(
-      class = "mw-btn mw-btn-update",
-      shiny::actionButton(ns(".update"), "", icon = shiny::icon("refresh"), class = "bt1")
-    )
-    container <- tagAppendChild(container, updateBtn)
-  }
-
-  if (okBtn) {
-    okBtnInput <- shiny::actionButton(ns("done"), "OK", class = "mw-btn mw-btn-ok")
-    container <- tagAppendChild(container, okBtnInput)
-  }
-
-  if (saveBtn) {
-    bottom_px <- ifelse(okBtn, "bottom: 80px;font-size: 8px;", "bottom: 30px;font-size: 8px;")
-
-    saveBtnInput <- shiny::downloadButton(ns("save"), label = "HTML", class = "mw-btn mw-btn-save",
-                                     style = bottom_px)
-    container <- tagAppendChild(container, saveBtnInput)
-  }
-
-  if (exportBtn) {
-    if(xor(okBtn, saveBtn)){
-      bottom_px <-  "bottom: 80px;font-size: 8px;"
-    } else if(okBtn && saveBtn){
-      bottom_px <-  "bottom: 130px;font-size: 8px;"
-    } else {
-      bottom_px <-  "bottom: 30px;font-size: 8px;"
-    }
-
-    if(exportType %in% "html2canvas"){
-      exportBtnInput <- shiny::actionButton(ns("export"), icon = icon("download"), label = "PNG",
-                                            class = "mw-btn mw-btn-export", style = bottom_px,
-                                            onclick = sprintf("saveAsPNG('%s')", ns("mw-chart-area")))
-    } else {
-      exportBtnInput <- shiny::downloadButton(ns("export"), label = "PNG", class = "mw-btn mw-btn-export",
-                                            style = bottom_px)
-    }
-
-    container <- tagAppendChild(container, exportBtnInput)
-  }
-
-  container
-}
-
-.uiChartBtns <- function(ns, ncharts, nrow, ncol) {
-  ids <- ns(paste0("mw-ind-inputs-", seq_len(ncharts)))
-  btns <- lapply(seq_len(ncharts), function(i) {
-    tags$div(
-      class = "mw-btn mw-btn-area",
-      onclick = sprintf("select(this,'%s')", ids[i]),
-      .uiChartIcon(i, nrow, ncol),
-      tags$div(class="right-arrow")
-    )
-  })
-
-  btns$class <- "mw-chart-selection"
-
-  do.call(tags$div, btns)
-}
-
-.uiChartIcon <- function(i, nrow, ncol) {
-  WIDTH <- 42
-  HEIGHT <- 28
-  PAD <- 2
-  i <- i - 1
-
-  w <- (WIDTH - 2 * PAD) / ncol
-  h <- (HEIGHT - 2 * PAD) / nrow
-
-  chartIconStyle <- sprintf("width:%spx;height:%spx;left:%spx;top:%spx;",
-                            w, h, w * (i%%ncol) + PAD, h * (i %/% ncol) + PAD)
-  tags$div(
-    class = "mw-icon-areachart",
-    tags$div(class="mw-icon-chart", style=chartIconStyle)
+#' @param border Should a border be added to the module ?
+#' @param okBtn Should the UI contain the OK button ?
+#' @param saveBtn Should the UI contain the save button ? For saving output as html
+#' @param exportBtn Should an export button be added to the controls ? For saving output as png
+#' @param margin Margin to apply around the module UI. Should be one two or four valid css
+#'   units.
+#' @param width Width of the module UI.
+#' @param height Height of the module UI.
+#' @param header	Tag or list of tags to display as a common header above all tabPanels.
+#' @param footer	Tag or list of tags to display as a common footer below all tabPanels
+#' @inheritParams compareOptions
+#'
+#' @rdname mwModule
+#' @export
+mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, exportBtn = TRUE,
+                       allowCompare = TRUE,
+                       margin = 0, width = "100%", height = 400, header = NULL, footer = NULL) {
+  res <- mwUI(id, border = border, okBtn = okBtn, saveBtn = saveBtn, exportBtn = exportBtn,
+              allowCompare = allowCompare,
+              width = width, height = height, fillPage = FALSE)
+  shiny::tagList(
+    header,
+    res,
+    footer
   )
 }

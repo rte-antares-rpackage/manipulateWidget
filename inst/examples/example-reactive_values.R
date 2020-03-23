@@ -12,7 +12,7 @@ ui <- fillPage(
   )
 )
 
-range = 2001
+Range = 2001
 server <- function(input, output, session) {
   mydata <- data.frame(
     year = 2000+1:100,
@@ -25,7 +25,7 @@ server <- function(input, output, session) {
     {
       dygraph(mydata[range[1]:range[2] - 2000, c("year", series)], main = title)
     },
-    range = mwSlider(range, 2100, c(2010, 2050)),
+    range = mwSlider(Range, 2100, c(2010, 2050)),
     series = mwSharedValue(),
     title = mwSharedValue(
       {"init"}

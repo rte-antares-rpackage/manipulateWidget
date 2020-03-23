@@ -37,7 +37,9 @@ updated when a value changes. list with \code{value} and \code{initBtn} (not aut
 
 \item{\code{returnCharts()}}{Return all charts.}
 
-\item{\code{setValue(name, value, chartId = 1, reactive = FALSE)}}{Update the value of a variable for a given chart.}
+\item{\code{setValue(name, value, chartId = 1, updateHTML = FALSE, reactive = FALSE)}}{Update the value of a variable for a given chart.}
+
+\item{\code{setValueAll(name, value, updateHTML = TRUE)}}{Update the value of an input for all charts}
 
 \item{\code{updateCharts()}}{Update all charts.}
 }}

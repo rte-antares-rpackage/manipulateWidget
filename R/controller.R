@@ -48,12 +48,14 @@ MWController <- setRefClass(
   "MWController",
   fields = c("inputList", "uiSpec", "envs", "session", "shinyOutput", "expr", "ncharts", "charts",
              "autoUpdate", "renderFunc", "outputFunc", "useCombineWidgets", "nrow", "ncol",
-             "returnFunc", "initialized"),
+             "returnFunc", "initialized", "listeners", "translations"),
   methods = list(
 
-    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE, showCompare = TRUE,
-                                                          saveBtn = TRUE, exportBtn = FALSE, exportType = "html2canvas"),
-                          nrow = NULL, ncol = NULL, returnFunc = function(widget, envs) {widget}) {
+    initialize = function(expr, inputs, autoUpdate = list(value = TRUE, initBtn = FALSE,
+                                                          saveBtn = TRUE, exportBtn = FALSE,
+                                                          exportType = "html2canvas"),
+                          nrow = NULL, ncol = NULL, returnFunc = function(widget, envs) {widget},
+                          translations = mwTranslations()) {
       expr <<- expr
       inputList <<- inputs$inputList
       uiSpec <<- inputs
@@ -70,6 +72,8 @@ MWController <- setRefClass(
       returnFunc <<- returnFunc
       charts <<- list()
       initialized <<- FALSE
+      listeners <<- character()
+      translations <<- translations
     },
 
     init = function() {
@@ -100,7 +104,7 @@ MWController <- setRefClass(
       catIfDebug("Set shiny session")
       session <<- session
       shinyOutput <<- output
-      inputList$session <<- session
+
       for (env in envs$ind) {
         assign(".initial", FALSE, envir = env)
         assign(".session", session, envir = env)
@@ -108,6 +112,14 @@ MWController <- setRefClass(
       # also on shared env
       assign(".initial", FALSE, envir = envs$shared)
       assign(".session", session, envir = envs$shared)
+
+      for (i in 1:ncharts) {
+        renderShinyOutput(i)
+      }
+    },
+
+    setShinyInputSession = function(session) {
+      inputList$session <<- session
     },
 
     getValue = function(name, chartId = 1) {
@@ -119,14 +131,30 @@ MWController <- setRefClass(
       inputList$getValue(inputId = id)
     },
 
-    setValue = function(name, value, chartId = 1, reactive = FALSE) {
+    setValue = function(name, value, chartId = 1, updateHTML = FALSE, reactive = FALSE) {
       "Update the value of a variable for a given chart."
       oldValue <- getValue(name, chartId)
       newValue <- inputList$setValue(name, value, chartId, reactive = reactive)
       if (!initialized) return()
+      if (updateHTML && !identical(oldValue, newValue)) {
+        input <- inputList$getInput(name, chartId)
+        input$valueHasChanged <- TRUE
+        inputList$updateHTML()
+      }
       if (autoUpdate$value && !identical(oldValue, newValue)) {
         if (inputList$isShared(name)) updateCharts()
         else updateChart(chartId)
+      }
+    },
+
+    setValueAll = function(name, value, updateHTML = TRUE) {
+      "Update the value of an input for all charts"
+      if (inputList$isShared(name)) {
+        setValue(name, value, chartId = 0, updateHTML = updateHTML)
+      } else {
+        for (i in seq_len(ncharts)) {
+          setValue(name, value, chartId = i, updateHTML = updateHTML)
+        }
       }
     },
 
@@ -137,7 +165,7 @@ MWController <- setRefClass(
       if (autoUpdate$value && !identical(oldValue, newValue)) {
         if (grepl("^shared_", id)) updateCharts()
         else {
-          chartId <- get(".id", envir = inputList$inputs[[id]]$env)
+          chartId <- get(".id", envir = inputList$getInputById(id)$env)
           updateChart(chartId)
         }
       }
@@ -155,13 +183,15 @@ MWController <- setRefClass(
 
     isVisible = function(name, chartId = 1) {
       "Indicates if a given input is visible"
-      inputList$isVisible(name, chartId = 1)
+      inputList$isVisible(name, chartId = chartId)
     },
 
     updateChart = function(chartId = 1) {
-      catIfDebug("Update chart", chartId)
       if(!is.null(envs)){
-        e <- new.env(parent = envs$ind[[chartId]]) # User can set values in expr without messing environments
+        catIfDebug("Update chart", chartId)
+        # Create a new environment so that users can set values in expr without
+        # messing environments
+        e <- new.env(parent = envs$ind[[chartId]])
         charts[[chartId]] <<- eval(expr, envir = e)
         if (useCombineWidgets) {
           charts[[chartId]] <<- combineWidgets(charts[[chartId]])
@@ -173,10 +203,10 @@ MWController <- setRefClass(
 
     returnCharts = function() {
       "Return all charts."
-      if (length(charts) == 1) {
+      if (uiSpec$ncharts == 1) {
         finalWidget <-  charts[[1]]
       } else {
-        finalWidget <- combineWidgets(list = charts, nrow = nrow, ncol = ncol)
+        finalWidget <- combineWidgets(list = charts[1:uiSpec$ncharts], nrow = nrow, ncol = ncol)
       }
       returnFunc(finalWidget, envs$ind)
     },
@@ -202,15 +232,32 @@ MWController <- setRefClass(
       }
     },
 
-    renderShinyOutputs = function() {
-      for (i in seq_len(ncharts)) renderShinyOutput(i)
+    setChartNumber = function(n, nrow = NULL, ncol = NULL) {
+      if (n != ncharts) {
+        uiSpec$setChartNumber(n)
+        envs <<- uiSpec$envs
+        inputList <<- uiSpec$inputList
+        if (n > ncharts) {
+          for (i in (ncharts + 1):n) {
+            assign(".initial", TRUE, envir = envs$ind[[i]])
+            updateChart(i)
+            if (!is.null(session))
+              assign(".initial", FALSE, envir = envs$ind[[i]])
+          }
+        }
+
+        ncharts <<- n
+      }
+      nrow <<- nrow
+      ncol <<- ncol
     },
 
     clone = function(env = parent.frame()) {
       res <- MWController(
         expr,
-        cloneUISpec(uiSpec, session),
-        autoUpdate
+        uiSpec$clone(),
+        autoUpdate,
+        translations = translations
       )
       res$charts <- charts
       res$nrow <- nrow
@@ -222,106 +269,6 @@ MWController <- setRefClass(
       res$inputList$initialized <- initialized
 
       res
-    },
-
-    getModuleUI = function(gadget = TRUE, saveBtn = TRUE, exportBtn = FALSE, exportType = "html2canvas", addBorder = !gadget) {
-      function(ns, okBtn = gadget, width = "100%", height = "400px", fillPage = TRUE) {
-        #ns <- shiny::NS
-        mwUI(ns, uiSpec, nrow, ncol, outputFunc,
-             okBtn = okBtn, saveBtn = autoUpdate$saveBtn,
-             exportBtn = autoUpdate$exportBtn, exportType = autoUpdate$exportType,
-             updateBtn = !autoUpdate$value,
-             areaBtns = length(uiSpec$inputs$ind) > 1, border = addBorder,
-             width = width, height = height, fillPage = fillPage,
-             showCompare = autoUpdate$showCompare)
-      }
-    },
-
-    render = function(output, session, fillPage) {
-      if (initialized) return()
-      ns <- session$ns
-      tryCatch({
-        init()
-        setShinySession(output, session)
-        output$ui <- renderUI(getModuleUI()(ns, height = "100%", fillPage = fillPage))
-
-        lapply(inputList$inputs, function(input) {
-          # Update input visibility
-          catIfDebug("Update visibility of", input$getID())
-          shiny::updateCheckboxInput(
-            session,
-            paste0(input$getID(), "_visible"),
-            value = eval(input$display, envir = input$env)
-          )
-          # Hack to fix https://github.com/rstudio/shiny/issues/1490
-          if (input$type == "select" && identical(input$lastParams$multiple, TRUE)) {
-            input$valueHasChanged <- TRUE
-            input$updateHTML(session)
-          }
-        })
-        if (autoUpdate$value) renderShinyOutputs()
-      }, error = function(e) {catIfDebug("Initialization error"); print(e)})
-    },
-
-    getModuleServer = function() {
-      function(input, output, session, fillPage = TRUE, ...) {
-
-        controller <- .self$clone()
-
-        reactiveValueList <- list(...)
-
-        observe({
-          for (n in names(reactiveValueList)) {
-            controller$setValue(n, reactiveValueList[[n]](), reactive = TRUE)
-          }
-          controller$render(output, session, fillPage = fillPage)
-        })
-
-        lapply(names(controller$inputList$inputs), function(id) {
-          if (controller$inputList$inputs[[id]]$type != "sharedValue") {
-            # When shiny starts, this code is executed but input[[id]] is not defined yet.
-            # The code is designed to skip this first useless update.
-            e <- environment()
-            e$shinyInitialisation <- TRUE
-            observe({
-              shinyValue <- input[[id]]
-              if (e$shinyInitialisation) {
-                assign("shinyInitialisation", FALSE, envir = e)
-              } else {
-                controller$setValueById(id, value = shinyValue)
-                controller$render(output, session)
-              }
-            })
-          }
-        })
-
-        observeEvent(input$.update, controller$updateCharts(), ignoreNULL = !autoUpdate$initBtn)
-        observeEvent(input$done, onDone(controller))
-
-        output$save <- shiny::downloadHandler(
-          filename = function() {
-            paste('mpWidget-', Sys.Date(), '.html', sep='')
-          },
-          content = function(con) {
-            htmlwidgets::saveWidget(widget = onDone(controller$clone(), stopApp = FALSE),
-                                    file = con, selfcontained = TRUE)
-          }
-        )
-
-        output$export <- shiny::downloadHandler(
-          filename = function() {
-            'mp-export.png'
-          },
-          content = function(con) {
-            tmp_html <- tempfile(fileext=".html")
-            htmlwidgets::saveWidget(widget = onDone(controller$clone(), stopApp = FALSE),
-                                    file = tmp_html, selfcontained = TRUE)
-            webshot::webshot(url = tmp_html, file = con)
-          }
-        )
-
-        return(controller)
-      }
     }
   )
 )
@@ -331,47 +278,6 @@ cloneEnv <- function(env, parentEnv = parent.env(env)) {
   parent.env(res) <- parentEnv
   res
 }
-
-cloneUISpec <- function(uiSpec, session) {
-  newSharedEnv <- cloneEnv(uiSpec$envs$shared)
-  newEnvs <- lapply(uiSpec$envs$ind, cloneEnv, parentEnv = newSharedEnv)
-
-  newInputs <- lapply(seq_along(uiSpec$inputList$inputs), function(i) {
-    x <- uiSpec$inputList$inputs[[i]]$copy()
-    chartId <- uiSpec$inputList$chartIds[i]
-    if (chartId == 0) x$env <- newSharedEnv
-    else x$env <- newEnvs[[chartId]]
-    x
-  })
-  names(newInputs) <- names(uiSpec$inputList$inputs)
-
-  newSpec <- replaceInputs(uiSpec$inputs, newInputs, c(list(newSharedEnv), newEnvs))
-
-  list(
-    envs = list(shared = newSharedEnv, ind = newEnvs),
-    inputs = newSpec,
-    inputList = InputList(newInputs, session),
-    ncharts = uiSpec$ncharts
-  )
-}
-
-replaceInputs <- function(inputs, newInputs, envs) {
-  lapply(inputs, function(el) {
-    if (is.list(el)) return(replaceInputs(el, newInputs, envs))
-    else if (el$type == "group") {
-      params <- replaceInputs(el$value, newInputs, envs)
-      params$.display <- el$display
-      params$label <- el$label
-      newGroup <- do.call(mwGroup, params)
-      env <- envs[[1 + get(".id", envir = el$env)]]
-      newGroup$init(el$name, env)
-      return(newGroup)
-    }
-    else return(newInputs[[el$getID()]])
-  })
-}
-
-
 
 #' knit_print method for MWController object
 #'
@@ -396,8 +302,8 @@ summary.MWController <- function(object, ...) {
   cat("Number of row(s)    :", object$nrow, "\n")
   cat("Number of column(s) :", object$ncol, "\n")
   cat("\nList of inputs : \n\n")
-  infos <- lapply(names(object$inputList$inputs), function(n){
-    input <- object$inputList$inputs[[n]]
+  infos <- lapply(row.names(object$inputList$inputTable), function(n){
+    input <- object$inputList$getInputById(n)
     if (is.atomic(input$value)) {
       if (is.null(input$value)) value <- "NULL"
       else if (length(input$value) == 0) value <- ""
@@ -426,4 +332,3 @@ summary.MWController <- function(object, ...) {
   infos <- do.call(rbind, infos)
   print(infos)
 }
-
