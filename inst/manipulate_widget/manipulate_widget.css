@@ -145,14 +145,12 @@
 }
 
 
-.mw-btn-update {
-  padding: 2px;
-}
-
 .mw-btn-update .bt1 {
-  height: 46px;
-  width: 46px;
-  padding: 2px;
+  padding:0;
+  width:35px;
+  height:35px;
+  outline:0;
+  border-radius:2;
 }
 
 .mw-btn-update .bt1:focus {
