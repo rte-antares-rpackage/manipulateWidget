@@ -11,7 +11,7 @@
 #' @param saveBtn Should an save button be added to the controls ? For saving output as html. Does not work in RStudio Viewer
 #' @param exportBtn Should an export button be added to the controls ? For saving output as png. Does not work in RStudio Viewer
 #' @param exportType \code{.exportBtn}, using \code{html2canvas} (default) and keeping current zoom, ... or using \code{webshot}
-#' @param updateBtn Should the updateBtn be added to the UI ? Currently unused.
+#' @param updateBtn Should the updateBtn be added to the UI ?
 #' @param width, height	Must be a valid CSS unit (like "100%", "400px", "auto") or a number,
 #' which will be coerced to a string and have "px" appended. Default to "100%" & "400px"
 #'
@@ -19,8 +19,9 @@
 #'
 #' @noRd
 mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
-                 saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas", updateBtn = FALSE,
-                 areaBtns = TRUE, border = FALSE, width = "100%", height = "400px",
+                 saveBtn = TRUE, exportBtn = TRUE, exportType = "html2canvas",
+                 updateBtn = FALSE, areaBtns = TRUE, border = FALSE,
+                 width = "100%", height = "400px",
                  fillPage = TRUE, allowCompare = TRUE) {
 
   ns <- NS(id)
@@ -105,6 +106,7 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
 #' @param okBtn Should the UI contain the OK button ?
 #' @param saveBtn Should the UI contain the save button ? For saving output as html
 #' @param exportBtn Should an export button be added to the controls ? For saving output as png
+#' @param updateBtn Should the updateBtn be added to the UI ?
 #' @param margin Margin to apply around the module UI. Should be one two or four valid css
 #'   units.
 #' @param width Width of the module UI.
@@ -115,11 +117,11 @@ mwUI <- function(id, nrow = 1, ncol = 1, okBtn = TRUE,
 #'
 #' @rdname mwModule
 #' @export
-mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE, exportBtn = TRUE,
-                       allowCompare = TRUE,
+mwModuleUI <- function(id, border = TRUE, okBtn = FALSE, saveBtn = TRUE,
+                       exportBtn = TRUE, updateBtn = FALSE, allowCompare = TRUE,
                        margin = 0, width = "100%", height = 400, header = NULL, footer = NULL) {
   res <- mwUI(id, border = border, okBtn = okBtn, saveBtn = saveBtn, exportBtn = exportBtn,
-              allowCompare = allowCompare,
+              allowCompare = allowCompare, updateBtn = updateBtn,
               width = width, height = height, fillPage = FALSE)
   shiny::tagList(
     header,
