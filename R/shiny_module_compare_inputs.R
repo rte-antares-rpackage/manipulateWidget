@@ -39,10 +39,10 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
     )
   })
 
-  nbCharts <- reactive({if (is.null(input$compare)) NULL else if (input$compare) input$nbCharts else 1})
+  nbCharts <- reactive({if (is.null(input$compare)) ctrl$ncharts else if (input$compare) input$nbCharts else 1})
 
   observeEvent(input$compare, {
-    if (!is.null(input$compare) & !input$compare) {
+    if (!is.null(input$compare) && !input$compare) {
       for (n in intersect(ctrl$uiSpec$getShareable(), input$.compareVars)) {
         ctrl$uiSpec$shareInput(n)
       }
@@ -54,12 +54,15 @@ compareInputsModuleServer <- function(input, output, session, ctrl) {
 
   observe({
     req(nbCharts())
+    i_ncols <- input$ncols
+    if(is.null(i_ncols)) i_ncols <- ctrl$ncol
+    if(is.null(i_ncols)) i_ncols <- "auto"
     if (nbCharts() == 1) {
       ncol <- 1
-    } else if (input$ncols == "auto") {
+    } else if (i_ncols== "auto") {
       ncol <- NULL
     } else {
-      ncol <- as.numeric(input$ncols)
+      ncol <- as.numeric(i_ncols)
     }
     dim <- .getRowAndCols(nbCharts(), ncol = ncol)
     res$n <- dim$n
