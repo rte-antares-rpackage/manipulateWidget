@@ -28,7 +28,6 @@
 #' @param .saveBtn Should an save button be added to the controls ? For saving output as html. Does not work in RStudio Viewer
 #' @param .exportBtn Should an export button be added to the controls ? For saving output as png. Does not work in RStudio Viewer
 #' @param .exportType \code{.exportBtn}, using \code{html2canvas} (default) and keeping current zoom, ... or using \code{webshot}
-#' @param .updateBtnInit In case of update button. Do you want to render graphics on init ?
 #' @param .viewer Controls where the gadget should be displayed. \code{"pane"}
 #'   corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
 #'   \code{"browser"} to an external web browser.
@@ -112,7 +111,6 @@
 #'
 manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
                              .exportBtn = TRUE, .exportType = c("html2canvas", "webshot"),
-                             .updateBtnInit = FALSE,
                              .viewer = c("pane", "window", "browser"),
                              .compare = NULL,
                              .compareOpts = compareOptions(),
@@ -150,12 +148,17 @@ manipulateWidget <- function(.expr, ..., .updateBtn = FALSE, .saveBtn = TRUE,
   dims <- .getRowAndCols(.compareOpts$ncharts, .compareOpts$nrow, .compareOpts$ncol)
 
   # Initialize inputs
-  inputs <- initInputEnv(list(...), env = .env, compare = .compare,
+  l_inputs <- list(...)
+  if(".updateBtnInit" %in% names(l_inputs)){
+    warning(".updateBtnInit is deprecated. Graphics are now always render on init")
+    l_inputs$.updateBtnInit <- NULL
+  }
+  inputs <- initInputEnv(l_inputs, env = .env, compare = .compare,
                        ncharts = .compareOpts$ncharts)
   # Initialize controller
   controller <- MWController(.expr, inputs,
-                             autoUpdate = list(value = !.updateBtn, initBtn = .updateBtnInit,
-                                               saveBtn = .saveBtn, exportBtn = .exportBtn, exportType = .exportType),
+                             autoUpdate = list(value = !.updateBtn, saveBtn = .saveBtn,
+                                               exportBtn = .exportBtn, exportType = .exportType),
                              nrow = dims$nrow, ncol = .compareOpts$ncol,
                              returnFunc = .return, translations = .translations)
 
