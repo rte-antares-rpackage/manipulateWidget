@@ -55,7 +55,11 @@ startModule <- function(ctrl) {
 
   observeEvent(
     menuState()$update,
-    ctrl$updateCharts(),
-    ignoreNULL = !ctrl$autoUpdate$initBtn
+    {
+      if(!is.null(menuState()$update) && menuState()$update > 0){
+        print("update")
+        ctrl$updateCharts()
+      }
+    }
   )
 }
