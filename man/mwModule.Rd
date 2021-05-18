@@ -13,6 +13,7 @@ mwModuleUI(
   okBtn = FALSE,
   saveBtn = TRUE,
   exportBtn = TRUE,
+  updateBtn = FALSE,
   allowCompare = TRUE,
   margin = 0,
   width = "100\%",
@@ -40,6 +41,8 @@ the main shiny application to the module.}
 \item{saveBtn}{Should the UI contain the save button ? For saving output as html}
 
 \item{exportBtn}{Should an export button be added to the controls ? For saving output as png}
+
+\item{updateBtn}{Should the updateBtn be added to the UI ?}
 
 \item{allowCompare}{If \code{TRUE} (the default), then the user can use the
 UI to add or remove charts and choose which variables to compare}

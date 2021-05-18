@@ -11,7 +11,6 @@ manipulateWidget(
   .saveBtn = TRUE,
   .exportBtn = TRUE,
   .exportType = c("html2canvas", "webshot"),
-  .updateBtnInit = FALSE,
   .viewer = c("pane", "window", "browser"),
   .compare = NULL,
   .compareOpts = compareOptions(),
@@ -44,8 +43,6 @@ update button.}
 \item{.exportBtn}{Should an export button be added to the controls ? For saving output as png. Does not work in RStudio Viewer}
 
 \item{.exportType}{\code{.exportBtn}, using \code{html2canvas} (default) and keeping current zoom, ... or using \code{webshot}}
-
-\item{.updateBtnInit}{In case of update button. Do you want to render graphics on init ?}
 
 \item{.viewer}{Controls where the gadget should be displayed. \code{"pane"}
 corresponds to the Rstudio viewer, \code{"window"} to a dialog window, and
