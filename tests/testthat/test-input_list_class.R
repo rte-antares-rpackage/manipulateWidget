@@ -135,7 +135,7 @@ describe("InputList", {
       inputs <- initAllInputs(inputs, e)
       inputList <- InputList(inputs)$init()
       inputList$removeInput("y", 1)
-      expect_error(inputList$getInputById("output_1_y"))
+      expect_null(inputList$getInputById("output_1_y"))
       expect_length(inputList$getInputById("output_1_x")$revDeps, 0)
       expect_silent(inputList$setValue(inputId = "output_1_x", value = 7))
 
@@ -149,8 +149,8 @@ describe("InputList", {
       inputs <- initAllInputs(inputs, e)
       inputList <- InputList(inputs)$init()
       inputList$removeInput("grp", 1)
-      expect_error(inputList$getInputById("output_1_y"))
-      expect_error(inputList$getInputById("output_1_grp"))
+      expect_null(inputList$getInputById("output_1_y"))
+      expect_null(inputList$getInputById("output_1_grp"))
       expect_length(inputList$getInputById("output_1_x")$revDeps, 0)
       expect_silent(inputList$setValue(inputId = "output_1_x", value = 7))
 

@@ -57,7 +57,6 @@ startModule <- function(ctrl) {
     menuState()$update,
     {
       if(!is.null(menuState()$update) && menuState()$update > 0){
-        print("update")
         ctrl$updateCharts()
       }
     }

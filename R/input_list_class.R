@@ -115,15 +115,21 @@ InputList <- setRefClass(
         return(getInputById(inputId))
       }
       idx <- which(inputTable$name == name & inputTable$chartId %in% c(0, chartId))
-      if (length(idx) == 0) stop("cannot find input with name ", name)
-      inputTable$input[[idx]]
+      if (length(idx) == 0) {
+        catIfDebug("cannot find input with name ", name)
+        NULL
+      } else {
+        inputTable$input[[idx]]
+      }
     },
 
     getInputById = function(inputId) {
       if (!inputId %in% row.names(inputTable)) {
-        stop("cannot find input with id ", inputId)
+        catIfDebug("cannot find input with id ", inputId)
+        NULL
+      } else {
+        inputTable[inputId, "input"][[1]]
       }
-      inputTable[inputId, "input"][[1]]
     },
 
     addInputs = function(x) {
@@ -154,14 +160,24 @@ InputList <- setRefClass(
 
     removeInput = function(name, chartId = 0, inputId = NULL) {
       if (!is.null(inputId)) {
-        if (!inputId %in% row.names(inputTable)) stop("cannot find input with id ", inputId)
-        idx <- which(row.names(inputTable) == inputId)
+        if (!inputId %in% row.names(inputTable)){
+          catIfDebug("cannot find input with id ", inputId)
+          return(TRUE)
+        } else {
+          idx <- which(row.names(inputTable) == inputId)
+        }
       } else {
         idx <- which(inputTable$name == name & inputTable$chartId == chartId)
       }
 
-      if (length(idx) == 0) stop("cannot find input with name ", name)
-      if (length(idx) > 1) stop("Something wrong with input", name)
+      if (length(idx) == 0){
+        catIfDebug("cannot find input with name ", name)
+        return(TRUE)
+      }
+      if (length(idx) > 1){
+        catIfDebug("Something wrong with input", name)
+        return(TRUE)
+      }
 
       inputToRemove <- inputTable[idx, "input"][[1]]
 

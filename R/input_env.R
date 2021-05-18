@@ -113,6 +113,7 @@ InputEnv <- setRefClass(
     },
 
     unshareInput = function(name) {
+      if (is.null(name) || name %in% "") return(character())
       if (name %in% inputList$unshared()) return(character())
 
       oldInput <- inputList$getInput(name, 0)

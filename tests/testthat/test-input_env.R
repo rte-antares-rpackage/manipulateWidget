@@ -80,7 +80,7 @@ describe("InputEnv Class", {
     expect_equal(newInput, "shared_x")
 
     expect_silent(model$inputList$getInput("x", 0))
-    expect_error(model$inputList$getInput("y", 0), "cannot find input")
+    expect_null(model$inputList$getInput("y", 0), "cannot find input")
 
     for (i in 1:2) {
       expect_silent(model$inputList$getInput("y", i))
@@ -99,7 +99,7 @@ describe("InputEnv Class", {
     newInputs <- model$unshareInput("b")
     expect_equal(newInputs, c("output_1_b", "output_2_b"))
 
-    expect_error(model$inputList$getInput("b", 0), "cannot find input")
+    expect_null(model$inputList$getInput("b", 0), "cannot find input")
 
     for (i in 1:2) {
       expect_silent(model$inputList$getInput("a", i))
@@ -131,9 +131,9 @@ describe("InputEnv Class", {
     expect_named(model$inputList$getInput("grp", 0)$value, c("a", "b"))
 
     for (i in 1:2) {
-      expect_error(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
-      expect_error(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
-      expect_error(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
+      expect_null(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
+      expect_null(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
+      expect_null(model$inputList$getInput(inputId = sprintf("output_%s_grp",i)), "cannot find input")
     }
 
     # Check environments
@@ -153,9 +153,9 @@ describe("InputEnv Class", {
       sort(newInputs),
       c("output_1_a", "output_1_b", "output_1_grp", "output_2_a", "output_2_b", "output_2_grp")
     )
-    expect_error(model$inputList$getInput("a", 0), "cannot find input")
-    expect_error(model$inputList$getInput("b", 0), "cannot find input")
-    expect_error(model$inputList$getInput("grp", 0), "cannot find input")
+    expect_null(model$inputList$getInput("a", 0), "cannot find input")
+    expect_null(model$inputList$getInput("b", 0), "cannot find input")
+    expect_null(model$inputList$getInput("grp", 0), "cannot find input")
 
     for (i in 1:2) {
       expect_silent(model$inputList$getInput("a", i))
