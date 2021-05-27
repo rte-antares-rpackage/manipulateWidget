@@ -2,11 +2,11 @@ Add more interactivity to interactive charts
 ================
 
 [![CRAN Status
-Badge](http://www.r-pkg.org/badges/version/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget)
+Badge](https://www.r-pkg.org/badges/version/manipulateWidget)](https://cran.r-project.org/web/packages/manipulateWidget/index.html)
 [![CRAN Downloads
-Badge](https://cranlogs.r-pkg.org/badges/manipulateWidget)](http://cran.r-project.org/package=manipulateWidget)
+Badge](https://cranlogs.r-pkg.org/badges/manipulateWidget)](https://cran.r-project.org/web/packages/manipulateWidget/index.html)
 [![Travis-CI Build
-Status](https://travis-ci.org/rte-antares-rpackage/manipulateWidget.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/manipulateWidget)
+Status](https://travis-ci.org/rte-antares-rpackage/manipulateWidget.svg?branch=master)](https://travis-ci.org/github/rte-antares-rpackage/manipulateWidget)
 [![Appveyor Build
 Status](https://ci.appveyor.com/api/projects/status/6y3tdofl0nk7oc4g/branch/master?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/manipulatewidget/branch/master)
 
@@ -41,7 +41,7 @@ know what is Shiny.
 
 All functionalities of this package can be replicated with other
 packages like [shiny](https://shiny.rstudio.com/),
-[flexdashboard](http://rmarkdown.rstudio.com/flexdashboard/),
+[flexdashboard](https://pkgs.rstudio.com/flexdashboard/),
 [crosstalk](http://rstudio.github.io/crosstalk/) and others. So why
 another package?
 
@@ -194,7 +194,7 @@ vignette](https://cran.r-project.org/web/packages/manipulateWidget/vignettes/man
 
 Copyright 2015-2020 RTE (France)
 
-  - RTE: <http://www.rte-france.com>
+  - RTE: <https://www.rte-france.com>
 
 This Source Code is subject to the terms of the GNU General Public
 License, version 2 or any higher version. If a copy of the GPL-v2 was
