@@ -14,6 +14,9 @@
 * `mwSelect(multiple = TRUE)` was not updating charts when selection was empty.
 * `staticPlot()` was evaluating expressions in the wrong environment.
 
+## Breaking changes
+* shiny applications using functions `mwModule()` and `mwModuleUI()` : you have to passed directly ui options like buttons on `mwModuleUI()` rather than in `mwModule()`
+
 
 # manipulateWidget 0.10.0 (2018-05-30)
 
