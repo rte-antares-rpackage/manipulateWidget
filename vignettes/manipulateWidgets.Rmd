@@ -247,4 +247,4 @@ manipulateWidget(myMapFun(radius, color, .initial, .session, .output),
 
 `manipulateWidget` uses Shiny, so it does not work in a "normal" Rmarkdown document. If one uses the function in a code chunck, the htmlwidget will be outputed with the default values of the parameters and there will be no interface to modify the parameters.
 
-Nevertheless, it is possible to include a shiny application in a document with the runtime: shiny (see http://rmarkdown.rstudio.com/authoring_shiny.html). In such setting `manipulateWidget` works normally and the document can be published on a shiny server to let final users play with the parameters of the document.
+Nevertheless, it is possible to include a shiny application in a document with the runtime: shiny (see https://bookdown.org/yihui/rmarkdown/shiny-documents.html). In such setting `manipulateWidget` works normally and the document can be published on a shiny server to let final users play with the parameters of the document.
