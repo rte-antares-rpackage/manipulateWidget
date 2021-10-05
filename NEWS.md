@@ -1,5 +1,10 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
+# manipulateWidget 0.11.1 (2021-10-05)
+
+## Bug Fixes
+* fix tests on R-devel 4.2
+
 # manipulateWidget 0.11.0 (2020-03-21)
 
 ## New features

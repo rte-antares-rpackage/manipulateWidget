@@ -23,8 +23,8 @@ test_input(mwPassword(), list("1", 1, NULL), list("1", "1", ""))
 test_input(mwSelect(1:4), list(1, 2, 5, NULL), list(1, 2, 1, 1))
 test_input(
   mwSelect(1:4, multiple = TRUE),
-  list(1, 5, NULL, 3:5),
-  list(1, integer(0), integer(0), 3:4)
+  list(1, 5, 3:5),
+  list(1, integer(0), 3:4)
 )
 # Select where choices have distinct label and values
 test_input(
@@ -34,8 +34,8 @@ test_input(
 )
 test_input(
   mwSelect(list(a = 1, b = 2), multiple = TRUE),
-  list(1, 2, 5, NULL, 1:3),
-  list(1, 2, integer(0), integer(0), 1:2)
+  list(1, 2, 5, 1:3),
+  list(1, 2, integer(0), 1:2)
 )
 
 # Checkbox
@@ -84,13 +84,13 @@ test_input(
 # Checkbox group
 test_input(
   mwCheckboxGroup(1:4),
-  list(1, 5, NULL, 3:5),
-  list(1, integer(0), integer(0), 3:4)
+  list(1, 5, 3:5),
+  list(1, integer(0), 3:4)
 )
 test_input(
   mwCheckboxGroup(list(a = 1, b = 2)),
-  list(1, 2, 5, NULL, 1:3),
-  list(1, 2, integer(0), integer(0), 1:2)
+  list(1, 2, 5, 1:3),
+  list(1, 2, integer(0), 1:2)
 )
 
 # Groups of input

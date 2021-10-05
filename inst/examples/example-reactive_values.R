@@ -1,5 +1,13 @@
 require(manipulateWidget)
 require(dygraphs)
+mydata <- data.frame(
+  year = 2000+1:100,
+  series1 = rnorm(100),
+  series2 = rnorm(100),
+  series3 = rnorm(100)
+)
+
+
 
 ui <- fillPage(
   fillRow(
@@ -14,12 +22,6 @@ ui <- fillPage(
 
 Range = 2001
 server <- function(input, output, session) {
-  mydata <- data.frame(
-    year = 2000+1:100,
-    series1 = rnorm(100),
-    series2 = rnorm(100),
-    series3 = rnorm(100)
-  )
 
   c <- manipulateWidget(
     {
@@ -29,7 +31,7 @@ server <- function(input, output, session) {
     series = mwSharedValue(),
     title = mwSharedValue(
       {"init"}
-    ), .runApp = FALSE, .showCompare = FALSE,
+    ), .runApp = FALSE,
     .compare = "range"
   )
 
