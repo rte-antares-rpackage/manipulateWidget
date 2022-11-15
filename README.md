@@ -179,7 +179,7 @@ result:
 
 ``` r
 manipulateWidget(
-  combinedPlots(Period, Country),
+  combinedPlots(Country, Period),
   Period = mwSlider(1960, 2014, c(1960, 2014)),
   Country = mwSelect(sort(unique(worldEnergyUse$country)), "United States")
 )
