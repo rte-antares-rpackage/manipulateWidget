@@ -15,7 +15,9 @@ manipulateWidget(
   .compare = NULL,
   .compareOpts = compareOptions(),
   .translations = mwTranslations(),
-  .return = function(widget, envs) {     widget },
+  .return = function(widget, envs) {
+     widget
+ },
   .width = NULL,
   .height = NULL,
   .runApp = TRUE
@@ -109,7 +111,7 @@ function \code{\link[leaflet]{leafletProxy}}. To use such functions,
 \code{manipulateWidget} evaluates the parameter \code{.expr} with four extra
 variables:
 
-\itemize{
+\describe{
   \item{\code{.initial}:}{
     \code{TRUE} if the expression is evaluated for the first time and then
     the widget has not been rendered yet, \code{FALSE} if the widget has
