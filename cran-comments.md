@@ -9,3 +9,7 @@
 
 * There's a new maintainer to the package.
 Thanks!
+
+## up to 0.11.2
+* fix ERROR CRAN CHECK : '`with_mock()` was deprecated in testthat 3.3.0.'
+* fix NOTE CRAN CHECK (`manipulateWidget.Rd`)
