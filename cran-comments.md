@@ -13,3 +13,4 @@ Thanks!
 ## up to 0.11.2
 * fix ERROR CRAN CHECK : '`with_mock()` was deprecated in testthat 3.3.0.'
 * fix NOTE CRAN CHECK (`manipulateWidget.Rd`)
+* fix pre check s3 method now exported and added to NAMESPACE
