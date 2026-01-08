@@ -279,6 +279,8 @@ Input <- setRefClass(
   )
 )
 
-as.character.Input <- function(x) {
+#' @export
+as.character.Input <- function(x, ...) {
+  list(...)
   "InputObject"
 }

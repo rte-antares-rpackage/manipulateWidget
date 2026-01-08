@@ -1,5 +1,10 @@
 <!-- Copyright © 2016 RTE Réseau de transport d’électricité --->
 
+
+# manipulateWidget 0.11.2
+* fix CRAN check ERROR (deprecated `whit_mock()` in tests)
+* fix pre check CRAN NOTE (s3 method)
+
 # manipulateWidget 0.11.1 (2021-10-05)
 
 ## Bug Fixes
